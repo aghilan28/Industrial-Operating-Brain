@@ -1,0 +1,75 @@
+# Industrial Operating Brain (IOB) — AI Intelligence Platform
+# Frozen core dependencies for Phase 0 (AI Architecture & Contracts)
+# Python 3.11+
+
+# --- Web / API layer ---
+fastapi==0.115.0
+uvicorn[standard]==0.32.0
+pydantic==2.9.2
+pydantic-settings==2.5.2
+
+# --- Graph database ---
+neo4j==5.24.0
+
+# --- Vector database ---
+qdrant-client==1.11.3
+
+# --- ML / Predictive Maintenance ---
+xgboost==2.1.1
+scikit-learn==1.5.2
+numpy==1.26.4
+pandas==2.2.3
+# Phase 6: thread-safe model artifact serialization
+joblib>=1.4.2
+
+# --- Explainable AI ---
+shap==0.46.0
+lime==0.2.0.1
+
+# --- Agentic orchestration (Decision Engine / GraphRAG fusion) ---
+langgraph==0.2.34
+
+# --- Embeddings ---
+sentence-transformers==3.1.1
+
+# --- Utilities ---
+python-dotenv==1.0.1
+httpx==0.27.2
+psutil==6.0.0
+orjson==3.10.7
+
+# --- Phase 3: Knowledge Extraction Pipeline ---
+pypdf==5.0.1
+pdfplumber==0.11.4
+pymupdf==1.24.9
+langchain-text-splitters==0.3.0
+tiktoken==0.7.0
+instructor==1.6.2
+openai==1.54.0
+anthropic==0.40.0
+reportlab==4.2.2
+python-magic==0.4.27
+
+# --- Phase 4: Embedding & Semantic Search ---
+# sentence-transformers already pinned above (3.1.1)
+# qdrant-client already pinned above (1.11.3)
+# Optional acceleration
+torch>=2.2.0
+# HuggingFace hub for model caching
+huggingface-hub>=0.24.0
+# Tokenizers explicitly
+tokenizers>=0.19.0
+
+# --- Phase 5: GraphRAG Engine ---
+# LLM clients (OpenAI / Anthropic — already pinned above)
+# openai already pinned (1.54.0)
+# anthropic already pinned (0.40.0)
+# RRF fusion and citation engine use only stdlib + pydantic (no extra deps)
+
+# --- Dev / test tooling ---
+pytest==8.3.3
+pytest-asyncio==0.24.0
+ruff==0.6.9
+mypy==1.11.2
+black==24.8.0
+locust==2.31.0

@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Industrial AI Knowledge Assistant</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;700&family=JetBrains+Mono&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@100..900&display=swap" rel="stylesheet"/>
+<style>
+        .engineering-grid {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(69, 70, 83, 0.1) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(69, 70, 83, 0.1) 1px, transparent 1px);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #454653;
+            border-radius: 10px;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "error-container": "#93000a",
+                        "surface": "#131313",
+                        "surface-dim": "#131313",
+                        "on-surface-variant": "#c6c5d5",
+                        "background": "#131313",
+                        "on-tertiary-fixed-variant": "#5d4200",
+                        "surface-container-high": "#2a2a2a",
+                        "on-surface": "#e5e2e1",
+                        "error": "#ffb4ab",
+                        "on-error": "#690005",
+                        "on-secondary": "#303033",
+                        "on-primary": "#131e8c",
+                        "tertiary-fixed": "#ffdea3",
+                        "on-tertiary-container": "#3e2b00",
+                        "secondary-fixed-dim": "#c8c5ca",
+                        "on-secondary-fixed-variant": "#47464a",
+                        "on-secondary-container": "#b6b4b8",
+                        "on-primary-fixed-variant": "#2f3aa3",
+                        "inverse-primary": "#4953bc",
+                        "surface-container-highest": "#353534",
+                        "outline-variant": "#454653",
+                        "secondary-fixed": "#e4e1e6",
+                        "surface-tint": "#bdc2ff",
+                        "primary-container": "#818cf8",
+                        "on-secondary-fixed": "#1b1b1e",
+                        "tertiary-container": "#c08d00",
+                        "primary-fixed-dim": "#bdc2ff",
+                        "on-background": "#e5e2e1",
+                        "inverse-surface": "#e5e2e1",
+                        "tertiary-fixed-dim": "#f7bd3e",
+                        "on-primary-fixed": "#000767",
+                        "surface-container-lowest": "#0e0e0e",
+                        "surface-container-low": "#1c1b1b",
+                        "on-error-container": "#ffdad6",
+                        "secondary": "#c8c5ca",
+                        "surface-variant": "#353534",
+                        "surface-bright": "#3a3939",
+                        "inverse-on-surface": "#313030",
+                        "on-tertiary": "#402d00",
+                        "primary": "#bdc2ff",
+                        "secondary-container": "#47464a",
+                        "tertiary": "#f7bd3e",
+                        "on-tertiary-fixed": "#261900",
+                        "on-primary-container": "#101b8a",
+                        "outline": "#908f9e",
+                        "surface-container": "#201f1f",
+                        "primary-fixed": "#e0e0ff"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "sm": "16px",
+                        "grid-gutter": "16px",
+                        "xs": "8px",
+                        "unit": "8px",
+                        "md": "24px",
+                        "lg": "32px",
+                        "xl": "48px",
+                        "xxl": "64px",
+                        "grid-margin": "24px"
+                    },
+                    fontFamily: {
+                        "body-lg": ["Manrope"],
+                        "h3": ["Bebas Neue"],
+                        "body-md": ["Manrope"],
+                        "h2": ["Bebas Neue"],
+                        "label-caps": ["Manrope"],
+                        "body-sm": ["Manrope"],
+                        "h1": ["Bebas Neue"],
+                        "mono-data": ["JetBrains Mono"]
+                    },
+                    fontSize: {
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "h3": ["24px", {"lineHeight": "24px", "letterSpacing": "0.02em", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "h2": ["32px", {"lineHeight": "32px", "letterSpacing": "0.03em", "fontWeight": "400"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                        "h1": ["48px", {"lineHeight": "48px", "letterSpacing": "0.04em", "fontWeight": "400"}],
+                        "mono-data": ["13px", {"lineHeight": "18px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary-container selection:text-on-primary-container engineering-grid min-h-screen">
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 w-full bg-surface z-50 border-b border-outline-variant px-grid-margin h-16 flex justify-between items-center">
+<div class="flex items-center gap-md">
+<span class="text-h3 font-h3 text-on-surface uppercase tracking-wider">Industrial Operating Brain</span>
+<div class="h-6 w-[1px] bg-outline-variant"></div>
+<nav class="hidden md:flex items-center gap-sm">
+<a class="text-on-surface-variant hover:bg-surface-container-high px-3 py-1 rounded transition-colors text-label-caps font-label-caps" href="#">Dashboard</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1 px-3 text-label-caps font-label-caps" href="#">Knowledge Assistant</a>
+<a class="text-on-surface-variant hover:bg-surface-container-high px-3 py-1 rounded transition-colors text-label-caps font-label-caps" href="#">Assets</a>
+</nav>
+</div>
+<div class="flex items-center gap-sm">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="bg-surface-container border border-outline-variant rounded-lg pl-10 pr-4 py-1.5 text-body-sm w-64 focus:outline-none focus:border-primary" placeholder="Global asset search..." type="text"/>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-on-surface transition-colors">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-on-surface transition-colors">settings</button>
+<div class="w-8 h-8 rounded-full bg-primary-container overflow-hidden border border-outline">
+<img class="w-full h-full object-cover" data-alt="Close-up high-resolution portrait of a senior industrial engineer with grey hair wearing a clean navy jumpsuit. The lighting is cold and professional, with a background of blurred server racks and industrial equipment. The image style is sharp and corporate, reflecting technical expertise and authority within a dark industrial environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJMk3Mo1WlXEQp6aBWK36Pr88wPUhrbwKU8b4xDUD3nOrxpTSf2OUQ5N1fytkilVHGHloX05ZlVTXVVX6rESK1XwwLd-dHg3ki-531RURz1QInzqvX4Rag_1djTMJv0kkcv9Qp4bpewqiUmKFu2Ew-EV4JKtu8sd3NTazHo4v0AAC5vNlCsVUZAjSVosF1w1N0Mu4MaVmsG2qT36Tsji44To3j5J_4JwY7kVhBlhFwTk8GjgnprX1-"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] w-64 bg-surface-container-low border-r border-outline-variant p-sm z-40 hidden xl:flex flex-col">
+<div class="flex items-center gap-sm mb-lg">
+<div class="w-10 h-10 bg-primary rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary">psychology</span>
+</div>
+<div>
+<h2 class="text-body-lg font-h2 text-primary leading-none">IOB v4.2</h2>
+<p class="text-label-caps font-label-caps text-on-surface-variant opacity-70">Enterprise Brain</p>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary py-3 rounded-lg font-bold mb-md hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined">add</span>
+            New Analysis
+        </button>
+<nav class="flex-1 flex flex-col gap-xs overflow-y-auto custom-scrollbar">
+<a class="flex items-center gap-sm px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-bold transition-all" href="#">
+<span class="material-symbols-outlined">psychology</span>
+<span class="text-label-caps font-label-caps">Knowledge Assistant</span>
+</a>
+<a class="flex items-center gap-sm px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest hover:text-on-surface rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">factory</span>
+<span class="text-label-caps font-label-caps">Assets</span>
+</a>
+<a class="flex items-center gap-sm px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest hover:text-on-surface rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">settings_input_hdmi</span>
+<span class="text-label-caps font-label-caps">Maintenance</span>
+</a>
+<a class="flex items-center gap-sm px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest hover:text-on-surface rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">query_stats</span>
+<span class="text-label-caps font-label-caps">Telemetry</span>
+</a>
+<a class="flex items-center gap-sm px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest hover:text-on-surface rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="text-label-caps font-label-caps">System Health</span>
+</a>
+</nav>
+<div class="pt-sm border-t border-outline-variant flex flex-col gap-xs">
+<a class="flex items-center gap-sm px-4 py-2 text-on-surface-variant hover:text-on-surface text-body-sm transition-all" href="#">
+<span class="material-symbols-outlined">description</span>
+                Documentation
+            </a>
+<a class="flex items-center gap-sm px-4 py-2 text-on-surface-variant hover:text-on-surface text-body-sm transition-all" href="#">
+<span class="material-symbols-outlined">support_agent</span>
+                Support
+            </a>
+</div>
+</aside>
+<!-- Main Content Shell -->
+<main class="xl:ml-64 mt-16 p-grid-margin min-h-[calc(100vh-64px)]">
+<div class="max-w-[1440px] mx-auto flex flex-col gap-lg">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-md pb-md border-b border-outline-variant">
+<div class="max-w-2xl">
+<h1 class="text-h1 font-h1 text-on-surface">Industrial AI Knowledge Assistant</h1>
+<p class="text-body-lg text-on-surface-variant mt-xs">Ask questions about industrial assets, failures, telemetry, maintenance history, and AI predictions using enterprise knowledge.</p>
+</div>
+<div class="flex flex-wrap gap-xs">
+<div class="flex items-center gap-xs px-3 py-1 bg-surface-container border border-outline-variant rounded-full">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span class="text-label-caps font-label-caps">Knowledge Graph: Indexed</span>
+</div>
+<div class="flex items-center gap-xs px-3 py-1 bg-surface-container border border-outline-variant rounded-full">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="text-label-caps font-label-caps">LLM: Online</span>
+</div>
+<div class="flex items-center gap-xs px-3 py-1 bg-surface-container border border-outline-variant rounded-full">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="text-label-caps font-label-caps">GraphRAG: Ready</span>
+</div>
+</div>
+</div>
+<!-- Three Pane Layout -->
+<div class="grid grid-cols-12 gap-grid-gutter h-[calc(100vh-280px)] min-h-[600px]">
+<!-- KnowledgeSidebar (20%) -->
+<aside class="col-span-12 md:col-span-3 lg:col-span-2 bg-surface-container-low border border-outline-variant rounded-xl flex flex-col overflow-hidden">
+<div class="p-sm border-b border-outline-variant">
+<h3 class="text-label-caps font-label-caps mb-sm">Knowledge Sources</h3>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="w-full bg-surface-container border border-outline-variant rounded px-8 py-1 text-body-sm focus:outline-none focus:border-primary" placeholder="Filter sources..." type="text"/>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-sm flex flex-col gap-md">
+<div>
+<p class="text-label-caps font-label-caps text-on-surface-variant opacity-60 mb-xs">Categories</p>
+<ul class="flex flex-col gap-1">
+<li><button class="w-full flex items-center justify-between text-body-sm py-1.5 px-2 rounded hover:bg-surface-container-high transition-colors"><span>Assets</span> <span class="text-[10px] bg-outline-variant px-1 rounded">1.2k</span></button></li>
+<li><button class="w-full flex items-center justify-between text-body-sm py-1.5 px-2 rounded hover:bg-surface-container-high transition-colors"><span>Maintenance</span> <span class="text-[10px] bg-outline-variant px-1 rounded">8.5k</span></button></li>
+<li><button class="w-full flex items-center justify-between text-body-sm py-1.5 px-2 rounded hover:bg-surface-container-high transition-colors text-primary font-bold"><span>Telemetry</span> <span class="text-[10px] bg-primary text-on-primary px-1 rounded">Live</span></button></li>
+<li><button class="w-full flex items-center justify-between text-body-sm py-1.5 px-2 rounded hover:bg-surface-container-high transition-colors"><span>SOPs & Manuals</span></button></li>
+<li><button class="w-full flex items-center justify-between text-body-sm py-1.5 px-2 rounded hover:bg-surface-container-high transition-colors"><span>Industrial Standards</span></button></li>
+</ul>
+</div>
+<div>
+<p class="text-label-caps font-label-caps text-on-surface-variant opacity-60 mb-xs">Recent History</p>
+<ul class="flex flex-col gap-2">
+<li class="text-body-sm p-2 bg-surface-container rounded border border-outline-variant cursor-pointer hover:bg-surface-container-high">
+<p class="line-clamp-2">Turbine A01 high temperature analysis...</p>
+<span class="text-[10px] text-on-surface-variant">2h ago</span>
+</li>
+<li class="text-body-sm p-2 rounded cursor-pointer hover:bg-surface-container-high">
+<p class="line-clamp-2">Annual Maintenance Schedule Review</p>
+<span class="text-[10px] text-on-surface-variant">Yesterday</span>
+</li>
+</ul>
+</div>
+</div>
+</aside>
+<!-- ConversationWorkspace (55%) -->
+<section class="col-span-12 md:col-span-9 lg:col-span-7 flex flex-col bg-surface border border-outline-variant rounded-xl overflow-hidden relative">
+<div class="flex-1 overflow-y-auto custom-scrollbar p-lg space-y-lg pb-32">
+<!-- Welcome State -->
+<div class="flex flex-col items-center justify-center py-xl text-center">
+<div class="w-16 h-16 bg-primary-container rounded-2xl flex items-center justify-center mb-md">
+<span class="material-symbols-outlined text-on-primary-container text-4xl" style="font-variation-settings: 'FILL' 1;">psychology</span>
+</div>
+<h2 class="text-h2 font-h2 text-on-surface">Industrial AI Copilot</h2>
+<p class="text-body-md text-on-surface-variant max-w-md mx-auto">Access real-time telemetry, maintenance records, and industrial manuals via Graph-RAG.</p>
+<div class="grid grid-cols-2 gap-sm mt-xl w-full max-w-xl">
+<button class="p-md bg-surface-container border border-outline-variant rounded-lg text-left hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-primary mb-xs">warning</span>
+<p class="text-body-sm font-bold">Why is Turbine A01 at high risk?</p>
+<p class="text-label-caps font-label-caps text-on-surface-variant mt-1">Predictive analysis</p>
+</button>
+<button class="p-md bg-surface-container border border-outline-variant rounded-lg text-left hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-primary mb-xs">history</span>
+<p class="text-body-sm font-bold">Show maintenance of Pump P05</p>
+<p class="text-label-caps font-label-caps text-on-surface-variant mt-1">History query</p>
+</button>
+</div>
+</div>
+<!-- Message Example (Assistant) -->
+<div class="flex flex-col gap-sm">
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">smart_toy</span>
+<span class="text-label-caps font-label-caps">Assistant • Just now</span>
+</div>
+<div class="bg-surface-container-low border border-outline-variant p-md rounded-xl">
+<p class="text-body-md mb-md">Based on the telemetry from Turbine A01 and historical maintenance records, the high-temperature warning is likely due to bearing wear in the primary drive shaft.</p>
+<div class="mb-md">
+<h4 class="text-label-caps font-label-caps text-primary mb-xs">Telemetry Corridors</h4>
+<div class="overflow-x-auto rounded border border-outline-variant">
+<table class="w-full text-left text-body-sm">
+<thead class="bg-surface-container-high">
+<tr>
+<th class="p-2 border-b border-outline-variant">Metric</th>
+<th class="p-2 border-b border-outline-variant">Value</th>
+<th class="p-2 border-b border-outline-variant">Threshold</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-b border-outline-variant">
+<td class="p-2">Shaft Temp</td>
+<td class="p-2 text-error">82.4°C</td>
+<td class="p-2">75.0°C</td>
+</tr>
+<tr>
+<td class="p-2">Vibration</td>
+<td class="p-2 text-tertiary">0.42mm/s</td>
+<td class="p-2">0.50mm/s</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="bg-surface-container-high p-sm rounded-lg border border-outline-variant mb-md">
+<details class="group">
+<summary class="flex items-center justify-between cursor-pointer list-none">
+<span class="text-label-caps font-label-caps flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm">database</span> GraphRAG Evidence (4 Sources)
+                                            </span>
+<span class="material-symbols-outlined group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="mt-sm space-y-xs text-body-sm text-on-surface-variant">
+<div class="flex justify-between border-b border-outline-variant pb-xs">
+<span>SOP-2024-V4: Thermal Limits</span>
+<span class="text-primary">94% match</span>
+</div>
+<div class="flex justify-between border-b border-outline-variant pb-xs">
+<span>Log: Maintenance July 2023</span>
+<span class="text-primary">88% match</span>
+</div>
+</div>
+</details>
+</div>
+<div class="flex items-center gap-sm">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors text-lg">bookmark</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors text-lg">share</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors text-lg">refresh</button>
+<div class="flex-1"></div>
+<button class="text-label-caps font-label-caps border border-outline-variant px-2 py-1 rounded hover:bg-surface-container-high">Explain Logic</button>
+</div>
+</div>
+</div>
+</div>
+<!-- ChatInput Sticky Footer -->
+<div class="absolute bottom-0 left-0 w-full p-md bg-surface border-t border-outline-variant">
+<div class="relative bg-surface-container-high border border-outline-variant rounded-xl p-xs flex items-center">
+<button class="p-2 text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined">attach_file</span>
+</button>
+<input class="flex-1 bg-transparent border-none focus:ring-0 text-body-md placeholder:text-on-surface-variant" placeholder="Ask about assets, telemetry, maintenance, failures, or industrial knowledge..." type="text"/>
+<button class="p-2 text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined">mic</span>
+</button>
+<button class="bg-primary text-on-primary p-2 rounded-lg ml-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</div>
+</section>
+<!-- ContextPanel (25%) -->
+<aside class="col-span-12 lg:col-span-3 flex flex-col gap-md h-full">
+<!-- Selected Asset Card -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-md">
+<div class="flex justify-between items-start mb-md">
+<div>
+<h4 class="text-label-caps font-label-caps text-on-surface-variant mb-1">Active Context</h4>
+<h2 class="text-h3 font-h3">Turbine A01</h2>
+</div>
+<span class="px-2 py-1 bg-error-container text-on-error-container text-[10px] font-bold rounded uppercase">Warning</span>
+</div>
+<div class="space-y-sm">
+<div class="flex justify-between items-center text-body-sm">
+<span class="text-on-surface-variant">Health Score</span>
+<span class="font-mono-data text-error font-bold">68%</span>
+</div>
+<div class="w-full bg-outline-variant h-1 rounded-full overflow-hidden">
+<div class="bg-error h-full w-[68%]"></div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-xs mt-lg pt-md border-t border-outline-variant">
+<div class="p-2 bg-surface-container-high rounded text-center">
+<p class="text-[10px] text-on-surface-variant uppercase">Temp</p>
+<p class="font-mono-data text-body-md">82°C</p>
+</div>
+<div class="p-2 bg-surface-container-high rounded text-center">
+<p class="text-[10px] text-on-surface-variant uppercase">RPM</p>
+<p class="font-mono-data text-body-md">3200</p>
+</div>
+</div>
+</div>
+<!-- Live Telemetry Snapshot -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-md flex-1">
+<h4 class="text-label-caps font-label-caps mb-md flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm">query_stats</span> Telemetry Graph
+                        </h4>
+<div class="h-40 w-full relative border-b border-l border-outline-variant mb-md overflow-hidden">
+<!-- Visualizing a simple SVG graph -->
+<svg class="w-full h-full stroke-primary fill-none" viewbox="0 0 100 40">
+<path d="M0,35 L10,32 L20,34 L30,25 L40,28 L50,15 L60,18 L70,5 L80,10 L90,2 L100,8" stroke-width="2"></path>
+</svg>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent"></div>
+</div>
+<div class="space-y-sm">
+<h4 class="text-label-caps font-label-caps text-on-surface-variant">Knowledge References</h4>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-sm p-2 rounded hover:bg-surface-container-high cursor-pointer transition-colors border border-transparent hover:border-outline-variant">
+<span class="material-symbols-outlined text-primary">description</span>
+<div class="flex-1 min-w-0">
+<p class="text-body-sm truncate">A01_Main_Manual_v2.pdf</p>
+<p class="text-[10px] text-on-surface-variant">Maintenance SOP</p>
+</div>
+</div>
+<div class="flex items-center gap-sm p-2 rounded hover:bg-surface-container-high cursor-pointer transition-colors border border-transparent hover:border-outline-variant">
+<span class="material-symbols-outlined text-primary">history</span>
+<div class="flex-1 min-w-0">
+<p class="text-body-sm truncate">Fault_Log_2023_Q4</p>
+<p class="text-[10px] text-on-surface-variant">Incident Reports</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent AI Prediction -->
+<div class="bg-tertiary-container text-on-tertiary-container rounded-xl p-md border border-tertiary">
+<div class="flex items-center gap-xs mb-xs">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span class="text-label-caps font-label-caps">Risk Forecast</span>
+</div>
+<p class="text-body-sm font-bold">Probable failure within 72h</p>
+<div class="flex justify-between items-end mt-sm">
+<p class="text-label-caps font-label-caps opacity-80">Confidence: 89%</p>
+<button class="text-[10px] bg-on-tertiary-container text-tertiary-container px-2 py-1 rounded font-bold">ACT NOW</button>
+</div>
+</div>
+</aside>
+</div>
+</div>
+</main>
+<script>
+        // Simple micro-interaction for suggestion cards
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const ripples = btn.querySelectorAll('.ripple');
+                ripples.forEach(r => r.remove());
+            });
+        });
+    </script>
+</body></html>

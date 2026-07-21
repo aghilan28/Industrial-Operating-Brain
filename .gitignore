@@ -1,0 +1,32 @@
+﻿# Dependency directories
+node_modules/
+__pycache__/
+*.py[cod]
+*.class
+.venv/
+venv/
+ENV/
+
+# Build outputs
+.next/
+dist/
+build/
+out/
+
+# Environment files
+.env
+.env.*
+!.env.example
+!.env.phase3.example
+
+# Local databases and logs
+*.db
+*.sqlite3
+*.log
+logs/
+
+# IDE & OS specific files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

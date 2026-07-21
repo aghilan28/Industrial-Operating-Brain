@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Login | Industrial Operating Brain</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Manrope:wght@400;500;700&amp;family=Geist+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            background-color: #070707;
+            color: #e5e2e1;
+            margin: 0;
+            overflow-x: hidden;
+        }
+        .engineering-grid {
+            background-size: 32px 32px;
+            background-image: 
+                linear-gradient(to right, rgba(69, 70, 83, 0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(69, 70, 83, 0.1) 1px, transparent 1px);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-secondary-fixed-variant": "#47464a",
+                      "on-primary-fixed": "#000767",
+                      "inverse-primary": "#4953bc",
+                      "primary": "#bdc2ff",
+                      "outline-variant": "#454653",
+                      "surface-container-highest": "#353534",
+                      "tertiary-container": "#c08d00",
+                      "on-secondary-fixed": "#1b1b1e",
+                      "on-secondary-container": "#b6b4b8",
+                      "surface-variant": "#353534",
+                      "on-surface": "#e5e2e1",
+                      "on-primary-container": "#101b8a",
+                      "error": "#ffb4ab",
+                      "on-background": "#e5e2e1",
+                      "surface-dim": "#131313",
+                      "secondary": "#c8c5ca",
+                      "on-secondary": "#303033",
+                      "surface-container": "#201f1f",
+                      "on-primary-fixed-variant": "#2f3aa3",
+                      "on-tertiary-container": "#3e2b00",
+                      "primary-container": "#818cf8",
+                      "secondary-fixed-dim": "#c8c5ca",
+                      "on-tertiary-fixed": "#261900",
+                      "surface": "#131313",
+                      "outline": "#908f9e",
+                      "on-tertiary-fixed-variant": "#5d4200",
+                      "tertiary-fixed-dim": "#f7bd3e",
+                      "surface-bright": "#3a3939",
+                      "surface-container-lowest": "#0e0e0e",
+                      "primary-fixed-dim": "#bdc2ff",
+                      "secondary-fixed": "#e4e1e6",
+                      "surface-tint": "#bdc2ff",
+                      "on-error": "#690005",
+                      "primary-fixed": "#e0e0ff",
+                      "surface-container-low": "#1c1b1b",
+                      "inverse-surface": "#e5e2e1",
+                      "inverse-on-surface": "#313030",
+                      "on-primary": "#131e8c",
+                      "on-error-container": "#ffdad6",
+                      "surface-container-high": "#2a2a2a",
+                      "tertiary-fixed": "#ffdea3",
+                      "on-surface-variant": "#c6c5d5",
+                      "error-container": "#93000a",
+                      "background": "#131313",
+                      "secondary-container": "#47464a",
+                      "on-tertiary": "#402d00",
+                      "tertiary": "#f7bd3e"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "lg": "24px",
+                      "gutter": "16px",
+                      "md": "16px",
+                      "xs": "4px",
+                      "container-margin": "40px",
+                      "sm": "8px",
+                      "base": "8px",
+                      "xl": "32px"
+              },
+              "fontFamily": {
+                      "body-md": ["Manrope"],
+                      "headline-md": ["Bebas Neue"],
+                      "label-caps": ["Manrope"],
+                      "headline-lg": ["Bebas Neue"],
+                      "mono-data": ["Geist Mono"],
+                      "headline-sm": ["Bebas Neue"],
+                      "body-sm": ["Manrope"],
+                      "display-xl": ["Bebas Neue"],
+                      "body-lg": ["Manrope"]
+              },
+              "fontSize": {
+                      "body-md": ["16px", {"lineHeight": "24px", "letterSpacing": "0px", "fontWeight": "400"}],
+                      "headline-md": ["32px", {"lineHeight": "32px", "letterSpacing": "0.04em", "fontWeight": "700"}],
+                      "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}],
+                      "headline-lg": ["48px", {"lineHeight": "48px", "letterSpacing": "0.04em", "fontWeight": "700"}],
+                      "mono-data": ["14px", {"lineHeight": "20px", "letterSpacing": "-0.02em", "fontWeight": "500"}],
+                      "headline-sm": ["24px", {"lineHeight": "24px", "letterSpacing": "0.04em", "fontWeight": "700"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "letterSpacing": "0px", "fontWeight": "400"}],
+                      "display-xl": ["72px", {"lineHeight": "72px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "letterSpacing": "0px", "fontWeight": "500"}]
+              }
+            },
+          },
+        }
+      </script>
+</head>
+<body class="flex min-h-screen bg-background engineering-grid">
+<!-- MAIN LOGIN WRAPPER -->
+<main class="flex flex-col md:flex-row w-full min-h-screen z-10">
+<!-- LEFT SIDE: BRANDING (60%) -->
+<section class="hidden md:flex md:w-3/5 flex-col justify-center px-container-margin relative border-r border-outline-variant bg-surface-container-low/50 backdrop-blur-sm">
+<div class="max-w-3xl">
+<!-- Branding -->
+<div class="mb-xl">
+<span class="font-label-caps text-label-caps text-primary tracking-widest uppercase">Industrial Operating Brain</span>
+</div>
+<!-- Headline -->
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-md">Cognition Before Control.</h1>
+<!-- Subheading -->
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-xl max-w-2xl leading-relaxed">
+                    Transform industrial telemetry into explainable intelligence with AI-driven decision support, predictive maintenance, Graph RAG, Digital Twins, and autonomous industrial agents.
+                </p>
+<!-- Capability Cards Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-lg mt-xl">
+<!-- Card 1 -->
+<div class="bg-surface-container border border-outline-variant p-md rounded-xl hover:border-primary transition-colors group">
+<span class="material-symbols-outlined text-primary mb-sm">precision_manufacturing</span>
+<h3 class="font-label-caps text-label-caps text-on-surface mb-xs">Predictive Maintenance</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">AI-driven failure forecasting.</p>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container border border-outline-variant p-md rounded-xl hover:border-primary transition-colors group">
+<span class="material-symbols-outlined text-primary mb-sm">hub</span>
+<h3 class="font-label-caps text-label-caps text-on-surface mb-xs">Graph Intelligence</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Semantic relationships across telemetry.</p>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container border border-outline-variant p-md rounded-xl hover:border-primary transition-colors group">
+<span class="material-symbols-outlined text-primary mb-sm">smart_toy</span>
+<h3 class="font-label-caps text-label-caps text-on-surface mb-xs">Industrial AI Agents</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Autonomous decision-making workflows.</p>
+</div>
+</div>
+</div>
+<!-- Subtle background branding element -->
+<div class="absolute bottom-12 left-container-margin">
+<span class="font-mono-data text-mono-data text-outline-variant/50">IOB_SYSTEM_CORE_V2.4.0-STABLE // ENCRYPTED_LINK_ACTIVE</span>
+</div>
+</section>
+<!-- RIGHT SIDE: AUTH (40%) -->
+<section class="w-full md:w-2/5 flex items-center justify-center p-md bg-background">
+<div class="w-full max-w-[420px] bg-surface-container-low border border-outline-variant rounded-xl p-xl shadow-2xl">
+<!-- Logo & Header -->
+<div class="flex flex-col items-center text-center mb-xl">
+<div class="w-16 h-16 bg-primary text-on-primary flex items-center justify-center rounded-lg mb-md">
+<span class="font-headline-md text-headline-md">IOB</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface mb-xs">Welcome Back</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Sign in to access the Industrial Operating Brain.</p>
+</div>
+<!-- Error Banner placeholder (hidden by default but fixed space) -->
+<div class="mb-md p-sm border border-error bg-error-container/10 rounded min-h-[40px] flex items-center gap-sm opacity-0 pointer-events-none transition-opacity" id="error-banner">
+<span class="material-symbols-outlined text-error text-[20px]">warning</span>
+<span class="font-body-sm text-body-sm text-error">Invalid authentication credentials.</span>
+</div>
+<!-- Auth Form -->
+<form class="space-y-md" id="login-form">
+<div>
+<label class="block font-label-caps text-label-caps text-on-surface-variant mb-xs" for="email">Email Address</label>
+<input class="w-full h-[48px] bg-surface-container border border-outline-variant rounded-lg px-md text-on-surface font-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" id="email" name="email" placeholder="operator@iob.enterprise" required="" type="email"/>
+</div>
+<div>
+<div class="flex justify-between items-center mb-xs">
+<label class="block font-label-caps text-label-caps text-on-surface-variant" for="password">Access Password</label>
+<a class="font-label-caps text-label-caps text-primary hover:underline" href="#">Forgot Password?</a>
+</div>
+<input class="w-full h-[48px] bg-surface-container border border-outline-variant rounded-lg px-md text-on-surface font-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" id="password" name="password" placeholder="••••••••••••" required="" type="password"/>
+</div>
+<div class="flex items-center">
+<input class="w-4 h-4 rounded border-outline-variant bg-surface-container text-primary focus:ring-primary focus:ring-offset-background cursor-pointer" id="remember" type="checkbox"/>
+<label class="ml-sm font-body-sm text-body-sm text-on-surface-variant cursor-pointer select-none" for="remember">Remember this terminal session</label>
+</div>
+<button class="w-full h-[48px] bg-primary text-on-primary-fixed font-label-caps text-label-caps uppercase tracking-widest rounded-lg transition-all active:scale-[0.98] hover:bg-primary/90 mt-xl" type="submit">
+                        Sign In
+                    </button>
+</form>
+<!-- Footer info -->
+<div class="mt-xl pt-lg border-t border-outline-variant/30 text-center">
+<p class="font-body-sm text-body-sm text-outline">
+                        Mission Critical Infrastructure System<br/>
+<span class="font-mono-data text-[10px] opacity-60">AUTH_PROTOCOL: SHA-512 | AES-256-GCM</span>
+</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Interactions -->
+<script>
+        const form = document.getElementById('login-form');
+        const errorBanner = document.getElementById('error-banner');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            // Simulate error state
+            errorBanner.classList.remove('opacity-0', 'pointer-events-none');
+            errorBanner.classList.add('opacity-100');
+            
+            // Shake effect
+            const container = form.closest('div');
+            container.classList.add('animate-shake');
+            setTimeout(() => container.classList.remove('animate-shake'), 400);
+        });
+
+        // Add tailwind shake animation via style injection
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-5px); }
+                75% { transform: translateX(5px); }
+            }
+            .animate-shake {
+                animation: shake 0.2s cubic-bezier(.36,.07,.19,.97) both;
+                animation-iteration-count: 2;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body></html>

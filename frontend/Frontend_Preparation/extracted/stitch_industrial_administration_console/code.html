@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settings &amp; User Profile | IOB Administration Console</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&amp;family=Bebas+Neue&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        /* Engineering Grid Overlay */
+        .engineering-grid {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, #454653 1px, transparent 1px),
+                              linear-gradient(to bottom, #454653 1px, transparent 1px);
+            opacity: 0.1;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary-fixed-variant": "#5d4200",
+                      "secondary-fixed-dim": "#c8c6c8",
+                      "tertiary-container": "#c08d00",
+                      "on-error": "#690005",
+                      "surface-dim": "#12131a",
+                      "background": "#070707",
+                      "on-surface-variant": "#c6c5d5",
+                      "surface-bright": "#383941",
+                      "primary-container": "#818cf8",
+                      "surface-container": "#101012",
+                      "surface-container-low": "#1a1b22",
+                      "inverse-surface": "#e3e1ec",
+                      "outline": "#908f9e",
+                      "on-secondary-fixed-variant": "#474649",
+                      "on-tertiary-fixed": "#261900",
+                      "on-primary": "#131e8c",
+                      "surface-variant": "#33343c",
+                      "primary-fixed-dim": "#bdc2ff",
+                      "inverse-primary": "#4953bc",
+                      "surface-container-highest": "#33343c",
+                      "surface-container-high": "#292931",
+                      "on-background": "#e3e1ec",
+                      "on-primary-fixed-variant": "#2f3aa3",
+                      "primary-fixed": "#e0e0ff",
+                      "on-error-container": "#ffdad6",
+                      "tertiary-fixed": "#ffdea3",
+                      "surface-tint": "#bdc2ff",
+                      "on-primary-fixed": "#000767",
+                      "secondary": "#c8c6c8",
+                      "on-surface": "#e3e1ec",
+                      "tertiary-fixed-dim": "#f7bd3e",
+                      "on-tertiary": "#402d00",
+                      "on-tertiary-container": "#3e2b00",
+                      "secondary-fixed": "#e5e1e4",
+                      "outline-variant": "#454653",
+                      "surface-container-lowest": "#0d0e15",
+                      "inverse-on-surface": "#2f3038",
+                      "tertiary": "#f7bd3e",
+                      "on-secondary-fixed": "#1b1b1d",
+                      "on-secondary": "#303032",
+                      "surface": "#12131a",
+                      "on-secondary-container": "#b7b4b7",
+                      "primary": "#bdc2ff",
+                      "on-primary-container": "#101b8a",
+                      "error-container": "#93000a",
+                      "secondary-container": "#474649",
+                      "error": "#ffb4ab"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "12px",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "2xl": "48px",
+                      "lg": "24px",
+                      "margin-mobile": "16px",
+                      "margin-desktop": "32px",
+                      "gutter": "16px",
+                      "md": "16px",
+                      "unit": "8px",
+                      "xs": "4px",
+                      "xl": "32px",
+                      "sm": "8px"
+              },
+              "fontFamily": {
+                      "title-lg": ["Manrope"],
+                      "body-lg": ["Manrope"],
+                      "headline-md": ["Bebas Neue"],
+                      "display": ["Bebas Neue"],
+                      "body-md": ["Manrope"],
+                      "code-sm": ["monospace"],
+                      "label-md": ["Manrope"],
+                      "headline-lg": ["Bebas Neue"]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen relative overflow-x-hidden">
+<!-- Grid Background Layer -->
+<div class="fixed inset-0 engineering-grid pointer-events-none"></div>
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-margin-desktop h-16 bg-surface-container-low border-b border-outline-variant">
+<div class="flex items-center gap-xl">
+<span class="font-headline-md text-headline-md text-primary font-bold tracking-wider">IOB ADMINISTRATION CONSOLE</span>
+<nav class="hidden md:flex items-center gap-md">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Dashboard</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Analytics</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Assets</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Logs</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative">
+<input class="bg-surface-variant border border-outline-variant rounded-lg px-md py-xs text-label-md w-64 focus:outline-none focus:border-primary" placeholder="Search parameters..." type="text"/>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">notifications</button>
+<button class="material-symbols-outlined text-primary">settings</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">help</button>
+<div class="h-8 w-8 rounded-full bg-surface-container-highest border border-outline-variant flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional studio portrait of a senior industrial systems administrator with a serious expression, wearing technical apparel. The lighting is low-key and dramatic with sharp blue edge lights, reflecting a high-tech control room environment. The image is crisp, high-contrast, and fits a dark-mode industrial UI aesthetic perfectly." src="https://lh3.googleusercontent.com/aida-public/AB6AXuANB55pOazwPIE4ZuEWz9MMmftzXgZBbYVO0M5RPhYt2Z5gIGGyZ8efvxNap_12WMzzXGigc_JWPf0p56FVdw_kWP47dVTTs0XBbmQE-ukFJmdu4SYi1DR9IaDzact29RGgTFA0r-zcwUarIssgAyO4NzpDQYNOeN5ifBcw_Hn9NHYn5lc9dC6pCVItxivM5fRDMIcWzCxEuy-FKSRAFIs4lKSksG0PlJOI1112eJQDyFyuob8j1-PCtg"/>
+</div>
+</div>
+</header>
+<!-- Main Layout -->
+<main class="pt-24 pb-12 px-margin-desktop max-w-[1600px] mx-auto grid grid-cols-12 gap-gutter relative z-10">
+<!-- Header Information -->
+<div class="col-span-12 mb-lg flex justify-between items-end border-b border-outline-variant pb-md">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-primary tracking-wide">SETTINGS &amp; ADMINISTRATION</h1>
+<p class="font-body-md text-on-surface-variant max-w-2xl mt-xs">Manage enterprise users, industrial infrastructure, AI preferences, security policies, and system integrations.</p>
+</div>
+<div class="flex items-center gap-md font-label-md text-label-md">
+<div class="flex items-center gap-xs bg-surface-container-high px-md py-xs rounded border border-outline-variant">
+<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+<span class="text-on-surface uppercase">Production Environment</span>
+</div>
+<div class="text-on-surface-variant border-l border-outline-variant pl-md">
+                    VERSION 4.2.1
+                </div>
+</div>
+</div>
+<!-- Left Sidebar: Profile & Navigation -->
+<div class="col-span-3 flex flex-col gap-gutter">
+<!-- Profile Card -->
+<section class="bg-surface-container rounded-lg border border-outline-variant p-md">
+<div class="flex items-center gap-md mb-md">
+<div class="w-16 h-16 rounded-lg border-2 border-primary overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="A close-up technical identification photo of an industrial lead, featuring a clean-shaven face and focused gaze. The aesthetic is ultra-modern and clinical with sharp focus and cinematic lighting against a dark neutral background. High-quality digital photography for an enterprise admin dashboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCI5TTr_GRwCOElW1whlaV_ryJcftTTnSmFPB9Uo8INyiua-z82KAqkk25_Ff29dqClJVMEHjS4GawTb63zdGnQfColgvA90PrzThXiYnUSoid9kg4L-5_K-uyJpQ0QbLy7KZvFxA2ZHIyK8tGvkDROX0b02ukhLVw15nycTlbKmxbB3nb_Wpa5-TFTg9ZxqdUH2YWzxSVrsdVWj4yxYkuwMWJsvL9ipk9TfnDuhitkvDZI0eveESuWjg"/>
+</div>
+<div>
+<h2 class="font-title-lg text-title-lg text-on-surface">Admin User</h2>
+<p class="font-label-md text-label-md text-primary uppercase tracking-tighter">Infrastructure Lead</p>
+<p class="text-[10px] text-on-surface-variant mt-1">PLANT A · SECTOR 7</p>
+</div>
+</div>
+<button class="w-full py-2 bg-primary text-on-primary font-bold rounded-lg text-label-md hover:bg-primary-fixed transition-colors flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+                    SYSTEM STATUS
+                </button>
+</section>
+<!-- Navigation List -->
+<nav class="bg-surface-container rounded-lg border border-outline-variant flex flex-col p-xs">
+<a class="flex items-center gap-md px-md py-3 bg-primary-container text-on-primary-container font-bold rounded-lg group transition-all duration-150" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-label-md">Profile</span>
+</a>
+<a class="flex items-center gap-md px-md py-3 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined">manage_accounts</span>
+<span class="text-label-md">Account</span>
+</a>
+<a class="flex items-center gap-md px-md py-3 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined">security</span>
+<span class="text-label-md">Security</span>
+</a>
+<a class="flex items-center gap-md px-md py-3 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined">notifications</span>
+<span class="text-label-md">Notifications</span>
+</a>
+<a class="flex items-center gap-md px-md py-3 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined">psychology</span>
+<span class="text-label-md">AI Preferences</span>
+</a>
+<a class="flex items-center gap-md px-md py-3 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined">factory</span>
+<span class="text-label-md">Plant Configuration</span>
+</a>
+<a class="flex items-center gap-md px-md py-3 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined">hub</span>
+<span class="text-label-md">MQTT</span>
+</a>
+<a class="flex items-center gap-md px-md py-3 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined">api</span>
+<span class="text-label-md">API Integrations</span>
+</a>
+<a class="flex items-center gap-md px-md py-3 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined">palette</span>
+<span class="text-label-md">Appearance</span>
+</a>
+<div class="h-px bg-outline-variant my-xs mx-md"></div>
+<a class="flex items-center gap-md px-md py-3 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined">info</span>
+<span class="text-label-md">System Info</span>
+</a>
+<a class="flex items-center gap-md px-md py-3 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded-lg transition-all duration-150" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="text-label-md text-error">Logout</span>
+</a>
+</nav>
+</div>
+<!-- Main Content Area -->
+<div class="col-span-7 flex flex-col gap-gutter overflow-y-auto max-h-[calc(100vh-180px)] pr-2 custom-scrollbar">
+<!-- Section 1: Profile Form -->
+<section class="bg-surface-container rounded-lg border border-outline-variant">
+<div class="p-md border-b border-outline-variant flex justify-between items-center">
+<h3 class="font-title-lg text-title-lg flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary">person</span>
+                        PROFILE INFORMATION
+                    </h3>
+<span class="text-[10px] font-bold text-on-surface-variant px-2 py-0.5 border border-outline-variant rounded uppercase">ID: IOB-ADMIN-042</span>
+</div>
+<div class="p-lg grid grid-cols-2 gap-lg">
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase">Full Name</label>
+<input class="bg-surface-variant border border-outline-variant rounded px-md py-sm text-body-md text-on-surface focus:border-primary outline-none" type="text" value="Admin User"/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase">Email Address</label>
+<input class="bg-surface-variant border border-outline-variant rounded px-md py-sm text-body-md text-on-surface focus:border-primary outline-none" type="email" value="admin.lead@iob.internal"/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase">Employee ID</label>
+<input class="bg-surface-container-highest border border-outline-variant rounded px-md py-sm text-body-md text-on-surface-variant cursor-not-allowed" readonly="" type="text" value="EMP-992384-IOB"/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase">Role Authority</label>
+<select class="bg-surface-variant border border-outline-variant rounded px-md py-sm text-body-md text-on-surface focus:border-primary outline-none">
+<option>Infrastructure Lead</option>
+<option>System Administrator</option>
+<option>Security Officer</option>
+</select>
+</div>
+</div>
+<div class="p-md bg-surface-container-low flex justify-end gap-md">
+<button class="px-lg py-2 border border-outline-variant text-on-surface font-bold rounded-lg text-label-md hover:bg-surface-variant transition-colors">CANCEL</button>
+<button class="px-lg py-2 bg-on-surface text-background font-bold rounded-lg text-label-md hover:bg-primary-fixed transition-colors">SAVE CHANGES</button>
+</div>
+</section>
+<!-- Section 2: Security -->
+<section class="bg-surface-container rounded-lg border border-outline-variant">
+<div class="p-md border-b border-outline-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary">security</span>
+<h3 class="font-title-lg text-title-lg">SECURITY PROTOCOLS</h3>
+</div>
+<div class="p-lg flex flex-col gap-md">
+<div class="flex items-center justify-between p-md bg-surface-variant border border-outline-variant rounded-lg">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-green-500 scale-125">task_alt</span>
+<div>
+<p class="font-label-md text-label-md text-on-surface uppercase">Two-Factor Authentication (2FA)</p>
+<p class="text-xs text-on-surface-variant">Secure your account with hardware or mobile biometric keys.</p>
+</div>
+</div>
+<button class="text-xs font-bold px-md py-1 border border-outline-variant rounded bg-surface-container hover:bg-surface-container-highest transition-colors">MANAGE</button>
+</div>
+<div class="mt-md">
+<h4 class="font-label-md text-label-md text-on-surface-variant uppercase mb-xs">Active Sessions</h4>
+<div class="flex flex-col gap-xs">
+<div class="flex items-center justify-between py-xs border-b border-outline-variant last:border-0">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px] text-primary">laptop</span>
+<span class="text-body-md">Chrome on macOS (192.168.1.45)</span>
+</div>
+<span class="text-[10px] bg-green-900/30 text-green-400 px-2 rounded-full border border-green-800/50">CURRENT</span>
+</div>
+<div class="flex items-center justify-between py-xs border-b border-outline-variant last:border-0">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">smartphone</span>
+<span class="text-body-md">IOB Mobile on iOS (LTE Connection)</span>
+</div>
+<button class="text-error text-[10px] font-bold hover:underline">TERMINATE</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 3: MQTT & AI -->
+<div class="grid grid-cols-2 gap-gutter">
+<!-- MQTT -->
+<section class="bg-surface-container rounded-lg border border-outline-variant">
+<div class="p-md border-b border-outline-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary">hub</span>
+<h3 class="font-title-lg text-title-lg">MQTT BRIDGE</h3>
+</div>
+<div class="p-md space-y-md">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase text-[10px]">Broker Host</p>
+<p class="font-code-sm text-primary">emqx-production.iob.internal</p>
+</div>
+<div class="flex justify-between">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase text-[10px]">Port</p>
+<p class="font-code-sm text-on-surface">8883</p>
+</div>
+<div class="text-right">
+<p class="font-label-md text-label-md text-on-surface-variant uppercase text-[10px]">TLS Encryption</p>
+<p class="font-code-sm text-green-400">ON (v1.3)</p>
+</div>
+</div>
+<button class="w-full py-1.5 border border-outline-variant rounded font-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all">CONNECTION SETTINGS</button>
+</div>
+</section>
+<!-- AI -->
+<section class="bg-surface-container rounded-lg border border-outline-variant">
+<div class="p-md border-b border-outline-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary">psychology</span>
+<h3 class="font-title-lg text-title-lg">AI ENGINE</h3>
+</div>
+<div class="p-md space-y-md">
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase text-[10px]">Active Model</p>
+<p class="font-body-md text-on-surface">IOB-Industrial-LLM-v2</p>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase text-[10px]">Vector Search</p>
+<div class="flex items-center gap-sm mt-1">
+<div class="w-8 h-4 bg-primary rounded-full relative">
+<div class="absolute right-0.5 top-0.5 w-3 h-3 bg-on-primary rounded-full"></div>
+</div>
+<span class="text-xs text-on-surface">GraphRAG Enabled</span>
+</div>
+</div>
+<button class="w-full py-1.5 border border-outline-variant rounded font-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-all">MODEL CONFIG</button>
+</div>
+</section>
+</div>
+<!-- Section 4: API Integrations -->
+<section class="bg-surface-container rounded-lg border border-outline-variant">
+<div class="p-md border-b border-outline-variant flex items-center justify-between">
+<h3 class="font-title-lg text-title-lg flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary">api</span>
+                        INFRASTRUCTURE INTEGRATIONS
+                    </h3>
+<button class="text-xs font-bold text-primary flex items-center gap-1 hover:underline">
+<span class="material-symbols-outlined text-[14px]">add</span> ADD SERVICE
+                    </button>
+</div>
+<div class="p-md grid grid-cols-3 gap-md">
+<!-- Grafana -->
+<div class="p-md bg-surface-variant border border-outline-variant rounded-lg flex flex-col items-center text-center gap-sm">
+<img alt="Grafana" class="w-8 h-8 grayscale opacity-70" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSqewkiO8Fe0hMdSFsygR2GoJX172w9xgxcfNFn3yNfeha4We5pgdQyf76YKNPqmtCrYrNRzRgNVMDQAr66WDDKBbBaQ3EtjloKmP4a4ZVRQOmIoVkOg9eRnyvPhk_v9pDOjvga860geTHte8X3ibw-xJxEsQYY5qsekdoqrTXLj7MZFxRv_oMw4j9thOtKQyOhSHObn6iFB4L_f2l5mbBsfF9RKP7NtSEVgUyXgLateU4ROjIUvWPhA"/>
+<div>
+<p class="font-label-md text-label-md">GRAFANA</p>
+<p class="text-[10px] text-green-500 font-bold uppercase tracking-widest">Connected</p>
+</div>
+</div>
+<!-- Redis -->
+<div class="p-md bg-surface-variant border border-outline-variant rounded-lg flex flex-col items-center text-center gap-sm">
+<img alt="Redis" class="w-8 h-8 grayscale opacity-70" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSRNbxcsQo2I3DUF_xsyPrIu3FOHKqtR4hcCjsJy-m7VBTAyCm0JPXJsFlHnSUKH0tv2QEKN3lUzOpyTUfL4BG0xGhxWHw7Y-SC2IWew01STIr5Jc877ASY4UznKK9rMDC0B3HlUVrbzaq2RQysvuGBq8_evqa8qSZKVWbMzhF9ysx83DRuSUbXGWK1WP_e14_0E_2ptg1_W-X62eG0HwgnjdkRIBxFQL-Qe6MjWMsKN0i7eYILO392w"/>
+<div>
+<p class="font-label-md text-label-md">REDIS CACHE</p>
+<p class="text-[10px] text-green-500 font-bold uppercase tracking-widest">Healthy</p>
+</div>
+</div>
+<!-- Neo4j -->
+<div class="p-md bg-surface-variant border border-outline-variant rounded-lg flex flex-col items-center text-center gap-sm">
+<img alt="Neo4j" class="w-8 h-8 grayscale opacity-70" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBol9peVSlasbDBSBK22eC3CcAlR-EM-NH5SK9B2a9f6DSiIcAMIGPMFgvazyML3_9VG_EzX-OQjLEYzzVShdd7opejEhk1SFi_A0klGrb6xq2hm2HK5MHnOJAl1qC_2xRrYGaRKVd7hMVXtBZA1dkhrN5CTaspgp6j6HO5HxZ-OgTHIdfqxi0oBeSLaiB9gmajOoQ7SPuK6nv4YmLo3h6MXRIpxhvnidL3HxKRcmO-AXYm9f6lnjufLw"/>
+<div>
+<p class="font-label-md text-label-md">NEO4J GRAPH</p>
+<p class="text-[10px] text-green-500 font-bold uppercase tracking-widest">99.9% Sync</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Quick Status Panel -->
+<div class="col-span-2 flex flex-col gap-gutter">
+<section class="bg-surface-container rounded-lg border border-outline-variant p-md">
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase border-b border-outline-variant pb-xs mb-md flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">sensors</span>
+                    System Health
+                </h3>
+<div class="flex flex-col gap-md">
+<div class="flex justify-between items-center">
+<span class="text-xs uppercase font-medium">MQTT</span>
+<div class="flex items-center gap-1.5">
+<span class="text-[10px] text-green-500 font-bold">HEALTHY</span>
+<span class="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
+</div>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-xs uppercase font-medium">FastAPI</span>
+<div class="flex items-center gap-1.5">
+<span class="text-[10px] text-green-500 font-bold">HEALTHY</span>
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+</div>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-xs uppercase font-medium">Database</span>
+<div class="flex items-center gap-1.5">
+<span class="text-[10px] text-green-500 font-bold">HEALTHY</span>
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+</div>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-xs uppercase font-medium">Neo4j</span>
+<div class="flex items-center gap-1.5">
+<span class="text-[10px] text-green-500 font-bold">HEALTHY</span>
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+</div>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-xs uppercase font-medium">Qdrant</span>
+<div class="flex items-center gap-1.5">
+<span class="text-[10px] text-green-500 font-bold">HEALTHY</span>
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+</div>
+</div>
+<div class="flex justify-between items-center border-t border-outline-variant pt-md mt-sm">
+<span class="text-xs uppercase font-medium">AI Engine</span>
+<div class="flex items-center gap-1.5">
+<span class="text-[10px] text-green-500 font-bold">READY</span>
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+</div>
+</div>
+</div>
+<div class="mt-xl pt-md border-t border-outline-variant">
+<div class="bg-surface-variant p-md rounded border border-outline-variant">
+<p class="text-[10px] font-bold text-on-surface-variant mb-1 uppercase tracking-widest">Network Load</p>
+<div class="h-2 bg-surface-container rounded-full overflow-hidden mb-2">
+<div class="h-full bg-primary w-[32%]"></div>
+</div>
+<p class="text-[10px] text-primary text-right font-bold">14.2 GB/s</p>
+</div>
+</div>
+</section>
+<!-- Quick Action Info -->
+<section class="p-md border border-primary/20 bg-primary/5 rounded-lg text-center">
+<span class="material-symbols-outlined text-primary scale-150 mb-md">done_outline</span>
+<p class="text-xs text-primary/80 font-medium">All changes to System Configuration are logged in the Secure Audit Trail.</p>
+<button class="mt-md w-full py-1 text-[10px] font-bold border border-primary/30 text-primary rounded hover:bg-primary/10 transition-colors uppercase">View Audit Logs</button>
+</section>
+</div>
+</main>
+<!-- Visual Polish: Hover Interaction Script -->
+<script>
+        document.querySelectorAll('nav a, button').forEach(el => {
+            el.addEventListener('mousedown', () => {
+                el.classList.add('scale-95');
+            });
+            el.addEventListener('mouseup', () => {
+                el.classList.remove('scale-95');
+            });
+            el.addEventListener('mouseleave', () => {
+                el.classList.remove('scale-95');
+            });
+        });
+    </script>
+</body></html>

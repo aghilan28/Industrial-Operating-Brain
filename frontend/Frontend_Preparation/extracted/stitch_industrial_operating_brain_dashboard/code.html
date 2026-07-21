@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Industrial Operating Brain | Dashboard Overview</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Manrope:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-container": "#3e2b00",
+                    "tertiary-container": "#c08d00",
+                    "primary-fixed-dim": "#bdc2ff",
+                    "on-surface-variant": "#c6c5d5",
+                    "on-primary-container": "#101b8a",
+                    "on-tertiary-fixed-variant": "#5d4200",
+                    "on-primary-fixed-variant": "#2f3aa3",
+                    "primary": "#bdc2ff",
+                    "primary-fixed": "#e0e0ff",
+                    "surface-variant": "#33343c",
+                    "surface": "#12131a",
+                    "on-error-container": "#ffdad6",
+                    "on-secondary": "#303032",
+                    "surface-container-lowest": "#0d0e15",
+                    "on-background": "#e3e1ec",
+                    "surface-bright": "#383941",
+                    "inverse-surface": "#e3e1ec",
+                    "secondary-container": "#474649",
+                    "on-secondary-fixed-variant": "#474649",
+                    "on-secondary-container": "#b7b4b7",
+                    "tertiary-fixed": "#ffdea3",
+                    "secondary-fixed-dim": "#c8c6c8",
+                    "on-primary": "#131e8c",
+                    "outline-variant": "#454653",
+                    "background": "#12131a",
+                    "secondary": "#c8c6c8",
+                    "surface-dim": "#12131a",
+                    "on-tertiary": "#402d00",
+                    "on-tertiary-fixed": "#261900",
+                    "surface-container-low": "#1a1b22",
+                    "inverse-primary": "#4953bc",
+                    "surface-tint": "#bdc2ff",
+                    "outline": "#908f9e",
+                    "error-container": "#93000a",
+                    "inverse-on-surface": "#2f3038",
+                    "on-error": "#690005",
+                    "surface-container": "#1e1f26",
+                    "on-surface": "#e3e1ec",
+                    "primary-container": "#818cf8",
+                    "secondary-fixed": "#e5e1e4",
+                    "on-secondary-fixed": "#1b1b1d",
+                    "surface-container-high": "#292931",
+                    "error": "#ffb4ab",
+                    "tertiary-fixed-dim": "#f7bd3e",
+                    "on-primary-fixed": "#000767",
+                    "tertiary": "#f7bd3e",
+                    "surface-container-highest": "#33343c",
+                    "base": "#070707",
+                    "border-subtle": "#1e1f26"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xxl": "64px",
+                    "gutter": "24px",
+                    "md": "24px",
+                    "xl": "48px",
+                    "sm": "16px",
+                    "grid_max_width": "1280px",
+                    "lg": "32px",
+                    "xs": "8px"
+            },
+            "fontFamily": {
+                    "body-md": ["Manrope"],
+                    "headline-lg": ["Bebas Neue"],
+                    "headline-md": ["Bebas Neue"],
+                    "body-lg": ["Manrope"],
+                    "display-lg": ["Bebas Neue"],
+                    "headline-lg-mobile": ["Bebas Neue"],
+                    "body-sm": ["Manrope"],
+                    "label-caps": ["Manrope"]
+            },
+            "fontSize": {
+                    "body-md": ["15px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "headline-lg": ["40px", {"lineHeight": "1.2", "letterSpacing": "0.03em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "1.2", "letterSpacing": "0.03em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "0.02em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "body-sm": ["13px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                    "label-caps": ["11px", {"lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .engineering-grid {
+            background-image: linear-gradient(to right, #1e1f26 1px, transparent 1px),
+                              linear-gradient(to bottom, #1e1f26 1px, transparent 1px);
+            background-size: 32px 32px;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #12131a; }
+        ::-webkit-scrollbar-thumb { background: #33343c; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #454653; }
+    </style>
+</head>
+<body class="bg-base text-on-background font-body-md min-h-screen selection:bg-primary selection:text-on-primary">
+<!-- TopNavBar Implementation -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-gutter h-[72px] bg-surface border-b border-outline-variant">
+<div class="flex flex-col">
+<h1 class="font-headline-md text-headline-md font-bold text-on-surface">Industrial Operating Brain</h1>
+<span class="font-label-caps text-label-caps text-on-surface-variant tracking-wider uppercase">Real-Time Industrial Intelligence Overview</span>
+</div>
+<div class="hidden md:flex items-center gap-lg">
+<div class="flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-[#22C55E] animate-pulse"></span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">OPERATIONAL</span>
+</div>
+<div class="flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">LIVE CONNECTION</span>
+</div>
+<div class="h-8 w-px bg-outline-variant"></div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">V2.4.1</span>
+<div class="flex items-center gap-md">
+<button class="text-on-surface hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-on-surface hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="flex items-center gap-xs pl-xs border-l border-outline-variant">
+<img class="w-8 h-8 rounded-full border border-primary" data-alt="A professional close-up portrait of a senior industrial systems administrator in a modern high-tech office. The lighting is low-key with cool blue ambient tones from nearby monitors, emphasizing a high-tech dark mode aesthetic. The subject has a confident expression, wearing a sleek black headset, reflecting the mission-critical environment of the industrial operating brain." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfS1EvX8dSxWqr0Oh7HI_kx6pNSMsysT2cy0A0oPGaHYFfUH05Z6a5W1BEx28fHO8PG7VJHFWDBGlY6hvOAJbnu-sLDVfVO8-gkT9IxONctjhoWmQKkF4LBAsc2L14ehzhlPcvdQmnLZ7iEI00UEM-VZzHgoFGJVEXiKlVhC5uOgEMkd9pjPStygRgXcODX4d0rx8_aUDkz6eL296XxtNwPuemJ4UBCvOVEyCAWUz9IeOVSQoa0BoP"/>
+</div>
+</div>
+</div>
+</header>
+<!-- SideNavBar Implementation -->
+<aside class="fixed left-0 top-[72px] h-[calc(100vh-72px)] w-64 flex flex-col py-md z-40 bg-surface-container-low border-r border-outline-variant">
+<nav class="flex-1 px-sm space-y-xs">
+<a class="flex items-center gap-sm px-md py-sm rounded bg-primary-container text-on-primary-container font-bold border-l-4 border-primary translate-x-1 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-caps text-label-caps">DASHBOARD</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="factory">factory</span>
+<span class="font-label-caps text-label-caps">ASSETS</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="query_stats">query_stats</span>
+<span class="font-label-caps text-label-caps">TELEMETRY</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="build">build</span>
+<span class="font-label-caps text-label-caps">MAINTENANCE</span>
+</a>
+</nav>
+<div class="px-sm pt-md border-t border-outline-variant">
+<a class="flex items-center gap-sm px-md py-sm rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-caps text-label-caps">SETTINGS</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-label-caps text-label-caps">SUPPORT</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 mt-[72px] p-lg engineering-grid min-h-[calc(100vh-72px)]">
+<div class="max-w-grid_max_width mx-auto space-y-lg">
+<!-- Section 1: KPI Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-md">
+<!-- OEE Card -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-md flex flex-col justify-between h-40">
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-on-surface-variant">OVERALL EQUIPMENT EFFECTIVENESS</span>
+<span class="material-symbols-outlined text-primary" data-icon="factory">factory</span>
+</div>
+<div class="mt-auto">
+<h2 class="font-headline-lg text-headline-lg">94.8%</h2>
+<div class="flex items-center gap-xs text-[#22C55E]">
+<span class="material-symbols-outlined text-sm" data-icon="trending_up">trending_up</span>
+<span class="font-body-sm text-body-sm">+1.2% VS LAST WEEK</span>
+</div>
+</div>
+</div>
+<!-- Health Score -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-md flex flex-col justify-between h-40">
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-on-surface-variant">SYSTEM HEALTH SCORE</span>
+<span class="material-symbols-outlined text-primary" data-icon="shield">shield</span>
+</div>
+<div class="mt-auto">
+<h2 class="font-headline-lg text-headline-lg">98%</h2>
+<div class="flex items-center gap-xs text-[#22C55E]">
+<span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span>
+<span class="font-body-sm text-body-sm">CRITICAL STABILITY</span>
+</div>
+</div>
+</div>
+<!-- Active Assets -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-md flex flex-col justify-between h-40">
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-on-surface-variant">ACTIVE ASSETS</span>
+<span class="material-symbols-outlined text-primary" data-icon="memory">memory</span>
+</div>
+<div class="mt-auto">
+<h2 class="font-headline-lg text-headline-lg">1,248</h2>
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="w-1.5 h-1.5 rounded-full bg-[#22C55E]"></span>
+<span class="font-body-sm text-body-sm">100% MONITORING COVERAGE</span>
+</div>
+</div>
+</div>
+<!-- AI Predictions -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-md flex flex-col justify-between h-40">
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-on-surface-variant">AI PREDICTIONS GENERATED</span>
+<span class="material-symbols-outlined text-primary" data-icon="psychology">psychology</span>
+</div>
+<div class="mt-auto">
+<h2 class="font-headline-lg text-headline-lg">186</h2>
+<div class="flex items-center gap-xs text-tertiary">
+<span class="material-symbols-outlined text-sm" data-icon="bolt">bolt</span>
+<span class="font-body-sm text-body-sm">12 ACTIONABLE INSIGHTS</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Section 2: Analytics Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-lg">
+<!-- Health Gauge & AI Summary -->
+<div class="lg:col-span-8 bg-surface-container-low border border-outline-variant rounded-xl p-md flex flex-col md:flex-row gap-xl items-center">
+<div class="relative w-48 h-48 flex items-center justify-center">
+<svg class="w-full h-full -rotate-90">
+<circle class="text-surface-variant" cx="96" cy="96" fill="transparent" r="88" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-primary" cx="96" cy="96" fill="transparent" r="88" stroke="currentColor" stroke-dasharray="552.92" stroke-dashoffset="11" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-headline-lg text-headline-lg">98%</span>
+<span class="font-label-caps text-label-caps text-[#22C55E]">EXCELLENT</span>
+</div>
+</div>
+<div class="flex-1 space-y-md">
+<div>
+<h3 class="font-headline-md text-headline-md mb-xs">AI Fleet Analysis</h3>
+<p class="text-on-surface-variant font-body-md border-l-4 border-primary pl-md bg-surface-container py-xs">
+                                Machine fleet operating within optimal thresholds. Predicted maintenance required for Turbine A01 in 72 hours.
+                            </p>
+</div>
+<div class="h-16 w-full flex items-end gap-[2px]">
+<!-- Mock Trend Chart -->
+<div class="bg-primary opacity-20 w-full h-2/3"></div>
+<div class="bg-primary opacity-30 w-full h-1/2"></div>
+<div class="bg-primary opacity-40 w-full h-3/4"></div>
+<div class="bg-primary opacity-60 w-full h-4/5"></div>
+<div class="bg-primary opacity-80 w-full h-full"></div>
+<div class="bg-primary opacity-100 w-full h-3/4"></div>
+<div class="bg-primary opacity-90 w-full h-4/5"></div>
+<div class="bg-primary opacity-70 w-full h-1/2"></div>
+<div class="bg-primary opacity-50 w-full h-2/3"></div>
+<div class="bg-primary opacity-40 w-full h-full"></div>
+</div>
+</div>
+</div>
+<!-- Machine Status List -->
+<div class="lg:col-span-4 bg-surface-container-low border border-outline-variant rounded-xl flex flex-col overflow-hidden max-h-[480px]">
+<div class="p-md border-b border-outline-variant bg-surface-container-high">
+<span class="font-label-caps text-label-caps">REAL-TIME ASSET STATUS</span>
+</div>
+<div class="flex-1 overflow-y-auto">
+<table class="w-full text-left">
+<thead class="sticky top-0 bg-surface-container-low font-label-caps text-label-caps text-on-surface-variant border-b border-outline-variant">
+<tr>
+<th class="px-md py-sm">ASSET</th>
+<th class="px-md py-sm">HEALTH</th>
+<th class="px-md py-sm">TEMP</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-subtle">
+<tr class="hover:bg-surface-variant transition-colors group">
+<td class="px-md py-sm">
+<div class="flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-[#22C55E]"></span>
+<span class="font-body-sm font-bold">Turbine A01</span>
+</div>
+</td>
+<td class="px-md py-sm font-body-sm text-on-surface-variant">92%</td>
+<td class="px-md py-sm font-body-sm">32°C</td>
+</tr>
+<tr class="hover:bg-surface-variant transition-colors">
+<td class="px-md py-sm">
+<div class="flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-[#22C55E]"></span>
+<span class="font-body-sm font-bold">Press B04</span>
+</div>
+</td>
+<td class="px-md py-sm font-body-sm text-on-surface-variant">98%</td>
+<td class="px-md py-sm font-body-sm">45°C</td>
+</tr>
+<tr class="hover:bg-surface-variant transition-colors">
+<td class="px-md py-sm">
+<div class="flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-[#F59E0B]"></span>
+<span class="font-body-sm font-bold">Drill C12</span>
+</div>
+</td>
+<td class="px-md py-sm font-body-sm text-on-surface-variant">74%</td>
+<td class="px-md py-sm font-body-sm">62°C</td>
+</tr>
+<tr class="hover:bg-surface-variant transition-colors">
+<td class="px-md py-sm">
+<div class="flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-[#22C55E]"></span>
+<span class="font-body-sm font-bold">Pump D09</span>
+</div>
+</td>
+<td class="px-md py-sm font-body-sm text-on-surface-variant">99%</td>
+<td class="px-md py-sm font-body-sm">28°C</td>
+</tr>
+<tr class="hover:bg-surface-variant transition-colors">
+<td class="px-md py-sm">
+<div class="flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-[#22C55E]"></span>
+<span class="font-body-sm font-bold">Cooler X2</span>
+</div>
+</td>
+<td class="px-md py-sm font-body-sm text-on-surface-variant">100%</td>
+<td class="px-md py-sm font-body-sm">12°C</td>
+</tr>
+<tr class="hover:bg-surface-variant transition-colors">
+<td class="px-md py-sm">
+<div class="flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-[#EF4444]"></span>
+<span class="font-body-sm font-bold">Motor F33</span>
+</div>
+</td>
+<td class="px-md py-sm font-body-sm text-on-surface-variant">42%</td>
+<td class="px-md py-sm font-body-sm">88°C</td>
+</tr>
+<tr class="hover:bg-surface-variant transition-colors">
+<td class="px-md py-sm">
+<div class="flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-[#22C55E]"></span>
+<span class="font-body-sm font-bold">Vent V05</span>
+</div>
+</td>
+<td class="px-md py-sm font-body-sm text-on-surface-variant">96%</td>
+<td class="px-md py-sm font-body-sm">22°C</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Section 3: Recent Alerts Table -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl overflow-hidden">
+<div class="p-md border-b border-outline-variant flex justify-between items-center bg-surface-container-high">
+<span class="font-label-caps text-label-caps">RECENT SYSTEM ALERTS</span>
+<button class="font-label-caps text-label-caps text-primary hover:underline transition-all">VIEW ALL ALERTS</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container font-label-caps text-label-caps text-on-surface-variant">
+<tr>
+<th class="px-md py-sm border-b border-outline-variant">PRIORITY</th>
+<th class="px-md py-sm border-b border-outline-variant">ASSET</th>
+<th class="px-md py-sm border-b border-outline-variant">ALERT TYPE</th>
+<th class="px-md py-sm border-b border-outline-variant">AI RECOMMENDATION</th>
+<th class="px-md py-sm border-b border-outline-variant">TIMESTAMP</th>
+<th class="px-md py-sm border-b border-outline-variant">STATUS</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-subtle">
+<tr class="hover:bg-surface-variant transition-colors">
+<td class="px-md py-md"><span class="w-2 h-2 rounded-full bg-[#EF4444] block"></span></td>
+<td class="px-md py-md font-bold text-on-surface">Motor F33</td>
+<td class="px-md py-md font-body-sm">Vibration Threshold Exceeded</td>
+<td class="px-md py-md">
+<div class="bg-primary/10 border-l-2 border-primary px-sm py-xs italic font-body-sm">
+                                        "Schedule bearing inspection within 4h"
+                                    </div>
+</td>
+<td class="px-md py-md font-body-sm text-on-surface-variant">12:44:02 PM</td>
+<td class="px-md py-md font-label-caps text-label-caps text-[#F59E0B]">PENDING</td>
+</tr>
+<tr class="hover:bg-surface-variant transition-colors">
+<td class="px-md py-md"><span class="w-2 h-2 rounded-full bg-[#F59E0B] block"></span></td>
+<td class="px-md py-md font-bold text-on-surface">Drill C12</td>
+<td class="px-md py-md font-body-sm">High Torque Variance</td>
+<td class="px-md py-md">
+<div class="bg-primary/10 border-l-2 border-primary px-sm py-xs italic font-body-sm">
+                                        "Calibrate gear synchronization"
+                                    </div>
+</td>
+<td class="px-md py-md font-body-sm text-on-surface-variant">11:15:30 AM</td>
+<td class="px-md py-md font-label-caps text-label-caps text-primary">INVESTIGATING</td>
+</tr>
+<tr class="hover:bg-surface-variant transition-colors">
+<td class="px-md py-md"><span class="w-2 h-2 rounded-full bg-[#22C55E] block"></span></td>
+<td class="px-md py-md font-bold text-on-surface">Turbine A01</td>
+<td class="px-md py-md font-body-sm">Coolant Flow Deviation</td>
+<td class="px-md py-md">
+<div class="bg-primary/10 border-l-2 border-primary px-sm py-xs italic font-body-sm">
+                                        "Auto-adjusted valve position"
+                                    </div>
+</td>
+<td class="px-md py-md font-body-sm text-on-surface-variant">09:02:11 AM</td>
+<td class="px-md py-md font-label-caps text-label-caps text-[#22C55E]">RESOLVED</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Footer / Side Panels as bottom grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<!-- Summary Card -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-md">
+<h4 class="font-label-caps text-label-caps mb-md">QUICK SUMMARY</h4>
+<div class="space-y-sm">
+<div class="flex justify-between items-center pb-xs border-b border-border-subtle">
+<span class="font-body-sm text-on-surface-variant">PRODUCTION RATE</span>
+<span class="font-bold text-primary">942 UNITS/HR</span>
+</div>
+<div class="flex justify-between items-center pb-xs border-b border-border-subtle">
+<span class="font-body-sm text-on-surface-variant">MAINTENANCE OVERDUE</span>
+<span class="font-bold text-[#EF4444]">0 ASSETS</span>
+</div>
+<div class="flex justify-between items-center pb-xs border-b border-border-subtle">
+<span class="font-body-sm text-on-surface-variant">ENERGY CONSUMPTION</span>
+<span class="font-bold text-tertiary">412 KW/H</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-on-surface-variant">AI CONFIDENCE LEVEL</span>
+<span class="font-bold text-[#22C55E]">99.2%</span>
+</div>
+</div>
+</div>
+<!-- System Activity -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-md">
+<h4 class="font-label-caps text-label-caps mb-md">SYSTEM TELEMETRY STATUS</h4>
+<div class="grid grid-cols-2 gap-sm">
+<div class="flex items-center gap-xs px-sm py-xs bg-surface border border-outline-variant rounded">
+<span class="w-2 h-2 rounded-full bg-[#22C55E]"></span>
+<span class="font-body-sm">SYNC OK</span>
+</div>
+<div class="flex items-center gap-xs px-sm py-xs bg-surface border border-outline-variant rounded">
+<span class="w-2 h-2 rounded-full bg-[#22C55E]"></span>
+<span class="font-body-sm">MQTT CONN</span>
+</div>
+<div class="flex items-center gap-xs px-sm py-xs bg-surface border border-outline-variant rounded">
+<span class="w-2 h-2 rounded-full bg-[#22C55E]"></span>
+<span class="font-body-sm">DB HEALTHY</span>
+</div>
+<div class="flex items-center gap-xs px-sm py-xs bg-surface border border-outline-variant rounded">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-body-sm">AI ENGINE</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action for Quick Add -->
+<button class="fixed bottom-lg right-lg w-14 h-14 bg-primary text-on-primary rounded-full shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-50">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+<script>
+        // Simple micro-interaction for active states
+        document.querySelectorAll('a, button').forEach(el => {
+            el.addEventListener('mousedown', () => {
+                el.style.transform = 'scale(0.98)';
+            });
+            el.addEventListener('mouseup', () => {
+                el.style.transform = '';
+            });
+        });
+    </script>
+</body></html>

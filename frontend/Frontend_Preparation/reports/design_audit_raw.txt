@@ -1,0 +1,1558 @@
+========================================
+PAGE: stitch_industrial_administration_console
+========================================
+---
+name: IOB Admin Console
+colors:
+  surface: '#12131a'
+  surface-dim: '#12131a'
+  surface-bright: '#383941'
+  surface-container-lowest: '#0d0e15'
+  surface-container-low: '#1a1b22'
+  surface-container: '#1e1f26'
+  surface-container-high: '#292931'
+  surface-container-highest: '#33343c'
+  on-surface: '#e3e1ec'
+  on-surface-variant: '#c6c5d5'
+  inverse-surface: '#e3e1ec'
+  inverse-on-surface: '#2f3038'
+  outline: '#908f9e'
+  outline-variant: '#454653'
+  surface-tint: '#bdc2ff'
+  primary: '#bdc2ff'
+  on-primary: '#131e8c'
+  primary-container: '#818cf8'
+  on-primary-container: '#101b8a'
+  inverse-primary: '#4953bc'
+  secondary: '#c8c6c8'
+  on-secondary: '#303032'
+  secondary-container: '#474649'
+  on-secondary-container: '#b7b4b7'
+  tertiary: '#f7bd3e'
+  on-tertiary: '#402d00'
+  tertiary-container: '#c08d00'
+  on-tertiary-container: '#3e2b00'
+  error: '#ffb4ab'
+  on-error: '#690005'
+  error-container: '#93000a'
+  on-error-container: '#ffdad6'
+  primary-fixed: '#e0e0ff'
+  primary-fixed-dim: '#bdc2ff'
+  on-primary-fixed: '#000767'
+  on-primary-fixed-variant: '#2f3aa3'
+  secondary-fixed: '#e5e1e4'
+  secondary-fixed-dim: '#c8c6c8'
+  on-secondary-fixed: '#1b1b1d'
+  on-secondary-fixed-variant: '#474649'
+  tertiary-fixed: '#ffdea3'
+  tertiary-fixed-dim: '#f7bd3e'
+  on-tertiary-fixed: '#261900'
+  on-tertiary-fixed-variant: '#5d4200'
+  background: '#12131a'
+  on-background: '#e3e1ec'
+  surface-variant: '#33343c'
+typography:
+  display:
+    fontFamily: Bebas Neue
+    fontSize: 48px
+    fontWeight: '400'
+    lineHeight: 48px
+    letterSpacing: 0.02em
+  headline-lg:
+    fontFamily: Bebas Neue
+    fontSize: 32px
+    fontWeight: '400'
+    lineHeight: 32px
+    letterSpacing: 0.02em
+  headline-lg-mobile:
+    fontFamily: Bebas Neue
+    fontSize: 24px
+    fontWeight: '400'
+    lineHeight: 24px
+  headline-md:
+    fontFamily: Bebas Neue
+    fontSize: 20px
+    fontWeight: '400'
+    lineHeight: 24px
+    letterSpacing: 0.04em
+  title-lg:
+    fontFamily: Manrope
+    fontSize: 18px
+    fontWeight: '700'
+    lineHeight: 24px
+  body-lg:
+    fontFamily: Manrope
+    fontSize: 16px
+    fontWeight: '400'
+    lineHeight: 24px
+  body-md:
+    fontFamily: Manrope
+    fontSize: 14px
+    fontWeight: '400'
+    lineHeight: 20px
+  label-md:
+    fontFamily: Manrope
+    fontSize: 12px
+    fontWeight: '600'
+    lineHeight: 16px
+    letterSpacing: 0.02em
+  code-sm:
+    fontFamily: monospace
+    fontSize: 12px
+    fontWeight: '400'
+    lineHeight: 16px
+rounded:
+  sm: 0.25rem
+  DEFAULT: 0.5rem
+  md: 0.75rem
+  lg: 1rem
+  xl: 1.5rem
+  full: 9999px
+spacing:
+  unit: 8px
+  xs: 4px
+  sm: 8px
+  md: 16px
+  lg: 24px
+  xl: 32px
+  2xl: 48px
+  gutter: 16px
+  margin-mobile: 16px
+  margin-desktop: 32px
+---
+
+## Brand & Style
+
+The design system is engineered for the Industrial Operating Brain (IOB) Administration Console, a high-stakes environment where precision, security, and clarity are paramount. The brand personality is **authoritative, technical, and hyper-functional**, reflecting an infrastructure-first mindset.
+
+The visual style is **Industrial Minimalism**. It draws inspiration from heavy-industry control panels and modern cloud infrastructure platforms like Azure and AWS. This is achieved through a high-contrast dark interface, a strict structural grid, and a total absence of decorative flourishes like gradients or blurs. Every visual element must serve a functional purpose, facilitating rapid data scanning and confident system administration.
+
+## Colors
+
+The palette is strictly dark-mode, designed to reduce eye strain during long monitoring sessions and to provide high-contrast legibility. 
+
+- **Foundation:** The system uses a tiered grayscale approach (`Surface 1` through `Surface 3`) to define information hierarchy and structural depth without relying on shadows.
+- **Accents:** A single Indigo accent (`#818CF8`) is used sparingly to indicate primary actions, focus states, and active navigation nodes.
+- **Borders:** Translucent white borders are the primary tool for element separation. Their varying opacities (`0.06`, `0.10`, `0.16`) denote the "strength" of the container or the density of the content.
+
+## Typography
+
+This system employs a high-contrast typographic pairing:
+
+1.  **Headings (Bebas Neue):** Used for main page headers and section titles. Its condensed, all-caps nature evokes industrial signage and provides a strong vertical rhythm.
+2.  **Body & UI (Manrope):** A clean, modern sans-serif used for all functional text, data readouts, and controls. It ensures maximum readability for complex industrial parameters.
+
+**Rules:**
+- All `Bebas Neue` headings should be treated with `uppercase` transform.
+- Use `Text Secondary` for body copy to maintain a comfortable reading contrast against the dark background, reserving `Text Primary` for titles and active inputs.
+- Technical data and IDs should use the `code-sm` monospaced style.
+
+## Layout & Spacing
+
+The design system is built on a **strict 8px grid**. All dimensions, paddings, and margins must be multiples of 8 (with the exception of 4px for extremely tight micro-adjustments).
+
+**Grid Model:**
+- **Desktop:** A 12-column fluid grid for the main content area with a fixed 240px left-hand navigation rail.
+- **Gutters:** 16px fixed gutters between columns.
+- **Margins:** 32px outer margins on desktop; 16px on mobile.
+- **Alignment:** Content should lean toward the top-left (industrial standard) rather than being centered, maximizing the "dashboard" feel.
+
+## Elevation & Depth
+
+This design system rejects the use of shadows to convey depth. Instead, it utilizes **Tonal Layering** and **Border Definition**:
+
+1.  **Level 0 (Base):** `#070707` — Used for the application background.
+2.  **Level 1 (Navigation/Sidebar):** `#101012` — Slightly lifted.
+3.  **Level 2 (Cards/Main Content):** `#18181B` — The primary surface for data.
+4.  **Level 3 (Modals/Popovers):** `#27272A` — The highest tier, used for temporary overlays.
+
+Depth is further reinforced by **Subtle Borders**. Every container must have a 1px solid border using `Border Subtle` or `Border Default` to define its perimeter against the dark canvas.
+
+## Shapes
+
+The shape language is controlled and geometric. 
+
+- **Standard Elements:** Use `8px` (`rounded-md`) for buttons, input fields, and standard cards.
+- **Large Containers:** Use `12px` (`rounded-lg`) for major dashboard widgets or modal windows.
+- **Functional Elements:** Use `Full` (Pill) only for status indicators (Badges/Chips) and toggle switches.
+
+Sharp corners are avoided to prevent a "raw" brutalist look, maintaining a level of enterprise-grade refinement.
+
+## Components
+
+### Buttons
+- **Primary:** Solid `#818CF8` background, `#070707` text. No shadow. 8px radius.
+- **Secondary:** Transparent background, `Border Strong` outline, `#FAFAFA` text.
+- **States:** Hover state for Primary shifts to `#6366F1`.
+
+### Input Fields
+- **Background:** `Surface 1`.
+- **Border:** `Border Default`. On focus, border changes to `Accent`.
+- **Label:** `Label-md` style, using `Text Secondary`.
+
+### Cards & Widgets
+- **Background:** `Surface 2`.
+- **Border:** `Border Default`.
+- **Header:** Include a 1px bottom border using `Border Subtle` to separate the widget title from its content.
+
+### Status Chips
+- Small, uppercase `Label-md` text.
+- Backgrounds use low-opacity versions of semantic colors (Success: Green, Warning: Amber, Error: Red).
+- Always pill-shaped (Full radius).
+
+### Data Tables
+- Header background: `Surface 1`.
+- Row background: Transparent, with a 1px bottom border (`Border Subtle`).
+- High-density spacing: 8px vertical padding per row.
+
+
+========================================
+PAGE: stitch_industrial_ai_explainability_interface
+========================================
+---
+name: Industrial Logic System
+colors:
+  surface: '#121319'
+  surface-dim: '#121319'
+  surface-bright: '#393840'
+  surface-container-lowest: '#0d0e14'
+  surface-container-low: '#1b1b22'
+  surface-container: '#1f1f26'
+  surface-container-high: '#292930'
+  surface-container-highest: '#34343b'
+  on-surface: '#e4e1eb'
+  on-surface-variant: '#c6c5d5'
+  inverse-surface: '#e4e1eb'
+  inverse-on-surface: '#303037'
+  outline: '#908f9e'
+  outline-variant: '#454653'
+  surface-tint: '#bdc2ff'
+  primary: '#bdc2ff'
+  on-primary: '#131e8c'
+  primary-container: '#818cf8'
+  on-primary-container: '#101b8a'
+  inverse-primary: '#4953bc'
+  secondary: '#c8c5ca'
+  on-secondary: '#303033'
+  secondary-container: '#47464a'
+  on-secondary-container: '#b6b4b8'
+  tertiary: '#f7bd3e'
+  on-tertiary: '#402d00'
+  tertiary-container: '#c08d00'
+  on-tertiary-container: '#3e2b00'
+  error: '#ffb4ab'
+  on-error: '#690005'
+  error-container: '#93000a'
+  on-error-container: '#ffdad6'
+  primary-fixed: '#e0e0ff'
+  primary-fixed-dim: '#bdc2ff'
+  on-primary-fixed: '#000767'
+  on-primary-fixed-variant: '#2f3aa3'
+  secondary-fixed: '#e4e1e6'
+  secondary-fixed-dim: '#c8c5ca'
+  on-secondary-fixed: '#1b1b1e'
+  on-secondary-fixed-variant: '#47464a'
+  tertiary-fixed: '#ffdea3'
+  tertiary-fixed-dim: '#f7bd3e'
+  on-tertiary-fixed: '#261900'
+  on-tertiary-fixed-variant: '#5d4200'
+  background: '#121319'
+  on-background: '#e4e1eb'
+  surface-variant: '#34343b'
+typography:
+  headline-lg:
+    fontFamily: Bebas Neue
+    fontSize: 48px
+    fontWeight: '400'
+    lineHeight: 48px
+    letterSpacing: 0.02em
+  headline-md:
+    fontFamily: Bebas Neue
+    fontSize: 32px
+    fontWeight: '400'
+    lineHeight: 32px
+    letterSpacing: 0.02em
+  headline-sm:
+    fontFamily: Bebas Neue
+    fontSize: 24px
+    fontWeight: '400'
+    lineHeight: 24px
+    letterSpacing: 0.02em
+  title-lg:
+    fontFamily: Manrope
+    fontSize: 20px
+    fontWeight: '700'
+    lineHeight: 28px
+  body-lg:
+    fontFamily: Manrope
+    fontSize: 16px
+    fontWeight: '400'
+    lineHeight: 24px
+  body-md:
+    fontFamily: Manrope
+    fontSize: 14px
+    fontWeight: '400'
+    lineHeight: 20px
+  body-sm:
+    fontFamily: Manrope
+    fontSize: 12px
+    fontWeight: '500'
+    lineHeight: 16px
+  label-caps:
+    fontFamily: Manrope
+    fontSize: 11px
+    fontWeight: '700'
+    lineHeight: 16px
+    letterSpacing: 0.05em
+  mono-data:
+    fontFamily: JetBrains Mono
+    fontSize: 13px
+    fontWeight: '400'
+    lineHeight: 18px
+rounded:
+  sm: 0.25rem
+  DEFAULT: 0.5rem
+  md: 0.75rem
+  lg: 1rem
+  xl: 1.5rem
+  full: 9999px
+spacing:
+  base: 8px
+  grid-margin: 24px
+  grid-gutter: 16px
+  stack-xs: 4px
+  stack-sm: 8px
+  stack-md: 16px
+  stack-lg: 24px
+  stack-xl: 48px
+---
+
+## Brand & Style
+The design system is engineered for the **Industrial Operating Brain (IOB)**, an enterprise environment where explainable AI (XAI) meets heavy industry. The brand personality is one of **Scientific Precision**, **Absolute Transparency**, and **Unwavering Trust**. It avoids the decorative trends of consumer software, focusing instead on data density and logical clarity.
+
+The aesthetic follows a **High-Contrast Professional** movement. It utilizes a deep monochromatic base to minimize visual fatigue in control room environments, using high-contrast typography to ensure critical alerts are processed instantly. The style is strictly functional: no gradients, no blurs, and no skeuomorphic elements. Every visual mark must serve a diagnostic purpose, conveying a sense of "Engineering Integrity."
+
+## Colors
+The palette is optimized for low-light industrial environments. It utilizes a "Dark Logic" approach where depth is communicated through subtle hex shifts rather than shadows. 
+
+- **Functional Monochromes:** The background and surface tiers create a rigid hierarchy for data containers. 
+- **The Accent Rule:** #818CF8 (Accent) is the sole indicator of "Active State," "Selection," or "Positive Intelligence."
+- **Data Neutrality:** Forfeiting the traditional Red/Green/Yellow paradigm prevents "alert fatigue." Use the Accent color for all positive/active data and Surface-3 for inactive/negative space in charts and gauges.
+- **Borders:** Use `border-subtle` for structural engineering grids and `border-strong` for interactive component boundaries.
+
+## Typography
+The typography system balances the raw industrial impact of **Bebas Neue** with the scientific readability of **Manrope**.
+
+- **Headings:** Bebas Neue is used for primary module titles and high-level KPIs. It should always be used in uppercase to maintain a "blueprint" aesthetic.
+- **Body & Data:** Manrope is the workhorse for explainable AI narratives and technical specifications. Its geometric construction ensures legibility in data-dense tables.
+- **Numerical Data:** For telemetry and sensor readouts, use a monospaced font (JetBrains Mono) to ensure tabular alignment of shifting values.
+
+## Layout & Spacing
+This design system adheres to a **Strict 8px Grid**. All dimensions, padding, and margins must be multiples of 8.
+
+- **The Engineering Grid:** A background grid composed of 1px lines using `border-subtle` should be visible at 32px or 64px intervals to reinforce the sense of a technical workspace.
+- **Layout Model:** Use a 12-column fluid grid for desktop views. Content is contained within "Modules" (Surface 1) separated by 16px gutters.
+- **Data Density:** In diagnostic views, vertical rhythm can be tightened to 4px (stack-xs) to maximize information on a single screen without scrolling.
+
+## Elevation & Depth
+Depth in the design system is communicated through **Structural Layering** rather than shadows. 
+
+- **Tier 0 (Background Base):** The canvas.
+- **Tier 1 (Surface 1):** Primary layout containers.
+- **Tier 2 (Surface 2):** Nested components like cards, input fields, or sidebar nav items.
+- **Tier 3 (Surface 3):** Hover states, toggle tracks, and negative space in data visualizations.
+
+**Borders as Dividers:** Use `border-default` for all component perimeters. `border-strong` is reserved for focused elements or primary action buttons. No shadows are permitted; the UI should feel like a single-plane instrument panel.
+
+## Shapes
+The shape language is disciplined and geometric. 
+
+- **Standard Modules:** Use 8px (rounded-md) for most containers and cards.
+- **Secondary UI:** Use 12px (rounded-lg) for larger dashboard widgets to soften the technical density slightly.
+- **Functional Elements:** Use "Full" (Pill-shaped) exclusively for status badges, tags, and toggle switches to distinguish them from structural blocks.
+- **Strictness:** Internal elements should never have a larger radius than their parent container.
+
+## Components
+Consistent styling across technical components ensures the system remains predictable for operators.
+
+- **Buttons:** 
+  - *Primary:* Background: Accent, Text: Background-Base, Weight: Bold, Radius: 8px.
+  - *Secondary:* Background: Transparent, Border: Border-Strong, Text: Text-Primary.
+- **Input Fields:** Use Surface-2 as the background with a 1px `border-default`. Upon focus, the border changes to Accent.
+- **Outlined Icons:** Use only 2px stroke weight outlined icons. Avoid filled icons unless used as a status indicator.
+- **Explainability Cards:** Use Surface-1 with a vertical accent bar (2px) on the left side to denote AI-generated insights.
+- **Charts & Gauges:** 
+  - All active data: #818CF8.
+  - All background/empty tracks: #27272A (Surface 3).
+  - Do not use color to indicate "danger" or "success"—use iconography (e.g., a warning triangle) and clear text labels to avoid accessibility issues and color-coding confusion.
+- **Engineering Grid:** Apply a persistent background pattern of 1px `border-subtle` lines across the Background-Base to serve as a visual anchor for all modules.
+
+
+========================================
+PAGE: stitch_industrial_ai_knowledge_assistant
+========================================
+---
+name: IOB Industrial System
+colors:
+  surface: '#131313'
+  surface-dim: '#131313'
+  surface-bright: '#3a3939'
+  surface-container-lowest: '#0e0e0e'
+  surface-container-low: '#1c1b1b'
+  surface-container: '#201f1f'
+  surface-container-high: '#2a2a2a'
+  surface-container-highest: '#353534'
+  on-surface: '#e5e2e1'
+  on-surface-variant: '#c6c5d5'
+  inverse-surface: '#e5e2e1'
+  inverse-on-surface: '#313030'
+  outline: '#908f9e'
+  outline-variant: '#454653'
+  surface-tint: '#bdc2ff'
+  primary: '#bdc2ff'
+  on-primary: '#131e8c'
+  primary-container: '#818cf8'
+  on-primary-container: '#101b8a'
+  inverse-primary: '#4953bc'
+  secondary: '#c8c5ca'
+  on-secondary: '#303033'
+  secondary-container: '#47464a'
+  on-secondary-container: '#b6b4b8'
+  tertiary: '#f7bd3e'
+  on-tertiary: '#402d00'
+  tertiary-container: '#c08d00'
+  on-tertiary-container: '#3e2b00'
+  error: '#ffb4ab'
+  on-error: '#690005'
+  error-container: '#93000a'
+  on-error-container: '#ffdad6'
+  primary-fixed: '#e0e0ff'
+  primary-fixed-dim: '#bdc2ff'
+  on-primary-fixed: '#000767'
+  on-primary-fixed-variant: '#2f3aa3'
+  secondary-fixed: '#e4e1e6'
+  secondary-fixed-dim: '#c8c5ca'
+  on-secondary-fixed: '#1b1b1e'
+  on-secondary-fixed-variant: '#47464a'
+  tertiary-fixed: '#ffdea3'
+  tertiary-fixed-dim: '#f7bd3e'
+  on-tertiary-fixed: '#261900'
+  on-tertiary-fixed-variant: '#5d4200'
+  background: '#131313'
+  on-background: '#e5e2e1'
+  surface-variant: '#353534'
+typography:
+  h1:
+    fontFamily: Bebas Neue
+    fontSize: 48px
+    fontWeight: '400'
+    lineHeight: 48px
+    letterSpacing: 0.04em
+  h2:
+    fontFamily: Bebas Neue
+    fontSize: 32px
+    fontWeight: '400'
+    lineHeight: 32px
+    letterSpacing: 0.03em
+  h3:
+    fontFamily: Bebas Neue
+    fontSize: 24px
+    fontWeight: '400'
+    lineHeight: 24px
+    letterSpacing: 0.02em
+  body-lg:
+    fontFamily: Manrope
+    fontSize: 18px
+    fontWeight: '400'
+    lineHeight: 28px
+  body-md:
+    fontFamily: Manrope
+    fontSize: 16px
+    fontWeight: '400'
+    lineHeight: 24px
+  body-sm:
+    fontFamily: Manrope
+    fontSize: 14px
+    fontWeight: '500'
+    lineHeight: 20px
+  label-caps:
+    fontFamily: Manrope
+    fontSize: 12px
+    fontWeight: '700'
+    lineHeight: 16px
+    letterSpacing: 0.08em
+  mono-data:
+    fontFamily: JetBrains Mono
+    fontSize: 13px
+    fontWeight: '400'
+    lineHeight: 18px
+rounded:
+  sm: 0.25rem
+  DEFAULT: 0.5rem
+  md: 0.75rem
+  lg: 1rem
+  xl: 1.5rem
+  full: 9999px
+spacing:
+  unit: 8px
+  xs: 8px
+  sm: 16px
+  md: 24px
+  lg: 32px
+  xl: 48px
+  xxl: 64px
+  grid-margin: 24px
+  grid-gutter: 16px
+---
+
+## Brand & Style
+
+The design system is engineered for the "Industrial Operating Brain," a high-stakes enterprise environment requiring absolute clarity, auditability, and technical precision. The brand personality is clinical, authoritative, and robust, reflecting the heavy-duty nature of industrial automation and data synthesis.
+
+The design style is **Modern Industrial Minimalism**. It eschews decorative trends like glassmorphism or gradients in favor of a strict, structured interface that feels like a professional diagnostic instrument. Every UI element exists to serve a functional purpose within an engineering-grade framework. The aesthetic response should be one of "controlled complexity"—massive amounts of data rendered with legibility and reliability.
+
+## Colors
+
+The palette is strictly dark-mode centric to reduce eye strain in monitoring environments and to provide high contrast for technical data. 
+
+- **Foundations**: Use `--bg-base` for the main application background. Tiered surfaces (`surface-1` through `surface-3`) should be used to establish visual hierarchy and depth.
+- **Accents**: The Indigo accent (`#818CF8`) is reserved for primary actions, active states, and critical paths. It should be used sparingly to maintain the technical, "non-playful" atmosphere.
+- **Borders**: Borders are the primary method of separation. Use `border-subtle` for grid lines and `border-strong` for interactive component boundaries.
+
+## Typography
+
+This design system utilizes a high-contrast typographic pairing:
+
+- **Headlines**: `Bebas Neue` provides a technical, industrial look. It must always be used in uppercase with slight tracking (letter-spacing) to ensure a "stamped" or "engraved" architectural feel.
+- **Body & Interface**: `Manrope` is used for all functional text, data readouts, and documentation. Its geometric but highly legible forms ensure clarity in dense tables and dashboards.
+- **Data Entry**: For strictly numerical or code-based values, a monospaced font (JetBrains Mono) is recommended to ensure tabular alignment.
+
+## Layout & Spacing
+
+The layout is governed by a **Strict Engineering Grid**. Every element must align to an 8px square increment. 
+
+- **Grid System**: Use a 12-column fluid grid for main content areas, but reinforce the structure with visible `border-subtle` lines between major sections (e.g., sidebars, header, main panels).
+- **Responsive Behavior**: 
+  - **Desktop**: Full 12-column spread with fixed sidebars.
+  - **Tablet**: 8-column layout; sidebars collapse into icons.
+  - **Mobile**: 4-column layout; strict vertical stacking.
+- **Margins**: Use a consistent 24px margin for outer containers to allow the "Operating Brain" to breathe despite high data density.
+
+## Elevation & Depth
+
+Depth in this design system is communicated through **Tonal Layering and Borders** rather than shadows. 
+
+- **Layering**: Higher elevation is represented by lighter surface colors (e.g., a modal sits on `surface-3` while the background is `bg-base`).
+- **Outlines**: Every container must have a visible border. Interaction is signaled by changing the border color (e.g., from `border` to `accent`) rather than adding a shadow.
+- **Flatness**: Avoid any use of blurring or drop shadows. The UI should feel like a single physical sheet of glass with etched sections.
+
+## Shapes
+
+The shape language is disciplined and geometric. 
+
+- **Standard Radius**: Most interactive elements (buttons, inputs) use a **8px (0.5rem)** radius to balance the harshness of the dark palette with modern accessibility.
+- **Large Containers**: Use **12px (0.75rem)** for cards and primary layout sections to create a clear container-child relationship.
+- **Square Elements**: Icons and small status indicators may remain square (0px) if they are part of a dense data grid.
+
+## Components
+
+- **Buttons**: Square-ish (8px radius). Primary buttons use a solid `accent` background with dark text. Secondary buttons are outlined with `border-strong` and white text. No gradients.
+- **Inputs**: Use `surface-1` background with a `border` stroke. On focus, the stroke changes to `accent` with a 1px solid weight.
+- **Cards**: Background `surface-1` with `border-subtle`. Headers within cards should be separated by a horizontal line of `border-subtle`.
+- **Lists/Tables**: High-density rows (32px or 40px height). Every row is separated by a 1px `border-subtle`. Hover states use `surface-2`.
+- **Status Indicators**: Use outlined icons with a 2px stroke. Status colors (Success, Warning, Critical) should use desaturated versions of Green, Yellow, and Red to maintain the professional palette.
+- **Chips/Badges**: Rectangular with 4px radius. Use `surface-3` with `text-secondary` for neutral tags; use `accent-bg` with `accent` text for active filters.
+- **Icons**: Strictly outlined (Lucide-style). Stroke width should be 1.5px or 2px to ensure visibility against dark backgrounds.
+
+
+========================================
+PAGE: stitch_industrial_incident_command_center
+========================================
+---
+name: Industrial Operating Brain
+colors:
+  surface: '#12131a'
+  surface-dim: '#12131a'
+  surface-bright: '#383940'
+  surface-container-lowest: '#0c0e14'
+  surface-container-low: '#1a1b22'
+  surface-container: '#1e1f26'
+  surface-container-high: '#282a31'
+  surface-container-highest: '#33343c'
+  on-surface: '#e2e1eb'
+  on-surface-variant: '#c6c5d5'
+  inverse-surface: '#e2e1eb'
+  inverse-on-surface: '#2f3037'
+  outline: '#908f9e'
+  outline-variant: '#454653'
+  surface-tint: '#bdc2ff'
+  primary: '#bdc2ff'
+  on-primary: '#131e8c'
+  primary-container: '#818cf8'
+  on-primary-container: '#101b8a'
+  inverse-primary: '#4953bc'
+  secondary: '#c9c6c5'
+  on-secondary: '#313030'
+  secondary-container: '#474646'
+  on-secondary-container: '#b7b4b4'
+  tertiary: '#f7bd3e'
+  on-tertiary: '#402d00'
+  tertiary-container: '#c08d00'
+  on-tertiary-container: '#3e2b00'
+  error: '#ffb4ab'
+  on-error: '#690005'
+  error-container: '#93000a'
+  on-error-container: '#ffdad6'
+  primary-fixed: '#e0e0ff'
+  primary-fixed-dim: '#bdc2ff'
+  on-primary-fixed: '#000767'
+  on-primary-fixed-variant: '#2f3aa3'
+  secondary-fixed: '#e5e2e1'
+  secondary-fixed-dim: '#c9c6c5'
+  on-secondary-fixed: '#1c1b1b'
+  on-secondary-fixed-variant: '#474646'
+  tertiary-fixed: '#ffdea3'
+  tertiary-fixed-dim: '#f7bd3e'
+  on-tertiary-fixed: '#261900'
+  on-tertiary-fixed-variant: '#5d4200'
+  background: '#12131a'
+  on-background: '#e2e1eb'
+  surface-variant: '#33343c'
+typography:
+  display-xl:
+    fontFamily: Bebas Neue
+    fontSize: 48px
+    fontWeight: '400'
+    lineHeight: 48px
+    letterSpacing: 0.02em
+  headline-lg:
+    fontFamily: Bebas Neue
+    fontSize: 32px
+    fontWeight: '400'
+    lineHeight: 32px
+    letterSpacing: 0.02em
+  headline-md:
+    fontFamily: Bebas Neue
+    fontSize: 24px
+    fontWeight: '400'
+    lineHeight: 24px
+    letterSpacing: 0.02em
+  headline-sm:
+    fontFamily: Bebas Neue
+    fontSize: 20px
+    fontWeight: '400'
+    lineHeight: 20px
+    letterSpacing: 0.02em
+  body-lg:
+    fontFamily: Manrope
+    fontSize: 16px
+    fontWeight: '500'
+    lineHeight: 24px
+    letterSpacing: 0em
+  body-md:
+    fontFamily: Manrope
+    fontSize: 14px
+    fontWeight: '400'
+    lineHeight: 20px
+    letterSpacing: 0em
+  body-sm:
+    fontFamily: Manrope
+    fontSize: 12px
+    fontWeight: '400'
+    lineHeight: 16px
+    letterSpacing: 0em
+  label-md:
+    fontFamily: Manrope
+    fontSize: 13px
+    fontWeight: '600'
+    lineHeight: 18px
+    letterSpacing: 0.04em
+  label-sm:
+    fontFamily: Manrope
+    fontSize: 11px
+    fontWeight: '600'
+    lineHeight: 16px
+    letterSpacing: 0.06em
+rounded:
+  sm: 0.25rem
+  DEFAULT: 0.5rem
+  md: 0.75rem
+  lg: 1rem
+  xl: 1.5rem
+  full: 9999px
+spacing:
+  unit: 8px
+  xs: 4px
+  sm: 8px
+  md: 16px
+  lg: 24px
+  xl: 32px
+  gutter: 16px
+  margin-mobile: 16px
+  margin-desktop: 32px
+---
+
+## Brand & Style
+
+The design system is engineered for mission-critical industrial intelligence. It prioritizes high-density information architecture, immediate legibility, and a high-performance aesthetic. The personality is disciplined, technical, and authoritative—built for operators who manage complex systems where clarity is paramount.
+
+The design style is **Industrial Minimalism**. It rejects decorative flourishes, gradients, and blurs in favor of structural integrity. Depth is communicated through tonal layering and precise linework. A subtle 8px engineering grid overlay is applied to the base background to reinforce the sense of a precision-machined interface.
+
+## Colors
+
+The palette is strictly functional and optimized for low-light control room environments. It utilizes a deep monochromatic base with varying surface steps to create visual hierarchy without excessive contrast. 
+
+The **Accent** color is used sparingly for primary actions, focus states, and critical data points. **Borders** act as the primary structural element; their opacity variations indicate the level of containment and importance. No solid background fills should be used for status or severity; instead, rely on the established text colors and subtle accent backgrounds.
+
+## Typography
+
+This design system employs a dual-typeface strategy. **Bebas Neue** is used for all high-level headers and data-heavy "readouts." Its condensed, impactful nature mimics industrial signage and technical displays. **Manrope** is used for all body text, metadata, and interface labels to ensure maximum readability in dense layouts.
+
+Labels and small metadata should often use `textTransform: uppercase` with increased letter spacing to distinguish between interactive labels and static content. For mobile views, `display-xl` should scale down to `32px` to prevent text wrapping on narrow viewports.
+
+## Layout & Spacing
+
+The system is built on a strict **8px grid**. All margins, paddings, and component heights must be multiples of 8. 
+
+- **Layout Model:** A 12-column fluid grid is used for desktop (breakpoints at 1440px+), transitioning to an 8-column grid for tablets (768px-1024px), and a 4-column grid for mobile (below 768px).
+- **Density:** Elements should maintain a "Compact" density. Use 16px (md) for container gaps and 8px (sm) for internal element spacing.
+- **Engineering Grid:** A global background overlay consisting of 1px lines at 32px intervals with 10% opacity should be visible on the `Base Background` level to assist with alignment perception.
+
+## Elevation & Depth
+
+Depth is achieved through **Tonal Layers** and **Strong Outlines**. Shadows are strictly prohibited to maintain the flat, industrial aesthetic.
+
+1.  **Level 0 (Background):** Base layer (#070707) with the grid overlay.
+2.  **Level 1 (Sub-surface):** Used for sidebar and navigation areas (#101012).
+3.  **Level 2 (Surface):** Primary cards and content containers (#18181B). These must have a `Border Subtle` or `Border` stroke.
+4.  **Level 3 (Overlay):** Modals and dropdowns (#27272A). These require a `Border Strong` to clearly separate them from the content beneath.
+
+Visual separation is always reinforced by a 1px solid border.
+
+## Shapes
+
+The shape language is controlled and geometric. 
+
+- **8px (md):** Standard for buttons, input fields, and small cards.
+- **12px (lg):** Standard for primary content containers and modals.
+- **Full:** Reserved strictly for status indicators, pill-style badges, and toggle switches.
+
+All containers must use 1px strokes; do not use inner shadows or bevels.
+
+## Components
+
+### Buttons
+- **Primary:** Background `Accent`, Text `Secondary` (Dark), 8px radius.
+- **Secondary:** Outlined with `Border Strong`, Text `Primary`, 8px radius.
+- **Ghost:** No border or background, Text `Accent`.
+
+### Badges & Status
+- **Severity Badges:** Small outlined containers with 11px uppercase Manrope text. Include a 4px circular dot to the left of the text. 
+    - *Critical:* Red dot.
+    - *High:* Orange dot.
+    - *Medium:* Yellow dot.
+    - *Low:* Green dot.
+    - *Informational:* Blue dot.
+- **Status Badges:** Minimal outlined pills (Full radius) with `Text Secondary`.
+
+### Inputs
+- **Text Fields:** Surface 2 background, `Border Default` stroke. On focus, the stroke changes to `Accent` and the background to Surface 3.
+- **Checkboxes/Radios:** Square (4px radius) for checkboxes, circular for radios. Always outlined.
+
+### Data Display
+- **Cards:** Surface 2 background, 12px radius, `Border Default` stroke. Headers inside cards should use `Headline-sm`.
+- **Icons:** Use 20px or 24px outlined icons from the Lucide or Solar sets. Stroke weight should be consistent (1.5px or 2px).
+- **Lists:** Rows separated by `Border Subtle`. Interactive rows should have a hover state of Surface 3.
+
+
+========================================
+PAGE: stitch_industrial_operating_brain_dashboard
+========================================
+---
+name: Industrial Intelligence Framework
+colors:
+  surface: '#12131a'
+  surface-dim: '#12131a'
+  surface-bright: '#383941'
+  surface-container-lowest: '#0d0e15'
+  surface-container-low: '#1a1b22'
+  surface-container: '#1e1f26'
+  surface-container-high: '#292931'
+  surface-container-highest: '#33343c'
+  on-surface: '#e3e1ec'
+  on-surface-variant: '#c6c5d5'
+  inverse-surface: '#e3e1ec'
+  inverse-on-surface: '#2f3038'
+  outline: '#908f9e'
+  outline-variant: '#454653'
+  surface-tint: '#bdc2ff'
+  primary: '#bdc2ff'
+  on-primary: '#131e8c'
+  primary-container: '#818cf8'
+  on-primary-container: '#101b8a'
+  inverse-primary: '#4953bc'
+  secondary: '#c8c6c8'
+  on-secondary: '#303032'
+  secondary-container: '#474649'
+  on-secondary-container: '#b7b4b7'
+  tertiary: '#f7bd3e'
+  on-tertiary: '#402d00'
+  tertiary-container: '#c08d00'
+  on-tertiary-container: '#3e2b00'
+  error: '#ffb4ab'
+  on-error: '#690005'
+  error-container: '#93000a'
+  on-error-container: '#ffdad6'
+  primary-fixed: '#e0e0ff'
+  primary-fixed-dim: '#bdc2ff'
+  on-primary-fixed: '#000767'
+  on-primary-fixed-variant: '#2f3aa3'
+  secondary-fixed: '#e5e1e4'
+  secondary-fixed-dim: '#c8c6c8'
+  on-secondary-fixed: '#1b1b1d'
+  on-secondary-fixed-variant: '#474649'
+  tertiary-fixed: '#ffdea3'
+  tertiary-fixed-dim: '#f7bd3e'
+  on-tertiary-fixed: '#261900'
+  on-tertiary-fixed-variant: '#5d4200'
+  background: '#12131a'
+  on-background: '#e3e1ec'
+  surface-variant: '#33343c'
+typography:
+  display-lg:
+    fontFamily: Bebas Neue
+    fontSize: 64px
+    fontWeight: '700'
+    lineHeight: '1.1'
+    letterSpacing: 0.02em
+  headline-lg:
+    fontFamily: Bebas Neue
+    fontSize: 40px
+    fontWeight: '700'
+    lineHeight: '1.2'
+    letterSpacing: 0.03em
+  headline-md:
+    fontFamily: Bebas Neue
+    fontSize: 24px
+    fontWeight: '700'
+    lineHeight: '1.2'
+    letterSpacing: 0.03em
+  body-lg:
+    fontFamily: Manrope
+    fontSize: 18px
+    fontWeight: '400'
+    lineHeight: '1.6'
+  body-md:
+    fontFamily: Manrope
+    fontSize: 15px
+    fontWeight: '400'
+    lineHeight: '1.5'
+  body-sm:
+    fontFamily: Manrope
+    fontSize: 13px
+    fontWeight: '500'
+    lineHeight: '1.4'
+  label-caps:
+    fontFamily: Manrope
+    fontSize: 11px
+    fontWeight: '700'
+    lineHeight: '1'
+    letterSpacing: 0.1em
+  headline-lg-mobile:
+    fontFamily: Bebas Neue
+    fontSize: 32px
+    fontWeight: '700'
+    lineHeight: '1.2'
+rounded:
+  sm: 0.25rem
+  DEFAULT: 0.5rem
+  md: 0.75rem
+  lg: 1rem
+  xl: 1.5rem
+  full: 9999px
+spacing:
+  xs: 8px
+  sm: 16px
+  md: 24px
+  lg: 32px
+  xl: 48px
+  xxl: 64px
+  grid_max_width: 1280px
+  gutter: 24px
+---
+
+## Brand & Style
+
+The design system is engineered for mission-critical industrial operations. It prioritizes data density, mechanical precision, and immediate legibility over decorative trends. The aesthetic is "Industrial Dark," evoking the high-contrast environments of modern control rooms and automated factories. 
+
+The personality is authoritative, cold, and efficient. It uses a **Corporate / Modern** approach fused with **Brutalism**'s structural honesty. High-fidelity layouts rely on a rigid engineering grid and a high-contrast monochromatic base to ensure that data visualizations and system alerts remain the primary focus. 
+
+Visual signatures include:
+- A structural engineering grid backdrop.
+- Sharp, defined borders and mathematical spacing.
+- A restrained use of indigo accents for interactive states and primary actions.
+- Absence of soft shadows, blurs, or skeuomorphic depth.
+
+## Colors
+
+This design system utilizes a deep-space monochromatic palette designed to reduce eye strain in 24/7 operating environments. The color hierarchy is strictly functional:
+
+- **Base Layers:** The `#070707` background provides the ultimate contrast for readability. Surface tiers (1-3) are used to create structural depth and grouping.
+- **Accents:** Indigo (`#818CF8`) is reserved for primary interaction points and active system states. It should never be used for non-interactive elements.
+- **Borders:** Three levels of transparency define the geometry of the interface. `border-subtle` is used for background grids and non-essential separators, while `border-strong` defines interactive components like inputs and buttons.
+- **Status (Semantic):** Use standard industrial colors (Red/Yellow/Green) only for system health and alerts, ensuring they are not diluted by brand colors.
+
+## Typography
+
+The typographic system balances high-impact information hierarchy with technical readability. 
+
+- **Headlines (Bebas Neue):** Used for primary page titles, large KPI values, and section headers. Its condensed, bold nature allows for high-impact labels that feel industrial and authoritative.
+- **Body & Interface (Manrope):** All functional text, data tables, and descriptions use Manrope. Its geometric yet open letterforms ensure legibility in dense data environments.
+- **Data Display:** For numerical values within charts or tables, prioritize `body-md` with tabular lining figures if available to ensure columns align perfectly.
+- **Case Usage:** Use `label-caps` for table headers and small metadata tags to distinguish them from actionable body content.
+
+## Layout & Spacing
+
+This design system employs a rigid 8px linear grid system. All dimensions, padding, and margins must be multiples of 8.
+
+- **Grid Model:** A 12-column fixed grid with a maximum width of 1280px. On smaller screens, the grid becomes fluid with 24px side margins.
+- **The Engineering Grid:** A background pattern of `border-subtle` lines spaced at 32px intervals should be visible in the base layer to provide a sense of scale and alignment.
+- **Responsibility:** On mobile devices, complex data tables should horizontal scroll rather than stack, maintaining the integrity of the data columns. Sidebars collapse into a 64px icon rail to maximize work area.
+- **Transitions:** All state changes (hover, focus, active) use a 150ms linear fade. Avoid any "spring" or "bounce" physics that feel unprofessional or distracting.
+
+## Elevation & Depth
+
+In this design system, depth is communicated through **Tonal Layers** and **Borders**, not shadows. 
+
+- **Z-Index 0 (Background):** `--bg-base` (#070707). Contains the engineering grid.
+- **Z-Index 1 (Cards/Containers):** `--surface-1` (#101012). Used for primary content containers and KPI cards. Must have a `--border` to define its limits.
+- **Z-Index 2 (Overlays/Modals):** `--surface-2` (#18181B). These elements use a slightly lighter surface to appear closer to the user.
+- **Interaction:** Hover states on cards should not lift (no Y-axis movement). Instead, the border should transition to `--border-strong` or the background to `--surface-2`.
+- **Outlines:** Use `--border-strong` for all interactive input fields to ensure they are clearly identifiable against the dark background.
+
+## Shapes
+
+The shape language is "Soft-Technical." While the system is rigorous, subtle rounding prevents the UI from feeling dangerously sharp or dated.
+
+- **Containers:** KPI cards, charts, and main content areas use a **12px (rounded-lg)** radius.
+- **Interactive Elements:** Buttons, inputs, and chips use an **8px (standard)** radius for a more compact, tool-like appearance.
+- **Status Elements:** Status dots and utility tags use **Full (pill)** rounding to distinguish them from functional buttons.
+- **Icons:** Use 24px bounding boxes with a 1.5pt or 2pt stroke weight. Icons must be outlined only; filled icons are reserved for active toggle states.
+
+## Components
+
+### Buttons
+- **Primary:** Background `--accent`, text `#070707` (high contrast). No gradient.
+- **Secondary:** Background transparent, border `--border-strong`, text `--text-primary`.
+- **Tertiary/Ghost:** Background transparent, text `--text-secondary`, icon-only or text-only.
+
+### KPI Cards
+- **Structure:** Surface-1, 12px radius, 24px internal padding.
+- **Content:** Title in `label-caps` (top left), large value in `headline-lg` (center/bottom left), and a trend indicator or status dot (top right).
+
+### Input Fields
+- **Default:** `--surface-2` background, `--border` stroke, 8px radius.
+- **Focus:** Border transitions to `--accent`, no outer glow.
+- **Typography:** `body-md` for user input, `label-caps` for field labels placed above the input.
+
+### Status Indicators
+- **Minimalist Dots:** 8px circles without backgrounds. 
+- **Colors:** Success (#22C55E), Warning (#F59E0B), Critical (#EF4444).
+- **Placement:** Always placed to the left of the associated label.
+
+### Lists & Tables
+- **Rows:** 48px minimum height for touch/click safety.
+- **Dividers:** Use `border-subtle` between rows.
+- **Header:** Background `--surface-2`, `label-caps` text, persistent on scroll.
+
+### Critical Alerts
+- High-priority alerts use a thick 4px left-border of the semantic color (e.g., Red) on a `--surface-2` card. Avoid full-color backgrounds for alerts to maintain dark-mode integrity.
+
+
+========================================
+PAGE: stitch_industrial_operating_brain_portal
+========================================
+---
+name: Industrial Operating Brain
+colors:
+  surface: '#131313'
+  surface-dim: '#131313'
+  surface-bright: '#3a3939'
+  surface-container-lowest: '#0e0e0e'
+  surface-container-low: '#1c1b1b'
+  surface-container: '#201f1f'
+  surface-container-high: '#2a2a2a'
+  surface-container-highest: '#353534'
+  on-surface: '#e5e2e1'
+  on-surface-variant: '#c6c5d5'
+  inverse-surface: '#e5e2e1'
+  inverse-on-surface: '#313030'
+  outline: '#908f9e'
+  outline-variant: '#454653'
+  surface-tint: '#bdc2ff'
+  primary: '#bdc2ff'
+  on-primary: '#131e8c'
+  primary-container: '#818cf8'
+  on-primary-container: '#101b8a'
+  inverse-primary: '#4953bc'
+  secondary: '#c8c5ca'
+  on-secondary: '#303033'
+  secondary-container: '#47464a'
+  on-secondary-container: '#b6b4b8'
+  tertiary: '#f7bd3e'
+  on-tertiary: '#402d00'
+  tertiary-container: '#c08d00'
+  on-tertiary-container: '#3e2b00'
+  error: '#ffb4ab'
+  on-error: '#690005'
+  error-container: '#93000a'
+  on-error-container: '#ffdad6'
+  primary-fixed: '#e0e0ff'
+  primary-fixed-dim: '#bdc2ff'
+  on-primary-fixed: '#000767'
+  on-primary-fixed-variant: '#2f3aa3'
+  secondary-fixed: '#e4e1e6'
+  secondary-fixed-dim: '#c8c5ca'
+  on-secondary-fixed: '#1b1b1e'
+  on-secondary-fixed-variant: '#47464a'
+  tertiary-fixed: '#ffdea3'
+  tertiary-fixed-dim: '#f7bd3e'
+  on-tertiary-fixed: '#261900'
+  on-tertiary-fixed-variant: '#5d4200'
+  background: '#131313'
+  on-background: '#e5e2e1'
+  surface-variant: '#353534'
+typography:
+  display-xl:
+    fontFamily: Bebas Neue
+    fontSize: 72px
+    fontWeight: '700'
+    lineHeight: 72px
+    letterSpacing: 0.05em
+  headline-lg:
+    fontFamily: Bebas Neue
+    fontSize: 48px
+    fontWeight: '700'
+    lineHeight: 48px
+    letterSpacing: 0.04em
+  headline-md:
+    fontFamily: Bebas Neue
+    fontSize: 32px
+    fontWeight: '700'
+    lineHeight: 32px
+    letterSpacing: 0.04em
+  headline-sm:
+    fontFamily: Bebas Neue
+    fontSize: 24px
+    fontWeight: '700'
+    lineHeight: 24px
+    letterSpacing: 0.04em
+  body-lg:
+    fontFamily: Manrope
+    fontSize: 18px
+    fontWeight: '500'
+    lineHeight: 28px
+    letterSpacing: 0px
+  body-md:
+    fontFamily: Manrope
+    fontSize: 16px
+    fontWeight: '400'
+    lineHeight: 24px
+    letterSpacing: 0px
+  body-sm:
+    fontFamily: Manrope
+    fontSize: 14px
+    fontWeight: '400'
+    lineHeight: 20px
+    letterSpacing: 0px
+  label-caps:
+    fontFamily: Manrope
+    fontSize: 12px
+    fontWeight: '700'
+    lineHeight: 16px
+    letterSpacing: 0.1em
+  mono-data:
+    fontFamily: Geist Mono
+    fontSize: 14px
+    fontWeight: '500'
+    lineHeight: 20px
+    letterSpacing: -0.02em
+rounded:
+  sm: 0.25rem
+  DEFAULT: 0.5rem
+  md: 0.75rem
+  lg: 1rem
+  xl: 1.5rem
+  full: 9999px
+spacing:
+  base: 8px
+  xs: 4px
+  sm: 8px
+  md: 16px
+  lg: 24px
+  xl: 32px
+  container-margin: 40px
+  gutter: 16px
+---
+
+## Brand & Style
+The design system is engineered for mission-critical industrial infrastructure. It communicates **Industrial Intelligence** through a high-density, technical aesthetic that prioritizes data integrity and system reliability.
+
+The style is **Precision Minimalism**: a dark, high-contrast environment that removes all decorative flourishes in favor of structural clarity. The interface utilizes a digital "monolith" approach—deep blacks, subtle obsidian layering, and sharp indigo accents—to evoke the feeling of a sophisticated command center. A permanent engineering grid background (1px lines at 32px intervals) provides a subconscious sense of alignment and structural stability.
+
+## Colors
+The palette is built on a "True Dark" foundation to reduce eye strain in low-light industrial environments and maximize the luminance of data points. 
+
+- **Foundations:** The background is absolute black (#070707). Layering is achieved through increasing values of cool greys rather than shadows.
+- **Accents:** A singular Indigo hue (#818CF8) is used exclusively for interactive states and primary focus points. 
+- **Borders:** Interaction and structure are defined by semi-transparent white strokes. This creates a "blueprint" feel where lines are as important as surfaces.
+
+## Typography
+The typographic system utilizes a high-contrast pairing to distinguish between "Status" and "Information."
+
+- **Headers:** Bebas Neue provides an authoritative, industrial scale. It must always be used with wide tracking (4-5%) and in uppercase for headlines to mimic architectural signage and heavy machinery labeling.
+- **Body:** Manrope is the workhorse for all data-heavy contexts. Its modern, geometric construction maintains legibility at small scales in complex dashboards.
+- **Data Display:** For numerical values, sensor readings, and timestamps, use a monospaced variant to ensure tabular alignment and rapid scanning.
+
+## Layout & Spacing
+The design system operates on a **Strict 8px Grid**. Every element—from icon sizing to component height—must be a multiple of 8.
+
+- **Grid:** A 12-column fluid grid is used for desktop dashboards.
+- **Engineering Underlay:** A subtle 32px background grid helps developers align large-scale modules and cards.
+- **Density:** High information density is preferred. Padding should be efficient (16px standard for card internals) to allow more data visibility on a single screen.
+- **Mobile:** On mobile devices, margins shrink to 16px, and columns collapse to a single stack, while maintaining the 8px vertical rhythm.
+
+## Elevation & Depth
+In this design system, depth is communicated through **Tonal Layering** and **Strokes** rather than shadows. Shadows are strictly prohibited to maintain the "flat-technical" aesthetic.
+
+- **Level 0 (Base):** #070707 - Used for the main canvas and background grid.
+- **Level 1 (Surface):** #101012 - Used for primary layout sections (sidebars, top nav).
+- **Level 2 (Modules):** #18181B - Used for cards and secondary containers.
+- **Level 3 (Interactive):** #27272A - Used for hover states on list items and inputs.
+
+Every elevation change must be accompanied by a 1px border (`border-default`) to clearly define the geometry of the interface.
+
+## Shapes
+Shapes are disciplined and functional. We use a "Soft Industrial" radius that avoids the aggression of sharp corners while maintaining a professional, non-consumerist feel.
+
+- **Components:** Buttons, inputs, and tags use an 8px radius.
+- **Containers:** Large modules and cards use a 12px radius to create a clear visual distinction between the "frame" and the "content."
+- **Icons:** Use a 1.5pt stroke weight with slightly rounded caps to match the font geometry of Manrope.
+
+## Components
+- **Buttons:** Primary buttons are solid `accent-default` with black text. Secondary buttons use a `border-default` with `text-primary`. State changes are immediate: no easing, just a direct switch to `accent-hover`.
+- **Cards:** Cards use `surface-2` with a `border-default`. Header areas within cards should be separated by a `border-subtle` horizontal line.
+- **Inputs:** Backgrounds use `surface-1` with a `border-default`. On focus, the border changes to `accent-default` and a subtle 2px outer ring of `accent-bg` is applied.
+- **Data Chips:** Small, rectangular indicators with `accent-bg` backgrounds and `accent-default` text. These are used for status codes and machine states.
+- **Lists:** High-density rows with `border-subtle` bottom separators. Hovering a row triggers a `surface-3` background fill.
+- **Status Indicators:** Use a 8px solid circle. Green (#10B981) for Operational, Amber (#F59E0B) for Warning, and Red (#EF4444) for Critical. These are the only colors allowed outside the core palette.
+
+
+========================================
+PAGE: stitch_iob_asset_management_interface
+========================================
+---
+name: Industrial Operating Brain
+colors:
+  surface: '#121319'
+  surface-dim: '#121319'
+  surface-bright: '#393840'
+  surface-container-lowest: '#0d0e14'
+  surface-container-low: '#1b1b22'
+  surface-container: '#1f1f26'
+  surface-container-high: '#292930'
+  surface-container-highest: '#34343b'
+  on-surface: '#e4e1eb'
+  on-surface-variant: '#c6c5d5'
+  inverse-surface: '#e4e1eb'
+  inverse-on-surface: '#303037'
+  outline: '#908f9e'
+  outline-variant: '#454653'
+  surface-tint: '#bdc2ff'
+  primary: '#bdc2ff'
+  on-primary: '#131e8c'
+  primary-container: '#818cf8'
+  on-primary-container: '#101b8a'
+  inverse-primary: '#4953bc'
+  secondary: '#c6c6c7'
+  on-secondary: '#2f3131'
+  secondary-container: '#454747'
+  on-secondary-container: '#b4b5b5'
+  tertiary: '#f7bd3e'
+  on-tertiary: '#402d00'
+  tertiary-container: '#c08d00'
+  on-tertiary-container: '#3e2b00'
+  error: '#ffb4ab'
+  on-error: '#690005'
+  error-container: '#93000a'
+  on-error-container: '#ffdad6'
+  primary-fixed: '#e0e0ff'
+  primary-fixed-dim: '#bdc2ff'
+  on-primary-fixed: '#000767'
+  on-primary-fixed-variant: '#2f3aa3'
+  secondary-fixed: '#e2e2e2'
+  secondary-fixed-dim: '#c6c6c7'
+  on-secondary-fixed: '#1a1c1c'
+  on-secondary-fixed-variant: '#454747'
+  tertiary-fixed: '#ffdea3'
+  tertiary-fixed-dim: '#f7bd3e'
+  on-tertiary-fixed: '#261900'
+  on-tertiary-fixed-variant: '#5d4200'
+  background: '#121319'
+  on-background: '#e4e1eb'
+  surface-variant: '#34343b'
+typography:
+  headline-xl:
+    fontFamily: Bebas Neue
+    fontSize: 48px
+    fontWeight: '400'
+    lineHeight: 48px
+    letterSpacing: 0.02em
+  headline-lg:
+    fontFamily: Bebas Neue
+    fontSize: 32px
+    fontWeight: '400'
+    lineHeight: 32px
+    letterSpacing: 0.02em
+  headline-md:
+    fontFamily: Bebas Neue
+    fontSize: 24px
+    fontWeight: '400'
+    lineHeight: 24px
+    letterSpacing: 0.02em
+  headline-sm:
+    fontFamily: Bebas Neue
+    fontSize: 18px
+    fontWeight: '400'
+    lineHeight: 18px
+    letterSpacing: 0.04em
+  body-lg:
+    fontFamily: Manrope
+    fontSize: 18px
+    fontWeight: '400'
+    lineHeight: 28px
+  body-md:
+    fontFamily: Manrope
+    fontSize: 16px
+    fontWeight: '400'
+    lineHeight: 24px
+  body-sm:
+    fontFamily: Manrope
+    fontSize: 14px
+    fontWeight: '400'
+    lineHeight: 20px
+  label-md:
+    fontFamily: Manrope
+    fontSize: 12px
+    fontWeight: '600'
+    lineHeight: 16px
+    letterSpacing: 0.05em
+  label-sm:
+    fontFamily: Manrope
+    fontSize: 10px
+    fontWeight: '700'
+    lineHeight: 12px
+    letterSpacing: 0.08em
+  headline-xl-mobile:
+    fontFamily: Bebas Neue
+    fontSize: 36px
+    fontWeight: '400'
+    lineHeight: 36px
+rounded:
+  sm: 0.25rem
+  DEFAULT: 0.5rem
+  md: 0.75rem
+  lg: 1rem
+  xl: 1.5rem
+  full: 9999px
+spacing:
+  grid-unit: 8px
+  gutter: 16px
+  margin-sm: 16px
+  margin-md: 24px
+  margin-lg: 48px
+---
+
+## Brand & Style
+
+This design system is engineered for mission-critical industrial environments where clarity, speed of cognition, and reliability are paramount. It follows a **Minimal Industrial** aesthetic, drawing inspiration from high-precision engineering interfaces and aerospace telemetry systems. 
+
+The personality is utilitarian, authoritative, and focused. It avoids decorative trends like glassmorphism or vibrant neon glows in favor of structural integrity and high-contrast legibility. The UI acts as a silent, powerful infrastructure for complex asset management and Industry 5.0 automation.
+
+Key principles:
+- **Functional Precision:** Every line and pixel serves a purpose.
+- **Structural Rigidity:** Clear boundaries and a visible engineering grid reinforce a sense of order.
+- **Mission Criticality:** High-contrast text and a deep background ensure data populates with immediate visual priority.
+
+## Colors
+
+The color palette is anchored in a true-black environment to minimize eye strain in control-room settings and maximize the perceived contrast of data points.
+
+- **Foundational Neutrals:** A series of stepped grays (`surface-1` through `surface-3`) creates depth without the need for shadows. 
+- **Borders:** Three levels of border opacity define the structural hierarchy, with `border-subtle` used exclusively for the pervasive background engineering grid.
+- **Accent:** A technical indigo (`#818CF8`) serves as the primary action color, used sparingly to highlight active states, progress, or critical paths.
+- **Typography:** Pure white (`#FAFAFA`) is reserved for primary data, while secondary and tertiary grays manage information density.
+
+## Typography
+
+The typographic system utilizes a "Display vs. Data" strategy.
+
+- **Bebas Neue:** Used for high-level headings, KPIs, and module titles. Its condensed, vertical nature evokes industrial labeling and high-impact signage. 
+- **Manrope:** Used for all functional UI elements, body text, and data readouts. It provides the modern, geometric clarity required for complex technical information.
+- **Formatting:** Use uppercase for labels (`label-md`, `label-sm`) to distinguish metadata from content. Maintain tight line-heights on headings to emphasize the "blocky," industrial feel.
+
+## Layout & Spacing
+
+This design system is built on a strict **8px increment grid**. 
+
+- **Engineering Grid:** The background must feature a persistent grid pattern using `border-subtle` at 32px or 64px intervals to ground the interface in an "operating brain" environment.
+- **Fluidity:** Containers use a fluid 12-column system on desktop, but margins and internal padding must always snap to the 8px baseline.
+- **Breakpoints:**
+  - **Mobile (<768px):** 16px side margins, single-column reflow for cards.
+  - **Tablet (768px - 1280px):** 24px side margins, 2-column card layouts.
+  - **Desktop (>1280px):** Max-width 1440px or full-width fluid depending on the density of the asset telemetry.
+
+## Elevation & Depth
+
+In this industrial context, depth is achieved through **Tonal Layering** and **Outline Definition** rather than shadows.
+
+- **Flat Hierarchy:** Elements do not "float"; they are "housed" or "embedded." 
+- **Surfacing:** 
+  - Level 0: `bg-base` (The main application canvas).
+  - Level 1: `surface-1` + `border` (Primary containers and dashboard cards).
+  - Level 2: `surface-2` + `border-strong` (Interactive fields, inputs, and flyouts).
+- **No Shadows:** Shadows are strictly prohibited to maintain the "mission critical" flat-panel aesthetic. Use `border-strong` to provide visual separation between overlapping layers (e.g., modals).
+
+## Shapes
+
+The shape language is "Soft-Industrial"—relying on geometric precision with slight rounding to ensure the UI feels modern and accessible rather than archaic.
+
+- **Standard (8px):** Used for buttons, inputs, and small modules.
+- **Large (12px):** Used for primary content cards and containers.
+- **Full (Pill):** Reserved exclusively for status indicators (chips) and toggle switches.
+- **Square (0px):** Use only for technical data tables and specialized header sections that span the full viewport width.
+
+## Components
+
+### Buttons
+- **Height:** 40px fixed.
+- **Primary:** `bg: text-primary`, `text: #000000`, 8px radius. Bold, high-contrast.
+- **Secondary:** `bg: transparent`, `border: border-strong`, `text: text-primary`.
+- **Tertiary/Ghost:** `bg: transparent`, `text: text-secondary`. Use `accent` only for destructive or high-priority calls to action.
+
+### Input Fields & Dropdowns
+- **Height:** 40px.
+- **Surface:** `surface-2`.
+- **Border:** `border` (default), `accent` (focus).
+- **Text:** `text-primary` for input, `text-tertiary` for placeholders.
+
+### Cards
+- **Background:** `surface-1`.
+- **Border:** `border`.
+- **Corner Radius:** 12px.
+- **Header:** Should often include a `border-bottom` using `border-subtle` and a `label-md` category title.
+
+### Chips/Status Indicators
+- **Shape:** Full pill.
+- **Colors:** Use `accent-bg` with `accent` text for active states. Use `surface-3` for inactive or neutral states.
+
+### Icons
+- **Style:** Outlined (2px stroke weight).
+- **Scale:** 20px within a 24px bounding box.
+- **Library:** Lucide or Heroicons.
+
+### Engineering Grid
+- All major layout sections must sit atop a `border-subtle` grid background. This grid should remain fixed during scroll for a "viewport" effect.
+
+
+========================================
+PAGE: stitch_real_time_telemetry_interface
+========================================
+---
+name: IOB Core
+colors:
+  surface: '#121414'
+  surface-dim: '#121414'
+  surface-bright: '#38393a'
+  surface-container-lowest: '#0c0f0f'
+  surface-container-low: '#1a1c1c'
+  surface-container: '#1e2020'
+  surface-container-high: '#282a2b'
+  surface-container-highest: '#333535'
+  on-surface: '#e2e2e2'
+  on-surface-variant: '#c6c5d5'
+  inverse-surface: '#e2e2e2'
+  inverse-on-surface: '#2f3131'
+  outline: '#908f9e'
+  outline-variant: '#454653'
+  surface-tint: '#bdc2ff'
+  primary: '#bdc2ff'
+  on-primary: '#131e8c'
+  primary-container: '#818cf8'
+  on-primary-container: '#101b8a'
+  inverse-primary: '#4953bc'
+  secondary: '#c8c5ca'
+  on-secondary: '#303033'
+  secondary-container: '#47464a'
+  on-secondary-container: '#b6b4b8'
+  tertiary: '#f7bd3e'
+  on-tertiary: '#402d00'
+  tertiary-container: '#c08d00'
+  on-tertiary-container: '#3e2b00'
+  error: '#ffb4ab'
+  on-error: '#690005'
+  error-container: '#93000a'
+  on-error-container: '#ffdad6'
+  primary-fixed: '#e0e0ff'
+  primary-fixed-dim: '#bdc2ff'
+  on-primary-fixed: '#000767'
+  on-primary-fixed-variant: '#2f3aa3'
+  secondary-fixed: '#e4e1e6'
+  secondary-fixed-dim: '#c8c5ca'
+  on-secondary-fixed: '#1b1b1e'
+  on-secondary-fixed-variant: '#47464a'
+  tertiary-fixed: '#ffdea3'
+  tertiary-fixed-dim: '#f7bd3e'
+  on-tertiary-fixed: '#261900'
+  on-tertiary-fixed-variant: '#5d4200'
+  background: '#121414'
+  on-background: '#e2e2e2'
+  surface-variant: '#333535'
+typography:
+  display-lg:
+    fontFamily: Bebas Neue
+    fontSize: 48px
+    fontWeight: '400'
+    lineHeight: 48px
+    letterSpacing: 0.04em
+  display-lg-mobile:
+    fontFamily: Bebas Neue
+    fontSize: 32px
+    fontWeight: '400'
+    lineHeight: 32px
+    letterSpacing: 0.04em
+  headline-md:
+    fontFamily: Bebas Neue
+    fontSize: 24px
+    fontWeight: '400'
+    lineHeight: 28px
+    letterSpacing: 0.02em
+  body-lg:
+    fontFamily: Manrope
+    fontSize: 16px
+    fontWeight: '500'
+    lineHeight: 24px
+  body-md:
+    fontFamily: Manrope
+    fontSize: 14px
+    fontWeight: '400'
+    lineHeight: 20px
+  label-sm:
+    fontFamily: Manrope
+    fontSize: 12px
+    fontWeight: '600'
+    lineHeight: 16px
+    letterSpacing: 0.05em
+  mono-data:
+    fontFamily: Manrope
+    fontSize: 13px
+    fontWeight: '600'
+    lineHeight: 18px
+rounded:
+  sm: 0.25rem
+  DEFAULT: 0.5rem
+  md: 0.75rem
+  lg: 1rem
+  xl: 1.5rem
+  full: 9999px
+spacing:
+  base: 8px
+  xs: 4px
+  sm: 8px
+  md: 16px
+  lg: 24px
+  xl: 32px
+  2xl: 40px
+  3xl: 48px
+  4xl: 64px
+  container-margin: 32px
+  gutter: 16px
+---
+
+## Brand & Style
+The design system is engineered for the Industrial Operating Brain (IOB), emphasizing precision, high-density information display, and mission-critical reliability. The brand personality is rooted in Industry 5.0 principles—harmonizing human intuition with machine intelligence.
+
+The visual style is **Engineering-grade Minimalism**. It rejects decorative flourishes in favor of structural clarity and functional aesthetics. The UI utilizes a "Dark Lab" environment, reducing eye strain for operators in control room settings while ensuring that data visualizations remain the focal point. Expect a rigid, high-contrast interface where depth is communicated through subtle tonal stacking rather than shadows or blurs.
+
+## Colors
+The palette is strictly monochromatic with a singular functional accent. 
+
+- **Foundation:** The system uses a tiered dark-mode hierarchy starting from `#070707` to maintain deep contrast levels.
+- **Accents:** `#818CF8` (Indigo) is the exclusive color for interactivity and primary state indication.
+- **Borders:** Borders are the primary method of separation. Use `border-subtle` for decorative dividers and `border-strong` for interactive component boundaries.
+- **Strict Constraint:** Gradients and neon effects are prohibited. All colors must be flat and solid to ensure legibility across industrial-grade monitors.
+
+## Typography
+Typography is split between high-impact identifiers and high-readability data.
+
+- **Headings:** Bebas Neue provides an authoritative, industrial look. Use it for page titles, KPI values, and section headers. Its condensed nature allows for larger sizes without consuming excessive horizontal space.
+- **Body & Data:** Manrope is used for all functional text. It offers a balanced, modern grotesque feel that remains legible at small sizes.
+- **Formatting:** Use `label-sm` in uppercase for table headers and category labels. For telemetry and numerical values, ensure a medium or semi-bold weight to maintain prominence against the dark background.
+
+## Layout & Spacing
+This design system utilizes a **Strict 8px Grid**. All dimensions, padding, and margins must be increments of 8.
+
+- **Grid Model:** A 12-column fluid grid is used for desktop, shifting to a 4-column layout for mobile.
+- **Density:** To accommodate "Operating Brain" requirements, the default density is high. Use `md` (16px) for standard internal padding and `sm` (8px) for tightly coupled elements.
+- **Breakpoints:**
+  - Desktop: 1280px+ (12 columns)
+  - Tablet: 768px - 1279px (8 columns)
+  - Mobile: < 768px (4 columns)
+
+## Elevation & Depth
+Elevation in this system is achieved through **Tonal Layering** and **Strong Borders**. 
+
+- **Surface Stacking:**
+  - Level 0: `--bg-base` (#070707) - The application canvas.
+  - Level 1: `--surface-1` (#101012) - Main navigation sidebars or background card containers.
+  - Level 2: `--surface-2` (#18181B) - Individual widgets or table rows.
+  - Level 3: `--surface-3` (#27272A) - Overlays, dropdowns, and tooltips.
+- **Outlines:** Never use ambient shadows. Use `--border` to define the shape of elements and `--border-strong` to indicate focus or active states.
+
+## Shapes
+Shapes are geometric and controlled, reflecting an industrial machine-part aesthetic.
+
+- **Standard:** Use 8px (`rounded-md`) for cards, buttons, and input fields.
+- **Large:** Use 12px (`rounded-lg`) for large layout containers or primary modal windows.
+- **Interactive:** Use "Full" (Pill) only for status badges and specific toggle switches.
+- **Strict Constraint:** Do not use overly rounded or "bubbly" shapes. Sharp edges are preferred over soft curves to maintain a professional, engineering-focused atmosphere.
+
+## Components
+Consistent implementation of core industrial components:
+
+### KPI Cards
+- **Background:** `--surface-1`.
+- **Border:** 1px solid `--border`.
+- **Value:** Use `display-lg` in `text-primary`.
+- **Trend:** Small indicator in `text-secondary` with a simple chevron icon.
+
+### Enterprise Tables
+- **Header:** Background `--surface-2`, Text `label-sm` (`text-tertiary`).
+- **Rows:** Border-bottom 1px `--border-subtle`. 
+- **Hover State:** Background `--surface-3`.
+- **Data:** Use `mono-data` for numerical columns to ensure alignment.
+
+### Status Badges
+- **Shape:** Pill-shaped (Full).
+- **Styling:** Neutral background `--surface-3` with a small dot using the `--accent` color to indicate "Online" or "Active" status. No bright color fills.
+
+### Buttons & Inputs
+- **Primary Button:** Background `--accent`, Text `#070707` (high contrast black), `rounded-md`.
+- **Secondary Button:** Background transparent, Border `--border-strong`, Text `text-primary`.
+- **Input Fields:** Background `--bg-base`, Border `--border`, placeholder in `text-tertiary`. On focus, border changes to `--accent`.
+
+### Machine Pickers & Charts
+- **Charts:** Use thin 1px lines. No area fills under lines unless using `--accent-bg` at 10% opacity. 
+- **Pickers:** Use a list-based selection with `--surface-2` as the selected state background.
+
+

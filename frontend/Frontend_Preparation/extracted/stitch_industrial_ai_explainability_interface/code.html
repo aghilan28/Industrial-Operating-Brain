@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>IOB | AI Prediction &amp; Explainability</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Manrope:wght@400;500;700&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Design System Implementation -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-container": "#818cf8",
+                    "on-background": "#e4e1eb",
+                    "outline": "#908f9e",
+                    "tertiary-container": "#c08d00",
+                    "on-tertiary-fixed": "#261900",
+                    "inverse-surface": "#e4e1eb",
+                    "secondary": "#c8c5ca",
+                    "surface-container-highest": "#34343b",
+                    "on-primary-container": "#101b8a",
+                    "on-primary": "#131e8c",
+                    "on-secondary-fixed": "#1b1b1e",
+                    "on-tertiary-container": "#3e2b00",
+                    "background": "#070707", // Overridden by prompt requirement
+                    "secondary-fixed-dim": "#c8c5ca",
+                    "on-error": "#690005",
+                    "on-primary-fixed-variant": "#2f3aa3",
+                    "on-primary-fixed": "#000767",
+                    "tertiary-fixed-dim": "#f7bd3e",
+                    "tertiary-fixed": "#ffdea3",
+                    "on-error-container": "#ffdad6",
+                    "tertiary": "#f7bd3e",
+                    "on-surface": "#e4e1eb",
+                    "secondary-container": "#47464a",
+                    "inverse-on-surface": "#303037",
+                    "surface": "#070707",
+                    "on-surface-variant": "#c6c5d5",
+                    "primary": "#818CF8",
+                    "primary-fixed-dim": "#bdc2ff",
+                    "surface-container-high": "#18181B",
+                    "on-secondary-fixed-variant": "#47464a",
+                    "secondary-fixed": "#e4e1e6",
+                    "on-tertiary": "#402d00",
+                    "error": "#ffb4ab",
+                    "on-secondary-container": "#b6b4b8",
+                    "surface-container-low": "#101012",
+                    "error-container": "#93000a",
+                    "surface-container": "#1f1f26",
+                    "primary-fixed": "#e0e0ff",
+                    "on-tertiary-fixed-variant": "#5d4200",
+                    "on-secondary": "#303033",
+                    "inverse-primary": "#4953bc",
+                    "outline-variant": "#27272A",
+                    "surface-dim": "#070707",
+                    "surface-bright": "#393840",
+                    "surface-tint": "#bdc2ff",
+                    "surface-container-lowest": "#0d0e14",
+                    "surface-variant": "#34343b"
+            },
+            "borderRadius": {
+                    "DEFAULT": "8px",
+                    "lg": "12px",
+                    "xl": "16px",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-xs": "4px",
+                    "stack-xl": "48px",
+                    "base": "8px",
+                    "stack-sm": "8px",
+                    "stack-lg": "24px",
+                    "grid-margin": "24px",
+                    "grid-gutter": "16px",
+                    "stack-md": "16px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Bebas Neue"],
+                    "body-lg": ["Manrope"],
+                    "body-sm": ["Manrope"],
+                    "headline-sm": ["Bebas Neue"],
+                    "body-md": ["Manrope"],
+                    "title-lg": ["Manrope"],
+                    "label-caps": ["Manrope"],
+                    "headline-lg": ["Bebas Neue"],
+                    "mono-data": ["JetBrains Mono"]
+            },
+            "fontSize": {
+                    "headline-md": ["32px", {"lineHeight": "32px", "letterSpacing": "0.02em", "fontWeight": "400"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-sm": ["24px", {"lineHeight": "24px", "letterSpacing": "0.02em", "fontWeight": "400"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "700"}],
+                    "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "headline-lg": ["48px", {"lineHeight": "48px", "letterSpacing": "0.02em", "fontWeight": "400"}],
+                    "mono-data": ["13px", {"lineHeight": "18px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #070707;
+            background-image: 
+                linear-gradient(to right, #27272A 1px, transparent 1px),
+                linear-gradient(to bottom, #27272A 1px, transparent 1px);
+            background-size: 64px 64px;
+            color: #e4e1eb;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            font-size: 20px;
+        }
+        .gauge-ring {
+            transition: stroke-dashoffset 1s ease-out;
+            stroke-dasharray: 283;
+            stroke-dashoffset: calc(283 - (283 * 82) / 100);
+        }
+        .reveal-animation {
+            animation: reveal 0.8s ease-out forwards;
+        }
+        @keyframes reveal {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md antialiased">
+<!-- Shared TopNavBar Implementation -->
+<nav class="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-grid-margin h-16 bg-background/95 backdrop-blur-sm border-b border-outline-variant">
+<div class="flex items-center gap-stack-lg">
+<span class="font-headline-md text-headline-md text-primary tracking-wider">IOB: INDUSTRIAL OPERATING BRAIN</span>
+<div class="hidden md:flex items-center gap-stack-md ml-12">
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">DASHBOARD</a>
+<a class="font-label-caps text-label-caps text-primary border-b-2 border-primary pb-1" href="#">PREDICTIONS</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">ANALYTICS</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">ASSETS</a>
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">MODELS</a>
+</div>
+</div>
+<div class="flex items-center gap-stack-md">
+<div class="flex items-center gap-4 border-r border-outline-variant pr-4 mr-4">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary">settings</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary">notifications</span>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional close-up of an industrial operator profile picture, featuring a person in a technical control room environment. The lighting is low-key with subtle blue ambient light reflecting the IOB design system's technical aesthetic. High-contrast monochromatic styling with sharp focus on the face." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAF4EUGt_EOnmK6UiRdVFL1ubI_qbOWVIoiMhHBomGhi27fWaoBQQCzC4IoYUUBJDQWO2YbCOnoyhJti2T37sItQGxNiVRJGK6cioP05bGzBD3YjwwbYJVaVTCG3fAqANGCQS6DCwH5DYeQtl52K_p5sZm0uHkB03ZhzlEZQcG9f9MB5isI5rB7rCPcRXhB80xb4INMQfVgywkQsZoJzg2ul92y6DSzfoDmT1gS53GjEiqiv--As6Gm"/>
+</div>
+</div>
+</nav>
+<!-- Shared SideNavBar Implementation -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] w-64 flex flex-col p-stack-md z-40 bg-surface-container-low border-r border-outline-variant">
+<div class="mb-stack-lg">
+<div class="flex items-center gap-stack-sm mb-2">
+<div class="w-6 h-6 bg-primary flex items-center justify-center rounded-sm">
+<span class="material-symbols-outlined text-background !text-[14px]" style="font-variation-settings: 'FILL' 1;">psychology</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-primary">PREDICTION ENGINE</h3>
+</div>
+<p class="font-label-caps text-[10px] text-on-surface-variant opacity-60">V2.4.8-STABLE</p>
+</div>
+<nav class="flex-1 flex flex-col gap-1">
+<div class="flex items-center gap-3 px-3 py-2 rounded transition-all hover:bg-surface-container-high text-on-surface-variant cursor-pointer">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-body-sm text-body-sm">Overview</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded transition-all bg-secondary-container text-on-secondary-container border-l-4 border-primary cursor-pointer">
+<span class="material-symbols-outlined">sensors</span>
+<span class="font-body-sm text-body-sm">Telemetry</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded transition-all hover:bg-surface-container-high text-on-surface-variant cursor-pointer">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-body-sm text-body-sm">Diagnostics</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded transition-all hover:bg-surface-container-high text-on-surface-variant cursor-pointer">
+<span class="material-symbols-outlined">memory</span>
+<span class="font-body-sm text-body-sm">Inference</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded transition-all hover:bg-surface-container-high text-on-surface-variant cursor-pointer">
+<span class="material-symbols-outlined">history</span>
+<span class="font-body-sm text-body-sm">History</span>
+</div>
+</nav>
+<button class="mt-4 bg-primary text-background font-bold py-2 rounded-lg text-label-caps hover:opacity-90 active:scale-[0.98] transition-all">
+            EXPORT DATA
+        </button>
+<div class="mt-auto border-t border-outline-variant pt-4 flex flex-col gap-1">
+<div class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high cursor-pointer">
+<span class="material-symbols-outlined">help</span>
+<span class="font-body-sm text-body-sm">Support</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container-high cursor-pointer">
+<span class="material-symbols-outlined">check_circle</span>
+<span class="font-body-sm text-body-sm">System Status</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-24 pb-12 px-grid-margin max-w-[1280px] mx-auto">
+<!-- Header Section -->
+<header class="mb-stack-xl flex flex-col md:flex-row justify-between items-start md:items-end gap-stack-lg">
+<div class="reveal-animation">
+<h1 class="font-headline-lg text-headline-lg text-on-background mb-2">AI PREDICTION &amp; EXPLAINABILITY</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+                    Understand industrial risks through transparent machine learning and explainable AI insights. Automated diagnostics for critical failure prevention.
+                </p>
+</div>
+<div class="flex gap-stack-lg border border-outline-variant p-4 rounded-lg bg-surface-container-low font-mono-data text-mono-data reveal-animation" style="animation-delay: 0.1s;">
+<div class="flex flex-col">
+<span class="text-on-surface-variant opacity-60 text-[10px] uppercase">Asset</span>
+<span class="text-primary font-bold">Turbine-X7</span>
+</div>
+<div class="w-[1px] bg-outline-variant h-full"></div>
+<div class="flex flex-col">
+<span class="text-on-surface-variant opacity-60 text-[10px] uppercase">Model</span>
+<span class="text-on-surface">V2.4.8</span>
+</div>
+<div class="w-[1px] bg-outline-variant h-full"></div>
+<div class="flex flex-col">
+<span class="text-on-surface-variant opacity-60 text-[10px] uppercase">Latency</span>
+<span class="text-primary">12ms</span>
+</div>
+</div>
+</header>
+<!-- KPI Strip -->
+<section class="grid grid-cols-1 md:grid-cols-4 gap-grid-gutter mb-stack-xl reveal-animation" style="animation-delay: 0.2s;">
+<div class="bg-surface-container-low border border-outline-variant p-stack-md rounded-lg flex flex-col justify-between h-32">
+<span class="font-label-caps text-label-caps text-on-surface-variant">FAILURE PROBABILITY</span>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-headline-lg text-primary">82%</span>
+<span class="material-symbols-outlined text-primary">warning</span>
+</div>
+</div>
+<div class="bg-surface-container-low border border-outline-variant p-stack-md rounded-lg flex flex-col justify-between h-32">
+<span class="font-label-caps text-label-caps text-on-surface-variant">HEALTH SCORE</span>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-headline-lg text-on-surface">64%</span>
+</div>
+</div>
+<div class="bg-surface-container-low border border-outline-variant p-stack-md rounded-lg flex flex-col justify-between h-32">
+<span class="font-label-caps text-label-caps text-on-surface-variant">PREDICTION CONFIDENCE</span>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-headline-lg text-primary">96%</span>
+</div>
+</div>
+<div class="bg-surface-container-low border border-outline-variant p-stack-md rounded-lg flex flex-col justify-between h-32">
+<span class="font-label-caps text-label-caps text-on-surface-variant">RUL (ESTIMATED)</span>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-headline-lg text-on-surface">42</span>
+<span class="font-label-caps text-label-caps opacity-60">DAYS</span>
+</div>
+</div>
+</section>
+<!-- Main Split -->
+<div class="grid grid-cols-1 lg:grid-cols-[65%_35%] gap-grid-gutter mb-stack-xl">
+<!-- Left: Gauges -->
+<div class="space-y-grid-gutter">
+<div class="bg-surface-container-high border border-outline-variant rounded-lg p-stack-lg flex flex-col items-center justify-center min-h-[400px] reveal-animation" style="animation-delay: 0.3s;">
+<div class="relative w-64 h-64">
+<svg class="w-full h-full -rotate-90" viewbox="0 0 100 100">
+<circle cx="50" cy="50" fill="none" r="45" stroke="#27272A" stroke-width="8"></circle>
+<circle class="gauge-ring" cx="50" cy="50" fill="none" r="45" stroke="#818CF8" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+<span class="font-headline-lg text-headline-lg text-primary">82%</span>
+<span class="font-label-caps text-label-caps tracking-widest text-on-surface opacity-80">HIGH RISK</span>
+</div>
+</div>
+<div class="mt-stack-lg w-full max-w-md">
+<div class="flex justify-between mb-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant">CONFIDENCE METER</span>
+<span class="font-mono-data text-mono-data text-primary">96%</span>
+</div>
+<div class="w-full h-3 bg-surface-container-lowest border border-outline-variant rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 96%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right: Metadata & Summary -->
+<div class="flex flex-col gap-grid-gutter">
+<div class="bg-surface-container-low border border-outline-variant p-stack-md rounded-lg reveal-animation" style="animation-delay: 0.4s;">
+<h3 class="font-label-caps text-label-caps text-primary mb-4">PREDICTION METADATA</h3>
+<div class="grid grid-cols-2 gap-y-4 font-mono-data text-mono-data">
+<div>
+<p class="text-[10px] text-on-surface-variant opacity-50">ASSET ID</p>
+<p class="text-on-surface">TX7-001</p>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant opacity-50">MODEL CLASS</p>
+<p class="text-on-surface">LSTM_GRU_HYBRID</p>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant opacity-50">SAMPLES</p>
+<p class="text-on-surface">1.2M OPS</p>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant opacity-50">WINDOW</p>
+<p class="text-on-surface">24H ROLL</p>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant opacity-50">ACTIVE SENSORS</p>
+<p class="text-on-surface">142 UNITS</p>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant opacity-50">TIMESTAMP</p>
+<p class="text-on-surface">14:22:11 UTC</p>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-high border border-outline-variant p-stack-md rounded-lg border-l-4 border-primary reveal-animation" style="animation-delay: 0.5s;">
+<h3 class="font-label-caps text-label-caps text-primary mb-2">NATURAL LANGUAGE SUMMARY</h3>
+<p class="font-body-md text-body-md text-on-surface leading-relaxed italic">
+                        "Unusual harmonic vibrations detected in Bearing-3 coupled with a 12% rise in core temperature. Model predicts a 82% probability of lubrication failure within 42 days. Confidence remains high based on historical patterns of Asset TX7."
+                    </p>
+</div>
+</div>
+</div>
+<!-- Explainable AI Section -->
+<section class="mb-stack-xl">
+<h2 class="font-headline-sm text-headline-sm text-on-background mb-stack-md">EXPLAINABLE AI (XAI)</h2>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-grid-gutter">
+<!-- SHAP Chart -->
+<div class="bg-surface-container-low border border-outline-variant p-stack-md rounded-lg reveal-animation" style="animation-delay: 0.6s;">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-6">SHAP FEATURE IMPORTANCE (IMPACT ON RISK)</h3>
+<div class="space-y-4">
+<div class="space-y-1">
+<div class="flex justify-between text-[11px] font-mono-data">
+<span>BEARING VIBRATION</span>
+<span class="text-primary">+0.24</span>
+</div>
+<div class="h-2 bg-surface-container-highest rounded-full overflow-hidden flex">
+<div class="h-full bg-primary" style="width: 75%"></div>
+</div>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between text-[11px] font-mono-data">
+<span>CORE TEMPERATURE</span>
+<span class="text-primary">+0.18</span>
+</div>
+<div class="h-2 bg-surface-container-highest rounded-full overflow-hidden flex">
+<div class="h-full bg-primary" style="width: 55%"></div>
+</div>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between text-[11px] font-mono-data">
+<span>OIL PRESSURE</span>
+<span class="text-on-surface-variant opacity-60">-0.09</span>
+</div>
+<div class="h-2 bg-surface-container-highest rounded-full overflow-hidden flex justify-end">
+<div class="h-full bg-outline-variant" style="width: 30%"></div>
+</div>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between text-[11px] font-mono-data">
+<span>FLOW RATE</span>
+<span class="text-primary">+0.04</span>
+</div>
+<div class="h-2 bg-surface-container-highest rounded-full overflow-hidden flex">
+<div class="h-full bg-primary" style="width: 15%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Feature Contribution Table -->
+<div class="bg-surface-container-low border border-outline-variant rounded-lg overflow-hidden reveal-animation" style="animation-delay: 0.7s;">
+<table class="w-full text-left font-body-sm text-body-sm">
+<thead class="bg-surface-container-high border-b border-outline-variant">
+<tr>
+<th class="p-3 font-label-caps text-on-surface-variant">FEATURE</th>
+<th class="p-3 font-label-caps text-on-surface-variant">CURRENT</th>
+<th class="p-3 font-label-caps text-on-surface-variant">DEVIATION</th>
+<th class="p-3 font-label-caps text-on-surface-variant">CONTRIB.</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-high/50">
+<td class="p-3 font-mono-data">BRG_VIB_RMS</td>
+<td class="p-3">12.4 mm/s</td>
+<td class="p-3 text-primary">+4.2</td>
+<td class="p-3 font-bold">HIGH</td>
+</tr>
+<tr class="hover:bg-surface-container-high/50">
+<td class="p-3 font-mono-data">TEMP_CORE_A</td>
+<td class="p-3">94.2 °C</td>
+<td class="p-3 text-primary">+11.1</td>
+<td class="p-3 font-bold">HIGH</td>
+</tr>
+<tr class="hover:bg-surface-container-high/50">
+<td class="p-3 font-mono-data">PR_LUBE_SYS</td>
+<td class="p-3">4.1 bar</td>
+<td class="p-3 text-on-surface-variant">-0.2</td>
+<td class="p-3 font-bold opacity-40">LOW</td>
+</tr>
+<tr class="hover:bg-surface-container-high/50">
+<td class="p-3 font-mono-data">ROT_SPEED_N</td>
+<td class="p-3">3599 RPM</td>
+<td class="p-3 text-on-surface-variant">0.0</td>
+<td class="p-3 font-bold opacity-40">NEUTRAL</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- Model Reasoning & Recommendations -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-grid-gutter mb-stack-xl">
+<!-- Step by Step Reasoning -->
+<div class="bg-surface-container-high border border-outline-variant p-stack-md rounded-lg reveal-animation" style="animation-delay: 0.8s;">
+<h3 class="font-label-caps text-label-caps text-primary mb-6">MODEL REASONING PATHWAY</h3>
+<div class="space-y-6 relative ml-4 border-l border-outline-variant">
+<div class="relative pl-8">
+<div class="absolute -left-[5px] top-1 w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_#818CF8]"></div>
+<p class="font-label-caps text-[10px] text-on-surface-variant mb-1">STEP 01: SENSOR INGESTION</p>
+<p class="font-body-md text-on-surface">Data points from 142 localized sensors synchronized across 5ms window.</p>
+</div>
+<div class="relative pl-8">
+<div class="absolute -left-[5px] top-1 w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_#818CF8]"></div>
+<p class="font-label-caps text-[10px] text-on-surface-variant mb-1">STEP 02: ANOMALY DETECTION</p>
+<p class="font-body-md text-on-surface">Outlier detection triggers in Bearing Vibrations exceeding 2σ from mean.</p>
+</div>
+<div class="relative pl-8">
+<div class="absolute -left-[5px] top-1 w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_#818CF8]"></div>
+<p class="font-label-caps text-[10px] text-on-surface-variant mb-1">STEP 03: PATTERN MATCHING</p>
+<p class="font-body-md text-on-surface">Current thermal-vibration curve maps 92% to 'Lubrication Starvation' class.</p>
+</div>
+<div class="relative pl-8">
+<div class="absolute -left-[5px] top-1 w-2 h-2 rounded-full bg-outline-variant"></div>
+<p class="font-label-caps text-[10px] text-on-surface-variant mb-1">STEP 04: RISK QUANTIFICATION</p>
+<p class="font-body-md text-on-surface">Degradation slope calculates Failure Probability at 82% over 1,000 engine hours.</p>
+</div>
+<div class="relative pl-8">
+<div class="absolute -left-[5px] top-1 w-2 h-2 rounded-full bg-outline-variant"></div>
+<p class="font-label-caps text-[10px] text-on-surface-variant mb-1">STEP 05: OUTPUT GENERATION</p>
+<p class="font-body-md text-on-surface">Final inference packet dispatched to Operation Dashboard via MQTT.</p>
+</div>
+</div>
+</div>
+<!-- AI Recommendations -->
+<div class="flex flex-col gap-grid-gutter reveal-animation" style="animation-delay: 0.9s;">
+<div class="bg-surface-container-low border border-outline-variant p-stack-md rounded-lg">
+<h3 class="font-label-caps text-label-caps text-primary mb-6">MITIGATION RECOMMENDATIONS</h3>
+<div class="space-y-4">
+<div class="p-4 border border-outline-variant rounded bg-surface-container-lowest flex items-start gap-4">
+<span class="material-symbols-outlined text-primary">build</span>
+<div class="flex-1">
+<div class="flex justify-between items-center mb-1">
+<span class="font-bold text-on-surface">LUBRICANT FLUSH &amp; REPLACE</span>
+<span class="bg-primary/20 text-primary text-[10px] px-2 py-0.5 rounded font-bold">PRIORITY: CRITICAL</span>
+</div>
+<p class="text-body-sm text-on-surface-variant">Manual inspection of Bearing-3 oil viscosity and debris levels required within 48 hours.</p>
+<div class="mt-2 flex items-center gap-2 text-[11px] font-mono-data opacity-60">
+<span class="material-symbols-outlined !text-[14px]">timer</span>
+<span>EST. DOWNTIME: 4.2 HOURS</span>
+</div>
+</div>
+</div>
+<div class="p-4 border border-outline-variant rounded bg-surface-container-lowest flex items-start gap-4 opacity-70">
+<span class="material-symbols-outlined text-on-surface-variant">thermostat</span>
+<div class="flex-1">
+<div class="flex justify-between items-center mb-1">
+<span class="font-bold text-on-surface">LOAD BALANCING ADJUSTMENT</span>
+<span class="bg-outline-variant text-on-surface text-[10px] px-2 py-0.5 rounded font-bold">PRIORITY: MEDIUM</span>
+</div>
+<p class="text-body-sm text-on-surface-variant">Reduce turbine RPM by 5% to stabilize thermal expansion until next maintenance window.</p>
+<div class="mt-2 flex items-center gap-2 text-[11px] font-mono-data opacity-60">
+<span class="material-symbols-outlined !text-[14px]">timer</span>
+<span>EST. DOWNTIME: 0 HOURS</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Historical Predictions -->
+<section class="reveal-animation" style="animation-delay: 1s;">
+<h2 class="font-headline-sm text-headline-sm text-on-background mb-stack-md">PREDICTION HISTORY</h2>
+<!-- Full-width Timeline Card -->
+<div class="bg-surface-container-low border border-outline-variant p-stack-md rounded-lg mb-stack-md">
+<div class="flex justify-between items-center mb-6">
+<span class="font-label-caps text-label-caps text-on-surface-variant">FAILURE PROBABILITY OVER TIME (30D)</span>
+<div class="flex gap-4">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 bg-primary rounded-full"></div>
+<span class="text-[11px] font-mono-data">PROBABILITY</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 bg-outline-variant rounded-full"></div>
+<span class="text-[11px] font-mono-data">THRESH.</span>
+</div>
+</div>
+</div>
+<!-- Simple SVG Chart Representation -->
+<div class="w-full h-32 relative">
+<svg class="w-full h-full preserve-3d" preserveaspectratio="none" viewbox="0 0 1000 100">
+<line stroke="#27272A" stroke-dasharray="4" stroke-width="1" x1="0" x2="1000" y1="50" y2="50"></line>
+<path d="M0,80 L100,75 L200,82 L300,78 L400,60 L500,45 L600,42 L700,55 L800,30 L900,22 L1000,18" fill="none" stroke="#818CF8" stroke-width="2"></path>
+</svg>
+<div class="absolute bottom-0 w-full flex justify-between font-mono-data text-[10px] text-on-surface-variant pt-2">
+<span>OCT 01</span>
+<span>OCT 07</span>
+<span>OCT 14</span>
+<span>OCT 21</span>
+<span>OCT 28</span>
+<span>TODAY</span>
+</div>
+</div>
+</div>
+<!-- Prediction History Table -->
+<div class="bg-surface-container-low border border-outline-variant rounded-lg overflow-hidden">
+<table class="w-full text-left font-body-sm text-body-sm">
+<thead class="bg-surface-container-high border-b border-outline-variant">
+<tr>
+<th class="p-4 font-label-caps text-on-surface-variant">PREDICTION ID</th>
+<th class="p-4 font-label-caps text-on-surface-variant">TIMESTAMP</th>
+<th class="p-4 font-label-caps text-on-surface-variant">RISK %</th>
+<th class="p-4 font-label-caps text-on-surface-variant">CONFIDENCE</th>
+<th class="p-4 font-label-caps text-on-surface-variant">STATUS</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-high/30">
+<td class="p-4 font-mono-data">PRED-4482</td>
+<td class="p-4">2023-10-31 14:22</td>
+<td class="p-4 text-primary font-bold">82%</td>
+<td class="p-4">96%</td>
+<td class="p-4"><span class="bg-primary/10 border border-primary text-primary px-2 py-0.5 rounded text-[10px] font-bold">ACTIVE</span></td>
+</tr>
+<tr class="hover:bg-surface-container-high/30">
+<td class="p-4 font-mono-data">PRED-4481</td>
+<td class="p-4">2023-10-31 08:00</td>
+<td class="p-4 text-primary font-bold">78%</td>
+<td class="p-4">94%</td>
+<td class="p-4"><span class="opacity-40 text-[10px] font-bold">SUPERSEDED</span></td>
+</tr>
+<tr class="hover:bg-surface-container-high/30">
+<td class="p-4 font-mono-data">PRED-4480</td>
+<td class="p-4">2023-10-30 20:15</td>
+<td class="p-4 text-primary font-bold">62%</td>
+<td class="p-4">95%</td>
+<td class="p-4"><span class="opacity-40 text-[10px] font-bold">SUPERSEDED</span></td>
+</tr>
+<tr class="hover:bg-surface-container-high/30">
+<td class="p-4 font-mono-data">PRED-4479</td>
+<td class="p-4">2023-10-30 14:00</td>
+<td class="p-4 text-primary font-bold">45%</td>
+<td class="p-4">92%</td>
+<td class="p-4"><span class="opacity-40 text-[10px] font-bold">SUPERSEDED</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</main>
+<script>
+        // Micro-interaction for sidebar tabs
+        document.querySelectorAll('aside nav div').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('aside nav div').forEach(t => {
+                    t.classList.remove('bg-secondary-container', 'text-on-secondary-container', 'border-l-4', 'border-primary');
+                    t.classList.add('text-on-surface-variant', 'hover:bg-surface-container-high');
+                });
+                tab.classList.add('bg-secondary-container', 'text-on-secondary-container', 'border-l-4', 'border-primary');
+                tab.classList.remove('text-on-surface-variant', 'hover:bg-surface-container-high');
+            });
+        });
+    </script>
+</body></html>

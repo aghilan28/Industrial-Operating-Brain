@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AeroSys Industrial - Asset Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Manrope:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        /* Engineering Grid Background */
+        .engineering-grid {
+            background-size: 32px 32px;
+            background-image: linear-gradient(to right, #454653 1px, transparent 1px),
+                              linear-gradient(to bottom, #454653 1px, transparent 1px);
+            opacity: 0.1;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1f1f26;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #908f9e;
+            border-radius: 2px;
+        }
+
+        /* Gauge Animation */
+        @keyframes dash {
+            from { stroke-dashoffset: 283; }
+            to { stroke-dashoffset: 56.6; } /* 80% of 283 */
+        }
+        .gauge-path {
+            stroke-dasharray: 283;
+            animation: dash 2s ease-out forwards;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#c6c6c7",
+                        "surface-bright": "#393840",
+                        "on-tertiary": "#402d00",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-low": "#1b1b22",
+                        "on-secondary": "#2f3131",
+                        "secondary-container": "#454747",
+                        "on-tertiary-fixed": "#261900",
+                        "surface-container": "#1f1f26",
+                        "inverse-surface": "#e4e1eb",
+                        "outline": "#908f9e",
+                        "tertiary-fixed": "#ffdea3",
+                        "on-primary-fixed-variant": "#2f3aa3",
+                        "error-container": "#93000a",
+                        "inverse-primary": "#4953bc",
+                        "on-secondary-container": "#b4b5b5",
+                        "surface-variant": "#34343b",
+                        "on-tertiary-container": "#3e2b00",
+                        "primary-container": "#818cf8",
+                        "tertiary-fixed-dim": "#f7bd3e",
+                        "on-tertiary-fixed-variant": "#5d4200",
+                        "on-secondary-fixed-variant": "#454747",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "on-surface": "#e4e1eb",
+                        "tertiary": "#f7bd3e",
+                        "secondary-fixed": "#e2e2e2",
+                        "surface-tint": "#bdc2ff",
+                        "surface-container-high": "#292930",
+                        "inverse-on-surface": "#303037",
+                        "primary-fixed": "#e0e0ff",
+                        "surface-dim": "#121319",
+                        "on-primary-fixed": "#000767",
+                        "on-primary-container": "#101b8a",
+                        "on-background": "#e4e1eb",
+                        "on-error": "#690005",
+                        "error": "#ffb4ab",
+                        "primary-fixed-dim": "#bdc2ff",
+                        "on-primary": "#131e8c",
+                        "outline-variant": "#454653",
+                        "surface": "#121319",
+                        "on-surface-variant": "#c6c5d5",
+                        "surface-container-lowest": "#0d0e14",
+                        "primary": "#bdc2ff",
+                        "tertiary-container": "#c08d00",
+                        "secondary-fixed-dim": "#c6c6c7",
+                        "background": "#121319",
+                        "surface-container-highest": "#34343b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-sm": "16px",
+                        "margin-lg": "48px",
+                        "margin-md": "24px",
+                        "grid-unit": "8px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Bebas Neue"],
+                        "body-lg": ["Manrope"],
+                        "body-md": ["Manrope"],
+                        "headline-sm": ["Bebas Neue"],
+                        "body-sm": ["Manrope"],
+                        "label-sm": ["Manrope"],
+                        "headline-xl-mobile": ["Bebas Neue"],
+                        "label-md": ["Manrope"],
+                        "headline-xl": ["Bebas Neue"],
+                        "headline-md": ["Bebas Neue"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", {"lineHeight": "32px", "letterSpacing": "0.02em", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-sm": ["18px", {"lineHeight": "18px", "letterSpacing": "0.04em", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-sm": ["10px", {"lineHeight": "12px", "letterSpacing": "0.08em", "fontWeight": "700"}],
+                        "headline-xl-mobile": ["36px", {"lineHeight": "36px", "fontWeight": "400"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-xl": ["48px", {"lineHeight": "48px", "letterSpacing": "0.02em", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "24px", "letterSpacing": "0.02em", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface font-body-md overflow-x-hidden min-h-screen">
+<!-- Grid Overlay -->
+<div class="fixed inset-0 engineering-grid pointer-events-none z-0"></div>
+<!-- TopNavBar -->
+<nav class="fixed top-0 left-0 right-0 h-10 bg-surface border-b border-outline-variant flex justify-between items-center px-margin-md z-50">
+<div class="flex items-center gap-6">
+<span class="font-headline-md text-headline-md text-primary tracking-wider">AeroSys Industrial</span>
+<div class="hidden md:flex gap-4">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="font-label-md text-label-md text-primary border-b-2 border-primary pb-1 font-bold" href="#">Assets</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Maintenance</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Telemetry</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Analytics</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary">refresh</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary">settings</span>
+<div class="w-6 h-6 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="Close up profile portrait of a professional industrial engineer wearing a black smart-tech uniform against a dark atmospheric engineering background. The lighting is focused and high-contrast, matching the dark industrial theme of the application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUqxnjVjrZMrI8n53rHijxBQVBbuexQtSCRGOui4W6o1omnQ3FvvY-wby30KHSnEYcLplDCeaOx1TrV12faXl1aLIHAryVI5Mu6vSJRmQe0PF0gW5BUoPmHuOFvxf_pxDdLt9c2PFYAkbgv7qWccqjApQnUxEAsG5OUL1ETRzHpM6J5dxaSdlyPM7tChV1Itx1TcTq0ZG68eYKiooMvYCKiHd18_hPsIG0UvJNnTGJUlqxfPQmkHda"/>
+</div>
+</div>
+</nav>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-10 h-[calc(100vh-40px)] w-64 bg-surface-container border-r border-outline-variant flex flex-col z-40 hidden md:flex">
+<div class="p-6 border-b border-outline-variant">
+<div class="flex items-center gap-3 mb-1">
+<div class="w-8 h-8 rounded bg-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">factory</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Unit 04 - Houston</h3>
+<p class="font-body-sm text-body-sm text-primary">System Status: Optimal</p>
+</div>
+</div>
+</div>
+<div class="flex-1 py-4 overflow-y-auto custom-scrollbar">
+<nav class="px-2 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container border-l-4 border-primary transition-all scale-[0.98]" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Overview</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant transition-all" href="#">
+<span class="material-symbols-outlined">factory</span>
+<span class="font-label-md text-label-md">Asset Registry</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant transition-all" href="#">
+<span class="material-symbols-outlined">query_stats</span>
+<span class="font-label-md text-label-md">Live Monitor</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant transition-all" href="#">
+<span class="material-symbols-outlined">build</span>
+<span class="font-label-md text-label-md">Work Orders</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant transition-all" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="font-label-md text-label-md">Audit Logs</span>
+</a>
+</nav>
+</div>
+<div class="p-4">
+<button class="w-full h-10 bg-primary text-background font-bold rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">add</span>
+                New Asset
+            </button>
+</div>
+<div class="mt-auto border-t border-outline-variant p-2">
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-variant rounded transition-all" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-variant rounded transition-all" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-label-md text-label-md">Documentation</span>
+</a>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="md:ml-64 pt-14 pb-20 px-margin-md md:px-margin-lg relative z-10 max-w-[1280px] mx-auto">
+<!-- Header Section -->
+<header class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+<div>
+<h1 class="font-headline-xl text-headline-xl text-on-surface">Industrial Asset Management</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">Monitor every industrial asset, machine, subsystem, and operational component from a centralized enterprise platform.</p>
+</div>
+<div class="flex items-center gap-3">
+<div class="bg-surface-container border border-outline-variant px-4 h-10 rounded-lg flex items-center gap-2 cursor-pointer hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-primary text-[20px]">location_on</span>
+<span class="font-label-md text-label-md">Houston Plant Unit 04</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[16px]">expand_more</span>
+</div>
+<button class="w-10 h-10 bg-surface-container border border-outline-variant rounded-lg flex items-center justify-center hover:bg-surface-variant">
+<span class="material-symbols-outlined">refresh</span>
+</button>
+</div>
+</header>
+<!-- Toolbar -->
+<section class="mb-6 flex flex-wrap items-center gap-4 bg-surface-container-low p-4 rounded-xl border border-outline-variant">
+<div class="flex-1 min-w-[240px] relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant">search</span>
+<input class="w-full h-10 pl-10 pr-4 bg-surface-container border border-outline-variant rounded-lg focus:border-primary focus:ring-0 text-on-surface font-body-sm placeholder:text-outline" placeholder="Search by Asset Name or ID..." type="text"/>
+</div>
+<div class="flex items-center gap-3">
+<select class="h-10 bg-surface-container border border-outline-variant rounded-lg font-label-md text-label-md px-4 pr-8 focus:border-primary focus:ring-0 text-on-surface">
+<option>All Asset Types</option>
+<option>Turbines</option>
+<option>Hydraulics</option>
+<option>Robotics</option>
+</select>
+<select class="h-10 bg-surface-container border border-outline-variant rounded-lg font-label-md text-label-md px-4 pr-8 focus:border-primary focus:ring-0 text-on-surface">
+<option>All Status</option>
+<option>Healthy</option>
+<option>Warning</option>
+<option>Critical</option>
+</select>
+<button class="h-10 px-4 bg-secondary-container text-on-secondary-container rounded-lg font-label-md flex items-center gap-2 hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+                    More Filters
+                </button>
+</div>
+</section>
+<!-- Main Panel Split -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Panel: Asset List (45%) -->
+<div class="lg:col-span-5 flex flex-col gap-gutter">
+<div class="bg-surface-container border border-outline-variant rounded-xl overflow-hidden flex flex-col h-[700px]">
+<div class="p-4 border-b border-outline-variant bg-surface-container-high flex justify-between items-center">
+<span class="font-headline-sm text-headline-sm uppercase tracking-wider">Asset Registry</span>
+<span class="font-label-md text-label-md text-primary">12 Assets Active</span>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar">
+<table class="w-full text-left">
+<thead class="sticky top-0 bg-surface-container-high border-b border-outline-variant z-10">
+<tr>
+<th class="p-4 font-label-md text-label-md text-outline uppercase">Asset &amp; ID</th>
+<th class="p-4 font-label-md text-label-md text-outline uppercase">Health</th>
+<th class="p-4 font-label-md text-label-md text-outline uppercase">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-variant cursor-pointer transition-colors border-l-4 border-primary bg-surface-variant">
+<td class="p-4">
+<div class="font-bold text-on-surface">Turbine A01</div>
+<div class="text-[12px] text-outline">ID: TRX-9901-A</div>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-2">
+<div class="w-10 h-10 relative">
+<svg class="w-full h-full" viewbox="0 0 100 100">
+<circle cx="50" cy="50" fill="none" r="45" stroke="#454653" stroke-width="8"></circle>
+<circle class="gauge-path" cx="50" cy="50" fill="none" r="45" stroke="#bdc2ff" stroke-dasharray="283" stroke-dashoffset="56.6" stroke-width="8"></circle>
+</svg>
+<span class="absolute inset-0 flex items-center justify-center text-[10px] font-bold">80%</span>
+</div>
+</div>
+</td>
+<td class="p-4">
+<div class="inline-flex items-center px-2 py-1 border border-primary rounded-full gap-1">
+<div class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></div>
+<span class="text-[10px] font-bold uppercase text-primary">Optimal</span>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-variant cursor-pointer transition-colors border-l-4 border-transparent">
+<td class="p-4">
+<div class="font-bold text-on-surface">Hydraulic Press B03</div>
+<div class="text-[12px] text-outline">ID: HPX-1120-B</div>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-2">
+<div class="w-10 h-10 relative">
+<svg class="w-full h-full" viewbox="0 0 100 100">
+<circle cx="50" cy="50" fill="none" r="45" stroke="#454653" stroke-width="8"></circle>
+<circle cx="50" cy="50" fill="none" r="45" stroke="#f7bd3e" stroke-dasharray="283" stroke-dashoffset="113.2" stroke-width="8"></circle>
+</svg>
+<span class="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-tertiary">60%</span>
+</div>
+</div>
+</td>
+<td class="p-4">
+<div class="inline-flex items-center px-2 py-1 border border-tertiary rounded-full gap-1">
+<div class="w-1.5 h-1.5 rounded-full bg-tertiary"></div>
+<span class="text-[10px] font-bold uppercase text-tertiary">Warning</span>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-variant cursor-pointer transition-colors border-l-4 border-transparent">
+<td class="p-4">
+<div class="font-bold text-on-surface">Assembly Robot C12</div>
+<div class="text-[12px] text-outline">ID: ARX-4402-C</div>
+</td>
+<td class="p-4">
+<div class="flex items-center gap-2">
+<div class="w-10 h-10 relative">
+<svg class="w-full h-full" viewbox="0 0 100 100">
+<circle cx="50" cy="50" fill="none" r="45" stroke="#454653" stroke-width="8"></circle>
+<circle cx="50" cy="50" fill="none" r="45" stroke="#bdc2ff" stroke-dasharray="283" stroke-dashoffset="14.15" stroke-width="8"></circle>
+</svg>
+<span class="absolute inset-0 flex items-center justify-center text-[10px] font-bold">95%</span>
+</div>
+</div>
+</td>
+<td class="p-4">
+<div class="inline-flex items-center px-2 py-1 border border-primary rounded-full gap-1">
+<div class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></div>
+<span class="text-[10px] font-bold uppercase text-primary">Optimal</span>
+</div>
+</td>
+</tr>
+<!-- Filler Rows -->
+<tr class="hover:bg-surface-variant cursor-pointer transition-colors border-l-4 border-transparent">
+<td class="p-4">
+<div class="font-bold text-on-surface">Conveyor System S05</div>
+<div class="text-[12px] text-outline">ID: CSX-2291-S</div>
+</td>
+<td class="p-4"><div class="w-10 h-10 border-2 border-outline-variant rounded-full flex items-center justify-center text-[10px] font-bold">--</div></td>
+<td class="p-4">
+<div class="inline-flex items-center px-2 py-1 border border-outline-variant rounded-full gap-1 opacity-50">
+<div class="w-1.5 h-1.5 rounded-full bg-outline"></div>
+<span class="text-[10px] font-bold uppercase text-outline">Offline</span>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Right Panel: Asset Detail (55%) -->
+<div class="lg:col-span-7 flex flex-col gap-gutter">
+<!-- Asset Detail Card Header -->
+<div class="bg-surface-container border border-outline-variant rounded-xl p-6">
+<div class="flex justify-between items-start mb-6">
+<div>
+<div class="flex items-center gap-3 mb-1">
+<h2 class="font-headline-lg text-headline-lg">Turbine A01</h2>
+<span class="bg-primary-container text-on-primary-container text-[10px] font-bold uppercase px-2 py-0.5 rounded">Primary Unit</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Aerospace Grade Power Generation Subsystem • Sector 04-G</p>
+</div>
+<div class="flex gap-2">
+<button class="h-10 px-4 border border-outline-variant text-on-surface rounded-lg font-label-md hover:bg-surface-variant transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">edit</span> Edit
+                            </button>
+<button class="h-10 px-4 bg-primary text-background font-bold rounded-lg hover:opacity-90 transition-opacity flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">construction</span> Maintenance
+                            </button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter mb-8">
+<!-- Digital Twin Card -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-4 flex flex-col items-center justify-center relative overflow-hidden h-[300px]">
+<div class="absolute inset-0 z-0 opacity-20">
+<div class="w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/30 via-transparent to-transparent"></div>
+</div>
+<div class="relative z-10 w-48 h-48 mb-4">
+<img class="w-full h-full object-contain" data-alt="Technical 3D wireframe illustration of a high-tech industrial turbine engine. The style is minimalist blue blueprint schematic with glowing vector lines against a dark background. Professional, mission-critical engineering aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDW37PXASiDdCcuKX8YBwjah8oVRFZ8NydxhPhtCfPvg5qgCUT0KsipzdyfHTBaUfbFXyd4hr2Wquv7FgkU3g4JDpWt4hkXUBGeP46ZpPFCjpLO6SikfjgRXVOYDKIw_RiWO5bTrdCWsyRg4s-ynaVbaolvravpOt0Pnp06cciLeYcfa7TOkiQrKkZRk_toUAkOVhqufoXPzOoIV4qe3mSZ_ceqTM-gKbRAuoqsUo_XRt4Z6SrllIys"/>
+<!-- Large Health Gauge -->
+<div class="absolute -bottom-4 -right-4 w-24 h-24 bg-surface-container border border-primary/30 rounded-full flex flex-col items-center justify-center">
+<div class="text-primary font-headline-md leading-none">98%</div>
+<div class="text-[8px] font-bold text-outline uppercase">Health</div>
+</div>
+</div>
+<div class="font-label-md text-label-md text-primary tracking-widest uppercase">Excellent Performance</div>
+</div>
+<!-- Info & Sensors Grid -->
+<div class="grid grid-cols-2 gap-4">
+<!-- Sensor 1: Temp -->
+<div class="bg-surface-container-high border border-outline-variant rounded-xl p-4">
+<div class="flex justify-between items-start mb-2">
+<span class="material-symbols-outlined text-outline text-[20px]">thermostat</span>
+<span class="text-[10px] font-bold text-primary">STABLE</span>
+</div>
+<div class="text-on-surface font-headline-md">1,240 <span class="text-[14px] text-outline">°C</span></div>
+<div class="text-[10px] text-outline uppercase mt-1">Core Temperature</div>
+<div class="mt-2 h-1 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[80%]"></div>
+</div>
+</div>
+<!-- Sensor 2: RPM -->
+<div class="bg-surface-container-high border border-outline-variant rounded-xl p-4">
+<div class="flex justify-between items-start mb-2">
+<span class="material-symbols-outlined text-outline text-[20px]">rotate_right</span>
+<span class="text-[10px] font-bold text-primary">SYNCED</span>
+</div>
+<div class="text-on-surface font-headline-md">12.5k <span class="text-[14px] text-outline">RPM</span></div>
+<div class="text-[10px] text-outline uppercase mt-1">Rotational Speed</div>
+<div class="mt-2 h-1 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[90%]"></div>
+</div>
+</div>
+<!-- Sensor 3: Vibration -->
+<div class="bg-surface-container-high border border-outline-variant rounded-xl p-4">
+<div class="flex justify-between items-start mb-2">
+<span class="material-symbols-outlined text-outline text-[20px]">vibration</span>
+<span class="text-[10px] font-bold text-primary">LOW</span>
+</div>
+<div class="text-on-surface font-headline-md">0.02 <span class="text-[14px] text-outline">mm/s</span></div>
+<div class="text-[10px] text-outline uppercase mt-1">Axial Vibration</div>
+<div class="mt-2 h-1 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[15%]"></div>
+</div>
+</div>
+<!-- Sensor 4: Pressure -->
+<div class="bg-surface-container-high border border-outline-variant rounded-xl p-4">
+<div class="flex justify-between items-start mb-2">
+<span class="material-symbols-outlined text-outline text-[20px]">compress</span>
+<span class="text-[10px] font-bold text-primary">NORMAL</span>
+</div>
+<div class="text-on-surface font-headline-md">45.2 <span class="text-[14px] text-outline">BAR</span></div>
+<div class="text-[10px] text-outline uppercase mt-1">Intake Pressure</div>
+<div class="mt-2 h-1 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[65%]"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- AI Summary & Live Telemetry -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<div class="md:col-span-2 bg-surface-container-low border border-primary/20 rounded-xl p-4 flex gap-4">
+<div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-primary-container">psychology</span>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-primary uppercase tracking-widest mb-1">AI Performance Summary</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Predicted remaining useful life is <span class="text-on-surface font-bold">2,450 hours</span>. Thermal patterns indicate optimal cooling efficiency. No anomalous vibrations detected in the last 72-hour cycle.</p>
+</div>
+</div>
+<div class="bg-surface-container-high border border-outline-variant rounded-xl p-4">
+<h4 class="font-label-md text-label-md uppercase mb-2">Load Factor</h4>
+<div class="h-16 flex items-end gap-1 px-1">
+<div class="flex-1 bg-primary/20 h-[40%]"></div>
+<div class="flex-1 bg-primary/20 h-[45%]"></div>
+<div class="flex-1 bg-primary/20 h-[60%]"></div>
+<div class="flex-1 bg-primary/20 h-[55%]"></div>
+<div class="flex-1 bg-primary/20 h-[70%]"></div>
+<div class="flex-1 bg-primary/20 h-[65%]"></div>
+<div class="flex-1 bg-primary/20 h-[80%]"></div>
+<div class="flex-1 bg-primary/20 h-[75%]"></div>
+<div class="flex-1 bg-primary h-[85%]"></div>
+<div class="flex-1 bg-primary h-[82%]"></div>
+</div>
+<div class="flex justify-between mt-1 text-[8px] text-outline uppercase">
+<span>12h ago</span>
+<span>Live</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Section: Tables -->
+<section class="mt-gutter grid grid-cols-1 lg:grid-cols-2 gap-gutter">
+<!-- Maintenance History -->
+<div class="bg-surface-container border border-outline-variant rounded-xl overflow-hidden">
+<div class="p-4 border-b border-outline-variant bg-surface-container-high flex justify-between items-center">
+<span class="font-headline-sm text-headline-sm uppercase tracking-wider">Maintenance History</span>
+<button class="text-[12px] text-primary font-bold hover:underline">View Full Archive</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-surface-container-low border-b border-outline-variant">
+<tr>
+<th class="p-4 font-label-md text-label-md text-outline uppercase">Date</th>
+<th class="p-4 font-label-md text-label-md text-outline uppercase">Action</th>
+<th class="p-4 font-label-md text-label-md text-outline uppercase">Technician</th>
+<th class="p-4 font-label-md text-label-md text-outline uppercase">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-variant transition-colors">
+<td class="p-4 font-body-sm">Oct 12, 2023</td>
+<td class="p-4 font-body-sm font-bold">Full Bearing Replacement</td>
+<td class="p-4 font-body-sm text-on-surface-variant">M. Chen</td>
+<td class="p-4"><span class="text-[10px] font-bold bg-surface-variant px-2 py-1 rounded">COMPLETED</span></td>
+</tr>
+<tr class="hover:bg-surface-variant transition-colors">
+<td class="p-4 font-body-sm">Aug 24, 2023</td>
+<td class="p-4 font-body-sm font-bold">Lubrication Cycle</td>
+<td class="p-4 font-body-sm text-on-surface-variant">J. Doe</td>
+<td class="p-4"><span class="text-[10px] font-bold bg-surface-variant px-2 py-1 rounded">COMPLETED</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Recent Work Orders -->
+<div class="bg-surface-container border border-outline-variant rounded-xl overflow-hidden">
+<div class="p-4 border-b border-outline-variant bg-surface-container-high flex justify-between items-center">
+<span class="font-headline-sm text-headline-sm uppercase tracking-wider">Active Work Orders</span>
+<button class="text-[12px] text-primary font-bold hover:underline">Manage All</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-surface-container-low border-b border-outline-variant">
+<tr>
+<th class="p-4 font-label-md text-label-md text-outline uppercase">Priority</th>
+<th class="p-4 font-label-md text-label-md text-outline uppercase">Issue</th>
+<th class="p-4 font-label-md text-label-md text-outline uppercase">Due Date</th>
+<th class="p-4 font-label-md text-label-md text-outline uppercase">Assigned</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-variant transition-colors">
+<td class="p-4"><span class="text-[10px] font-bold border border-error text-error px-2 py-1 rounded">CRITICAL</span></td>
+<td class="p-4 font-body-sm font-bold">Vibration Anomaly S05</td>
+<td class="p-4 font-body-sm">Today</td>
+<td class="p-4 font-body-sm text-on-surface-variant">S. Gupta</td>
+</tr>
+<tr class="hover:bg-surface-variant transition-colors">
+<td class="p-4"><span class="text-[10px] font-bold border border-tertiary text-tertiary px-2 py-1 rounded">MEDIUM</span></td>
+<td class="p-4 font-body-sm font-bold">Sensor Recalibration</td>
+<td class="p-4 font-body-sm">Oct 28</td>
+<td class="p-4 font-body-sm text-on-surface-variant">K. Wilson</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</main>
+<!-- Navigation Shell for Mobile -->
+<nav class="fixed bottom-0 left-0 right-0 h-16 bg-surface-container border-t border-outline-variant flex md:hidden justify-around items-center z-50">
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-bold uppercase">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined">factory</span>
+<span class="text-[10px] font-bold uppercase">Assets</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">build</span>
+<span class="text-[10px] font-bold uppercase">Tasks</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="text-[10px] font-bold uppercase">Data</span>
+</a>
+</nav>
+<script>
+        // Simple Micro-interaction: Update health gauge on row selection
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('click', () => {
+                // Visual feedback only for demo
+                document.querySelectorAll('tbody tr').forEach(r => r.classList.remove('border-primary', 'bg-surface-variant'));
+                row.classList.add('border-primary', 'bg-surface-variant');
+            });
+        });
+    </script>
+</body></html>
