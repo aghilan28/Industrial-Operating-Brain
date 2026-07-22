@@ -40,11 +40,11 @@ Phase5_Backend_Integration/
 │   │   ├── industrial.py
 │   │   └── dashboard.py
 │   └── services/
-│       ├── __init__.py
-│       ├── auth_service.py
-│       ├── user_service.py
-│       ├── industrial_service.py
-│       └── dashboard_service.py
+│   │   ├── __init__.py
+│   │   ├── auth_service.py
+│   │   ├── user_service.py
+│   │   ├── industrial_service.py
+│   │   └── dashboard_service.py
 ├── tests/
 │   ├── __init__.py
 │   ├── conftest.py
@@ -85,7 +85,7 @@ Phase5_Backend_Integration/
 pip install -e .
 
 # Run the application
-uvicorn app.main:app --reload
+uvicorn apps.main:app --reload
 
 # Run tests
 pytest tests/ -v --cov=app
