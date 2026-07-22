@@ -51,6 +51,6 @@ async def readiness_probe(response: Response) -> Dict[str, Any]:
     if not db_ok:
         response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
         logger.critical("Readiness probe failed: Database connectivity is offline.")
-        return {"status": "unready", "checks": {"database": "unhealthy"}}
+        return {"status": "not_ready", "checks": {"database": "unhealthy"}}
 
     return {"status": "ready", "checks": {"database": "healthy"}}

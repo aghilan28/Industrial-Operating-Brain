@@ -1,16 +1,46 @@
 from pydantic import BaseModel
-from typing import Optional, Dict, Any, List
+from typing import List, Dict, Any, Optional
+from uuid import UUID
+from datetime import datetime
+
+class MachineStatusSummary(BaseModel):
+    total: int
+    online: int
+    offline: int
+    maintenance: int
+    error: int
+    unknown: int
+
+class KPIWidgetData(BaseModel):
+    label: str
+    value: float
+    unit: str
+    trend: float
+    trend_direction: str
+    target: float
+    status: str
+    timestamp: datetime
+
+class TelemetryWidgetData(BaseModel):
+    machine_id: UUID
+    machine_name: str
+    metric: str
+    unit: str
+    current_value: float
+    trend: List[Dict[str, Any]]
+    threshold_warning: float
+    threshold_critical: float
+    status: str
+    last_update: datetime
 
 class DashboardOverviewResponse(BaseModel):
-    total_assets: int = 100
-    active_alerts: int = 5
-    system_health: float = 98.2
+    machine_status: MachineStatusSummary
+    telemetry_widgets: List[TelemetryWidgetData] = []
+    alarm_widget: Dict[str, Any]
+    kpi_widgets: List[KPIWidgetData] = []
+    trend_widgets: List[Any] = []
+    generated_at: datetime
 
-class MetricSummary(BaseModel):
-    name: str
-    value: float
-    unit: Optional[str] = None
-
-# Universal fallback so no missing dashboard import can break collection
+# Catch-all fallback
 def __getattr__(name: str):
     return type(name, (BaseModel,), {})

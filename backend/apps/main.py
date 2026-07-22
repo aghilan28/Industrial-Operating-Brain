@@ -3,10 +3,13 @@ import logging
 import subprocess
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.exceptions import RequestValidationError
+from pydantic import ValidationError as PydanticValidationError
 
 from apps.api.ai_proxy import router as ai_router
+from apps.api.auth import router as auth_router
 from apps.core.api.alert import router as alert_router
 from apps.core.api.asset import router as asset_router
 from apps.core.config import settings
@@ -20,7 +23,13 @@ from apps.core.exceptions import (
     AuthenticationError,
     NotFoundError,
     ValidationError,
+    request_validation_exception_handler,
+    pydantic_validation_exception_handler,
+    http_exception_handler,
+    sqlalchemy_exception_handler,
+    general_exception_handler,
 )
+from sqlalchemy.exc import SQLAlchemyError
 
 logger = logging.getLogger("app.legacy")
 
@@ -30,59 +39,46 @@ def create_app() -> FastAPI:
     app_instance = FastAPI(title="Industrial Operating Brain", version="1.0.0")
 
     # Add Middlewares
+    app_instance.add_middleware(
+        CORSMiddleware,
+        allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allow_headers=["*"],
+    )
     app_instance.add_middleware(SecurityHeadersMiddleware)
     app_instance.add_middleware(CorrelationIdMiddleware)
 
     # Custom Application Exceptions Handler
     @app_instance.exception_handler(AppException)
     async def app_exception_handler(request: Request, exc: AppException):
-        status_code = 500
-        if isinstance(exc, AuthenticationError):
-            status_code = 401
-        elif isinstance(exc, NotFoundError):
-            status_code = 404
-        elif isinstance(exc, ValidationError):
-            status_code = 400
-
-        return JSONResponse(
-            status_code=status_code,
-            content={
-                "success": False,
-                "detail": str(exc.message if hasattr(exc, 'message') else exc),
-                "error_code": exc.__class__.__name__.upper(),
-            },
-        )
-
-    # Uniform HTTP Exception Handler (handles Starlette and FastAPI HTTP Exceptions, e.g. 404)
-    @app_instance.exception_handler(StarletteHTTPException)
-    async def http_exception_handler(request: Request, exc: StarletteHTTPException):
         return JSONResponse(
             status_code=exc.status_code,
             content={
                 "success": False,
-                "detail": exc.detail,
-                "error_code": "NOT_FOUND" if exc.status_code == 404 else "HTTP_ERROR",
+                "error": exc.error_code,
+                "message": exc.message,
+                "details": exc.details,
             },
         )
 
-    # Uniform Validation Exception Handler
-    @app_instance.exception_handler(RequestValidationError)
-    async def validation_exception_handler(request: Request, exc: RequestValidationError):
-        return JSONResponse(
-            status_code=422,
-            content={
-                "success": False,
-                "detail": exc.errors(),
-                "error_code": "VALIDATION_ERROR",
-            },
-        )
+    # Exception Handlers Registration
+    app_instance.add_exception_handler(RequestValidationError, request_validation_exception_handler)
+    app_instance.add_exception_handler(PydanticValidationError, pydantic_validation_exception_handler)
+    app_instance.add_exception_handler(SQLAlchemyError, sqlalchemy_exception_handler)
+    app_instance.add_exception_handler(Exception, general_exception_handler)
+    app_instance.add_exception_handler(StarletteHTTPException, http_exception_handler)
 
     # Register Health Check Router
+    app_instance.include_router(
+        health_router, prefix="/health", tags=["Health"]
+    )
     app_instance.include_router(
         health_router, prefix="/api/v1/health", tags=["Health"]
     )
 
     # Register Domain Routers
+    app_instance.include_router(auth_router, prefix="/api/v1/auth", tags=["Auth"])
     app_instance.include_router(alert_router, prefix="/api/v1", tags=["alerts"])
     app_instance.include_router(asset_router, prefix="/api/v1/assets", tags=["Assets"])
     app_instance.include_router(ai_router, prefix="/api/v1/ai", tags=["AI"])
@@ -96,6 +92,10 @@ def create_app() -> FastAPI:
             "version": settings.VERSION,
             "environment": settings.ENVIRONMENT,
         }
+
+    @app_instance.get("/health")
+    def health_endpoint():
+        return {"status": "healthy", "version": settings.VERSION}
 
     @app_instance.get("/api/telemetry/latest", tags=["Telemetry"])
     def get_latest_telemetry(limit: int = 10):
@@ -180,9 +180,3 @@ if __name__ == "__main__":
         log_level=settings.LOG_LEVEL.lower(),
         access_log=True,
     )
-
-
-@app.get("/health")
-async def health_check():
-    return {"status": "ok", "success": True}
-
