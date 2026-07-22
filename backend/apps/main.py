@@ -180,3 +180,9 @@ if __name__ == "__main__":
         log_level=settings.LOG_LEVEL.lower(),
         access_log=True,
     )
+
+
+@app.get("/health")
+async def health_check():
+    return {"status": "ok", "success": True}
+

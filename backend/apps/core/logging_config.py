@@ -1,20 +1,69 @@
 """
 Structured Logging Configuration
-Phase 5: Production-grade structured logging with structlog.
+Phase 5: Production-grade structured logging with structlog & stdlib logging.
 """
 
 import logging
 import sys
+import json
+from datetime import datetime, timezone
 from typing import Any, Dict
+from contextvars import ContextVar
 
 import structlog
 from structlog.stdlib import LoggerFactory
 
 from apps.core.config import settings
 
+# Context variable for tracking correlation ID across tasks/requests
+correlation_id_ctx = ContextVar("correlation_id_ctx", default="")
+
+
+class StructuredJSONFormatter(logging.Formatter):
+    """Production-grade JSON formatter for Python standard library logging."""
+
+    def format(self, record: logging.LogRecord) -> str:
+        timestamp = datetime.fromtimestamp(record.created, tz=timezone.utc).isoformat()
+        
+        log_data = {
+            "timestamp": timestamp,
+            "level": record.levelname,
+            "message": record.getMessage(),
+            "logger": record.name,
+            "module": record.module,
+            "correlation_id": correlation_id_ctx.get(),
+        }
+        
+        # Include extra fields if attached to the record
+        if hasattr(record, "extra_fields") and isinstance(record.extra_fields, dict):
+            log_data.update(record.extra_fields)
+            
+        # Format exception traceback if present
+        if record.exc_info:
+            import traceback
+            log_data["exception"] = "".join(traceback.format_exception(*record.exc_info))
+            
+        return json.dumps(log_data)
+
+
+def setup_structured_logging(level: str = "INFO", json_format: bool = True) -> None:
+    """Enterprise-grade structured logging bootstrap function."""
+    root = logging.getLogger()
+    for h in root.handlers[:]:
+        root.removeHandler(h)
+        
+    handler = logging.StreamHandler(sys.stdout)
+    if json_format:
+        handler.setFormatter(StructuredJSONFormatter())
+    else:
+        handler.setFormatter(logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s"))
+        
+    root.addHandler(handler)
+    root.setLevel(getattr(logging, level.upper(), logging.INFO))
+
 
 def setup_logging() -> None:
-    """Configure structured logging for the application."""
+    """Configure structured logging for the application using structlog."""
 
     # Configure standard library logging
     logging.basicConfig(
@@ -68,7 +117,6 @@ class LoggingMiddleware:
 
         request_id = scope.get("headers", {}).get(b"x-request-id", b"").decode()
         
-        # Log request
         self.logger.info(
             "http_request_started",
             method=scope["method"],
@@ -77,7 +125,6 @@ class LoggingMiddleware:
             request_id=request_id,
         )
 
-        # Wrap send to capture response
         status_code = 500
 
         async def send_wrapper(message):
