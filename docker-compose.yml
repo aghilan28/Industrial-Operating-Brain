@@ -1,4 +1,4 @@
-﻿services:
+services:
   # --- Infrastructure Services ---
   postgres:
     image: postgres:16-alpine
@@ -77,6 +77,8 @@
       - POSTGRES_HOST=postgres
       - REDIS_HOST=redis
       - MQTT_HOST=mosquitto
+      - DATABASE_URL=postgresql+asyncpg://iob_user:iob_password@postgres:5432/iob_db
+      - IOB_POSTGRES_DSN=postgresql+asyncpg://iob_user:iob_password@postgres:5432/iob_db
     depends_on:
       postgres:
         condition: service_healthy

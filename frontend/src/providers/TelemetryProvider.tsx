@@ -79,7 +79,7 @@ export const TelemetryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       url: wsHost,
       getToken: () => {
         if (typeof window !== 'undefined') {
-          return localStorage.getItem('token') || localStorage.getItem('access_token');
+          return localStorage.getItem('iob_access_token') || localStorage.getItem('token') || localStorage.getItem('access_token');
         }
         return null;
       },

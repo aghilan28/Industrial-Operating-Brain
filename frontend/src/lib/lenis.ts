@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 let lenisInstance: Lenis | null = null;
+let tickerCallback: ((time: number) => void) | null = null;
 
 /**
  * Initialize Lenis smooth scrolling, wired to GSAP ScrollTrigger.
@@ -24,9 +25,10 @@ export function initLenis() {
 
   lenis.on("scroll", ScrollTrigger.update);
 
-  gsap.ticker.add((time: number) => {
+  tickerCallback = (time: number) => {
     lenis.raf(time * 1000);
-  });
+  };
+  gsap.ticker.add(tickerCallback);
   gsap.ticker.lagSmoothing(0, 0);
 
   lenisInstance = lenis;
@@ -41,5 +43,9 @@ export function destroyLenis() {
   if (lenisInstance) {
     lenisInstance.destroy();
     lenisInstance = null;
+  }
+  if (tickerCallback) {
+    gsap.ticker.remove(tickerCallback);
+    tickerCallback = null;
   }
 }

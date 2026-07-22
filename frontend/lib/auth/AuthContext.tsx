@@ -1,6 +1,6 @@
-﻿"use client";
+"use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { AuthContextType, AuthUser, JWTClaims } from "./types";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -27,15 +27,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [status, setStatus] = useState<'loading' | 'authenticated' | 'unauthenticated'>('loading');
   const [error, setError] = useState<string | null>(null);
 
-  const setSessionCookie = (authToken: string | null) => {
+  const setSessionCookie = useCallback((authToken: string | null) => {
     if (authToken) {
       document.cookie = `iob_session=${authToken}; path=/; max-age=86400; SameSite=Lax`;
     } else {
       document.cookie = `iob_session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
     }
-  };
+  }, []);
 
-  const login = (accessToken: string) => {
+  const login = useCallback((accessToken: string) => {
     const claims = parseJwt(accessToken);
     if (!claims || (claims.exp && claims.exp * 1000 < Date.now())) {
       setError("Invalid or expired token provided");
@@ -58,15 +58,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(authUser);
     setStatus("authenticated");
     setError(null);
-  };
+  }, [setSessionCookie]);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem("iob_access_token");
     setSessionCookie(null);
     setToken(null);
     setUser(null);
     setStatus("unauthenticated");
-  };
+  }, [setSessionCookie]);
 
   useEffect(() => {
     const storedToken = localStorage.getItem("iob_access_token");
@@ -80,7 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } else {
       setStatus("unauthenticated");
     }
-  }, []);
+  }, [login, logout]);
 
   return (
     <AuthContext.Provider value={{ user, token, status, error, login, logout }}>

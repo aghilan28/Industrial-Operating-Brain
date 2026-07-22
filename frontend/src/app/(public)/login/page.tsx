@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -32,10 +32,17 @@ export default function LoginPage() {
       const { access_token, user } = response.data;
 
       // Build user object from response or defaults
+      let userRole = "OPERATOR";
+      const lowerUser = username.toLowerCase();
+      if (lowerUser.includes("admin")) userRole = "ADMIN";
+      else if (lowerUser.includes("engineer")) userRole = "ENGINEER";
+      else if (lowerUser.includes("analyst")) userRole = "ANALYST";
+      else if (lowerUser.includes("operator")) userRole = "OPERATOR";
+
       const userData = user || {
         userId: username,
-        role: "OPERATOR",
-        roles: ["OPERATOR"],
+        role: userRole,
+        roles: [userRole],
       };
 
       login(access_token, userData);

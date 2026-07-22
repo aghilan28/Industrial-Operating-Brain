@@ -146,6 +146,10 @@ export class TelemetryWebSocketClient {
     if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
     this.stopHeartbeat();
     if (this.ws) {
+      this.ws.onopen = null;
+      this.ws.onmessage = null;
+      this.ws.onclose = null;
+      this.ws.onerror = null;
       this.ws.close();
       this.ws = null;
     }

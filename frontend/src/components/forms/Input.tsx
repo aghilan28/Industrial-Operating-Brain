@@ -22,7 +22,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         <input
           ref={ref}
           className={cn(
-            "h-12 w-full rounded-xl border border-white/10 bg-black/40 text-sm text-zinc-300 outline-none ring-0 placeholder:text-zinc-600 focus:border-white/25 transition-colors",
+            "h-12 w-full rounded-xl border border-white/10 bg-black/40 text-sm text-zinc-300 placeholder:text-zinc-600 focus:border-indigo-500/80 transition-colors focus-ring",
             hasLeading && "pl-11",
             hasTrailing && "pr-11",
             !hasLeading && "pl-4",
@@ -56,7 +56,7 @@ export const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
     <textarea
       ref={ref}
       className={cn(
-        "w-full rounded-xl border border-white/10 bg-black/40 p-4 text-sm text-zinc-300 outline-none ring-0 placeholder:text-zinc-600 focus:border-white/25 transition-colors resize-y min-h-[6rem]",
+        "w-full rounded-xl border border-white/10 bg-black/40 p-4 text-sm text-zinc-300 placeholder:text-zinc-600 focus:border-indigo-500/80 transition-colors resize-y min-h-[6rem] focus-ring",
         className
       )}
       style={{ boxShadow: tokens.shadows.input }}

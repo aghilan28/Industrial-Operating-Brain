@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 
@@ -36,6 +36,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (storedToken && storedUser) {
         setToken(storedToken);
         setUser(JSON.parse(storedUser));
+        // Keep cookie in sync with localStorage on restore
+        document.cookie = `iob_session=${encodeURIComponent(storedToken)}; path=/; max-age=86400; SameSite=Lax`;
       }
     } catch (e) {
       console.error("Failed to restore auth session:", e);
@@ -49,6 +51,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(userData);
     localStorage.setItem(TOKEN_KEY, newToken);
     localStorage.setItem(USER_KEY, JSON.stringify(userData));
+    // Set the cookie for server middleware route guard
+    if (typeof window !== "undefined") {
+      document.cookie = `iob_session=${encodeURIComponent(newToken)}; path=/; max-age=86400; SameSite=Lax`;
+    }
   }, []);
 
   const logout = useCallback(() => {
@@ -56,7 +62,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
+    // Clear cookie
     if (typeof window !== "undefined") {
+      document.cookie = "iob_session=; path=/; max-age=0; SameSite=Lax";
       window.location.href = "/login";
     }
   }, []);
