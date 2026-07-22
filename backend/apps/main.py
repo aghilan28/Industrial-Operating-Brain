@@ -1,4 +1,4 @@
-import json
+﻿import json
 import logging
 import subprocess
 from fastapi import FastAPI, Request
@@ -41,7 +41,7 @@ def create_app() -> FastAPI:
     # Add Middlewares
     app_instance.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+        allow_origins=settings.CORS_ORIGINS,
         allow_credentials=True,
         allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         allow_headers=["*"],
@@ -85,7 +85,7 @@ def create_app() -> FastAPI:
 
     @app_instance.get("/", tags=["Root"])
     def read_root():
-        """Root endpoint — basic service status."""
+        """Root endpoint â€” basic service status."""
         return {
             "status": "online",
             "service": settings.PROJECT_NAME,
@@ -180,3 +180,4 @@ if __name__ == "__main__":
         log_level=settings.LOG_LEVEL.lower(),
         access_log=True,
     )
+
