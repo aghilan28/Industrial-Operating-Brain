@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import * as React from "react";
 import Link from "next/link";
@@ -10,6 +10,7 @@ import { Input } from "@/components/forms/Input";
 import { Avatar } from "@/components/ui/Avatar";
 import { PRIMARY_NAV, BREADCRUMB_PLACEHOLDER, APP_IDENTITY } from "@/constants/navigation";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { ConnectionBadge } from "@/components/telemetry/ConnectionBadge";
 
 export interface AppHeaderProps {
   onMenuToggle?: () => void;
@@ -107,16 +108,7 @@ export function AppHeader({ onMenuToggle, className }: AppHeaderProps) {
         {/* Action cluster */}
         <div className="hidden items-center gap-3 py-4 lg:flex">
           {/* Connection status badge */}
-          <div
-            className="hidden items-center gap-2 rounded-full border border-white/10 px-3 py-1.5 text-[0.68rem] font-sans font-medium uppercase tracking-widest md:inline-flex"
-            style={{
-              background: tokens.gradients.chip,
-              boxShadow: tokens.shadows.chip,
-            }}
-          >
-            <span className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse-dot" />
-            <span className="text-zinc-400">Connected</span>
-          </div>
+          <ConnectionBadge />
 
           {/* User Profile & Role Info */}
           {isAuthenticated && user && (
