@@ -136,7 +136,7 @@ addopts = [
     "--strict-markers",
     "--strict-config",
     "--tb=short",
-    "--cov=app",
+    "--cov=apps",
     "--cov-report=term-missing",
     "--cov-report=html:htmlcov",
 ]
@@ -231,7 +231,7 @@ disallow_untyped_defs = false
 disallow_incomplete_defs = false
 
 [tool.coverage.run]
-source = ["app"]
+source = ["apps"]
 omit = [
     "*/tests/*",
     "*/migrations/*",

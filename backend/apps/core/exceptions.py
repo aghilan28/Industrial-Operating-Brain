@@ -4,6 +4,11 @@ Phase 5: Structured error handling with error codes and details.
 """
 
 from typing import Any, Dict, Optional
+from fastapi import Request
+from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
+from pydantic import ValidationError as PydanticValidationError
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 
 class IOBException(Exception):
@@ -27,8 +32,6 @@ class IOBException(Exception):
 
 
 class ResourceNotFoundError(IOBException):
-    """Raised when a requested resource is not found."""
-
     def __init__(
         self,
         resource_type: str,
@@ -40,15 +43,13 @@ class ResourceNotFoundError(IOBException):
             message=message,
             error_code="NOT_FOUND",
             status_code=404,
-            details={**details, "resource_type": resource_type, "resource_id": resource_id},
+            details={**(details or {}), "resource_type": resource_type, "resource_id": resource_id},
         )
         self.resource_type = resource_type
         self.resource_id = resource_id
 
 
 class ValidationError(IOBException):
-    """Raised when input validation fails."""
-
     def __init__(
         self,
         message: str,
@@ -63,8 +64,6 @@ class ValidationError(IOBException):
 
 
 class AuthenticationError(IOBException):
-    """Raised when authentication fails."""
-
     def __init__(
         self,
         message: str = "Authentication required",
@@ -79,8 +78,6 @@ class AuthenticationError(IOBException):
 
 
 class AuthorizationError(IOBException):
-    """Raised when authorization fails."""
-
     def __init__(
         self,
         message: str = "Insufficient permissions",
@@ -95,8 +92,6 @@ class AuthorizationError(IOBException):
 
 
 class RateLimitError(IOBException):
-    """Raised when rate limit is exceeded."""
-
     def __init__(
         self,
         message: str = "Rate limit exceeded",
@@ -107,13 +102,11 @@ class RateLimitError(IOBException):
             message=message,
             error_code="RATE_LIMIT_EXCEEDED",
             status_code=429,
-            details={**details, "retry_after": retry_after},
+            details={**(details or {}), "retry_after": retry_after},
         )
 
 
 class ExternalServiceError(IOBException):
-    """Raised when an external service call fails."""
-
     def __init__(
         self,
         service: str,
@@ -124,13 +117,11 @@ class ExternalServiceError(IOBException):
             message=f"External service '{service}' error: {message}",
             error_code="EXTERNAL_SERVICE_ERROR",
             status_code=502,
-            details={**details, "service": service},
+            details={**(details or {}), "service": service},
         )
 
 
 class ConfigurationError(IOBException):
-    """Raised when configuration is invalid."""
-
     def __init__(
         self,
         message: str,
@@ -145,8 +136,6 @@ class ConfigurationError(IOBException):
 
 
 class RepositoryError(IOBException):
-    """Raised when repository operations fail."""
-
     def __init__(
         self,
         operation: str,
@@ -157,5 +146,84 @@ class RepositoryError(IOBException):
             message=f"Repository operation '{operation}' failed: {message}",
             error_code="REPOSITORY_ERROR",
             status_code=500,
-            details={**details, "operation": operation},
+            details={**(details or {}), "operation": operation},
         )
+
+
+# Backward-compatibility / test harness aliases
+AppException = IOBException
+NotFoundError = ResourceNotFoundError
+
+def create_error_response(exc: IOBException) -> JSONResponse:
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "success": False,
+            "detail": exc.message,
+            "error_code": exc.error_code,
+            "details": exc.details,
+        },
+    )
+
+async def request_validation_exception_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
+    return JSONResponse(
+        status_code=422,
+        content={
+            "success": False,
+            "detail": exc.errors(),
+            "error_code": "VALIDATION_ERROR",
+        },
+    )
+
+async def pydantic_validation_exception_handler(request: Request, exc: PydanticValidationError) -> JSONResponse:
+    return JSONResponse(
+        status_code=422,
+        content={
+            "success": False,
+            "detail": exc.errors(),
+            "error_code": "VALIDATION_ERROR",
+        },
+    )
+
+async def http_exception_handler(request: Request, exc: StarletteHTTPException) -> JSONResponse:
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "success": False,
+            "detail": exc.detail,
+            "error_code": "NOT_FOUND" if exc.status_code == 404 else "HTTP_ERROR",
+        },
+    )
+
+async def sqlalchemy_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    return JSONResponse(
+        status_code=500,
+        content={
+            "success": False,
+            "detail": "Database error occurred",
+            "error_code": "DATABASE_ERROR",
+        },
+    )
+
+async def general_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    return JSONResponse(
+        status_code=500,
+        content={
+            "success": False,
+            "detail": "An unexpected error occurred",
+            "error_code": "INTERNAL_ERROR",
+        },
+    )
+
+def sanitize_payload(payload: Any) -> Any:
+    if isinstance(payload, dict):
+        sanitized = {}
+        for key, value in payload.items():
+            if "password" in key.lower() or "token" in key.lower() or "secret" in key.lower():
+                sanitized[key] = "***REDACTED***"
+            else:
+                sanitized[key] = sanitize_payload(value)
+        return sanitized
+    elif isinstance(payload, list):
+        return [sanitize_payload(item) for item in payload]
+    return payload

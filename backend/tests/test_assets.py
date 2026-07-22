@@ -167,7 +167,10 @@ def test_get_assets_authenticated(mock_db_assets):
     """
     app.dependency_overrides[get_db] = lambda: mock_db_assets
     app.dependency_overrides[get_current_user] = lambda: UserContext(
-        user_id="user-123", role="engineer"
+        user_id="user-123",
+        username="user-123",
+        role="engineer",
+        roles=["engineer"]
     )
 
     response = client.get("/api/v1/assets")
@@ -204,7 +207,10 @@ def test_get_assets_empty_inventory():
 
     app.dependency_overrides[get_db] = lambda: empty_db
     app.dependency_overrides[get_current_user] = lambda: UserContext(
-        user_id="user-123", role="operator"
+        user_id="user-123",
+        username="user-123",
+        role="operator",
+        roles=["operator"]
     )
 
     response = client.get("/api/v1/assets")
@@ -228,7 +234,10 @@ def test_get_asset_detail_authenticated(mock_db_assets):
     """
     app.dependency_overrides[get_db] = lambda: mock_db_assets
     app.dependency_overrides[get_current_user] = lambda: UserContext(
-        user_id="user-123", role="engineer"
+        user_id="user-123",
+        username="user-123",
+        role="engineer",
+        roles=["engineer"]
     )
 
     response = client.get(f"/api/v1/assets/{MOCK_ASSET_ID}")
@@ -257,7 +266,10 @@ def test_get_asset_detail_not_found(mock_db_assets):
 
     app.dependency_overrides[get_db] = lambda: not_found_db
     app.dependency_overrides[get_current_user] = lambda: UserContext(
-        user_id="user-123", role="engineer"
+        user_id="user-123",
+        username="user-123",
+        role="engineer",
+        roles=["engineer"]
     )
 
     response = client.get("/api/v1/assets/NONEXISTENT-99")
@@ -278,7 +290,10 @@ def test_get_alerts_authenticated(mock_db_assets):
     """
     app.dependency_overrides[get_db] = lambda: mock_db_assets
     app.dependency_overrides[get_current_user] = lambda: UserContext(
-        user_id="user-123", role="operator"
+        user_id="user-123",
+        username="user-123",
+        role="operator",
+        roles=["operator"]
     )
 
     response = client.get("/api/v1/alerts")
@@ -310,7 +325,10 @@ def test_resolve_alarm_insufficient_role(mock_db_resolve):
     """
     app.dependency_overrides[get_db] = lambda: mock_db_resolve
     app.dependency_overrides[get_current_user] = lambda: UserContext(
-        user_id="user-viewer-01", role="viewer"
+        user_id="user-viewer-01",
+        username="user-viewer-01",
+        role="viewer",
+        roles=["viewer"]
     )
 
     response = client.post(
@@ -330,7 +348,10 @@ def test_resolve_alarm_as_admin(mock_db_resolve):
     """
     app.dependency_overrides[get_db] = lambda: mock_db_resolve
     app.dependency_overrides[get_current_user] = lambda: UserContext(
-        user_id="user-admin-01", role="admin"
+        user_id="user-admin-01",
+        username="user-admin-01",
+        role="admin",
+        roles=["admin"]
     )
 
     response = client.post(
@@ -353,7 +374,10 @@ def test_resolve_alarm_as_engineer(mock_db_resolve):
     """
     app.dependency_overrides[get_db] = lambda: mock_db_resolve
     app.dependency_overrides[get_current_user] = lambda: UserContext(
-        user_id="user-eng-01", role="engineer"
+        user_id="user-eng-01",
+        username="user-eng-01",
+        role="engineer",
+        roles=["engineer"]
     )
 
     response = client.post(
@@ -374,7 +398,10 @@ def test_resolve_alarm_as_operator_forbidden(mock_db_resolve):
     """
     app.dependency_overrides[get_db] = lambda: mock_db_resolve
     app.dependency_overrides[get_current_user] = lambda: UserContext(
-        user_id="user-op-01", role="operator"
+        user_id="user-op-01",
+        username="user-op-01",
+        role="operator",
+        roles=["operator"]
     )
 
     response = client.post(

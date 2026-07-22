@@ -36,27 +36,37 @@ if DATABASE_URL.startswith("sqlite://") and not DATABASE_URL.startswith(
     DATABASE_URL = DATABASE_URL.replace("sqlite://", "sqlite+aiosqlite://", 1)
 
 # Derive sync database URL for synchronous route handlers and ORM queries
-SYNC_DATABASE_URL = DATABASE_URL.replace("sqlite+aiosqlite://", "sqlite://", 1).replace("postgresql+asyncpg://", "postgresql+psycopg2://", 1).replace("postgresql+async://", "postgresql://", 1)
-
-# Instantiate async engine with target operational metrics (Section 6)
-engine = create_async_engine(
-    DATABASE_URL,
-    pool_size=getattr(settings, "DATABASE_POOL_SIZE", 20) if not DATABASE_URL.startswith("sqlite") else 5,
-    max_overflow=getattr(settings, "DATABASE_MAX_OVERFLOW", 10) if not DATABASE_URL.startswith("sqlite") else 10,
-    pool_timeout=getattr(settings, "DATABASE_POOL_TIMEOUT", 30.0),
-    pool_recycle=1800,
-    echo=False,
+SYNC_DATABASE_URL = (
+    DATABASE_URL.replace("sqlite+aiosqlite://", "sqlite://", 1)
+    .replace("postgresql+asyncpg://", "postgresql+psycopg2://", 1)
+    .replace("postgresql+async://", "postgresql://", 1)
 )
+
+# Engine kwargs based on DB backend (SQLite vs PostgreSQL)
+async_engine_kwargs = {"echo": False}
+sync_engine_kwargs = {"echo": False}
+
+if not DATABASE_URL.startswith("sqlite"):
+    async_engine_kwargs.update({
+        "pool_size": getattr(settings, "DATABASE_POOL_SIZE", 20),
+        "max_overflow": getattr(settings, "DATABASE_MAX_OVERFLOW", 10),
+        "pool_timeout": getattr(settings, "DATABASE_POOL_TIMEOUT", 30.0),
+        "pool_recycle": 1800,
+    })
+
+if not SYNC_DATABASE_URL.startswith("sqlite"):
+    sync_engine_kwargs.update({
+        "pool_size": getattr(settings, "DATABASE_POOL_SIZE", 20),
+        "max_overflow": getattr(settings, "DATABASE_MAX_OVERFLOW", 10),
+        "pool_timeout": getattr(settings, "DATABASE_POOL_TIMEOUT", 30.0),
+        "pool_recycle": 1800,
+    })
+
+# Instantiate async engine
+engine = create_async_engine(DATABASE_URL, **async_engine_kwargs)
 
 # Instantiate sync engine for synchronous Session operations
-sync_engine = create_engine(
-    SYNC_DATABASE_URL,
-    pool_size=getattr(settings, "DATABASE_POOL_SIZE", 20) if not SYNC_DATABASE_URL.startswith("sqlite") else 5,
-    max_overflow=getattr(settings, "DATABASE_MAX_OVERFLOW", 10) if not SYNC_DATABASE_URL.startswith("sqlite") else 10,
-    pool_timeout=getattr(settings, "DATABASE_POOL_TIMEOUT", 30.0),
-    pool_recycle=1800,
-    echo=False,
-)
+sync_engine = create_engine(SYNC_DATABASE_URL, **sync_engine_kwargs)
 
 AsyncSessionLocal = async_sessionmaker(
     engine,

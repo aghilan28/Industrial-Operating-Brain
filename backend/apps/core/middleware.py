@@ -1,13 +1,13 @@
 """
-Distributed Trace Propagation Middleware
-Phase 0 Remediation — Enforces X-Correlation-ID across all inbound requests.
+Distributed Trace Propagation & Security Headers Middleware
+Phase 0 Remediation — Enforces X-Correlation-ID and Security Headers across all inbound requests.
 """
 
+import uuid
+import structlog
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response
-import uuid
-import structlog
 
 logger = structlog.get_logger("app.core.middleware")
 
@@ -28,4 +28,15 @@ class CorrelationIdMiddleware(BaseHTTPMiddleware):
         )
         response: Response = await call_next(request)
         response.headers["X-Correlation-ID"] = correlation_id
+        return response
+
+
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    """Injects enterprise-grade security headers on all outbound responses."""
+
+    async def dispatch(self, request: Request, call_next):
+        response: Response = await call_next(request)
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
         return response

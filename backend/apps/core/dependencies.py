@@ -697,3 +697,24 @@ __all__ = [
     "set_repositories",
     "shutdown_repository_subsystem",
 ]
+
+class UserContext:
+    __slots__ = ('user_id', 'email', 'role', 'roles', 'permissions')
+
+    def __init__(self, user_id: str, email: str, role: str, roles: list = None, permissions: list = None):
+        self.user_id = user_id
+        self.email = email
+        self.role = role
+        self.roles = roles or [role]
+        self.permissions = permissions or []
+
+    def __eq__(self, other):
+        if not isinstance(other, UserContext):
+            return False
+        return (self.user_id, self.email, self.role) == (other.user_id, other.email, other.role)
+
+    def __hash__(self):
+        return hash((self.user_id, self.email, self.role))
+
+    def __repr__(self):
+        return f"<UserContext user_id={self.user_id} role={self.role}>"

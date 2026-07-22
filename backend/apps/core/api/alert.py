@@ -8,8 +8,8 @@ from apps.schemas.industrial import AlarmResolveRequest, AlarmAcknowledgeRequest
 
 router = APIRouter()
 
-@router.get("/", response_model=List[dict])
-async def list_alerts(
+@router.get("/alerts", response_model=List[dict])
+async def get_alerts(
     severity: Optional[str] = Query(None, pattern="^(critical|warning|info)$"),
     limit: int = Query(
         settings.DEFAULT_PAGE_LIMIT,
@@ -29,9 +29,9 @@ async def list_alerts(
     """
     return await service.get_active_alarms(severity=severity, limit=limit, offset=offset)
 
-@router.post("/{alert_id}/acknowledge", response_model=dict)
-async def acknowledge_alert(
-    alert_id: str,
+@router.post("/alerts/{alarm_id}/acknowledge", response_model=dict)
+async def acknowledge_alarm(
+    alarm_id: str,
     request: AlarmAcknowledgeRequest,
     service: IndustrialService = Depends(get_industrial_service),
     user: UserContext = Depends(get_current_user)
@@ -39,11 +39,11 @@ async def acknowledge_alert(
     """
     Acknowledge an active alert.
     """
-    return await service.acknowledge_alarm(alert_id, user.user_id, request)
+    return await service.acknowledge_alarm(alarm_id, user.user_id, request)
 
-@router.post("/{alert_id}/resolve", response_model=dict)
-async def resolve_alert(
-    alert_id: str,
+@router.post("/alerts/{alarm_id}/resolve", response_model=dict)
+async def resolve_alarm(
+    alarm_id: str,
     request: AlarmResolveRequest,
     service: IndustrialService = Depends(get_industrial_service),
     user: UserContext = Depends(require_role("admin", "engineer"))
@@ -51,4 +51,4 @@ async def resolve_alert(
     """
     Resolve an alert (Admin/Engineer only).
     """
-    return await service.resolve_alarm(alert_id, user.user_id, request)
+    return await service.resolve_alarm(alarm_id, user.user_id, request)

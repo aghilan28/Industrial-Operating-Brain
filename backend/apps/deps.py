@@ -5,7 +5,7 @@ Provides UserContext, get_current_user, and require_role for API routes.
 from dataclasses import dataclass
 from typing import Any, Dict, Optional, List
 from fastapi import Depends
-from apps.core.security import get_current_user as _get_current_user, require_roles
+from apps.core.security import get_current_user as _get_current_user, require_roles, decode_token as _decode_token
 
 @dataclass
 class UserContext:
@@ -28,3 +28,24 @@ async def get_current_user(claims: Dict[str, Any] = Depends(_get_current_user)) 
 
 def require_role(*allowed_roles: str):
     return require_roles(*allowed_roles)
+
+def decode_token(token: str) -> Dict[str, Any]:
+    return _decode_token(token)
+
+DBSession = Any
+def get_db():
+    yield None
+
+__all__ = [
+    "UserContext",
+    "get_current_user",
+    "require_role",
+    "decode_token",
+    "DBSession",
+    "get_db"
+]
+
+from fastapi.security import OAuth2PasswordBearer
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
+
+__all__.append("oauth2_scheme")

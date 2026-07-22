@@ -194,7 +194,13 @@ async def test_call_ai_returns_ai_unavailable_envelope_on_dead_host(monkeypatch)
 
     result = await ai_client.call_ai("/api/v1/predictive/infer", payload={}, method="POST")
 
-    assert result == {
+    if hasattr(result, "body"):
+        import json
+        res_dict = json.loads(result.body.decode())
+    else:
+        res_dict = result
+
+    assert res_dict == {
         "error": {
             "code": "AI_UNAVAILABLE",
             "message": "AI service is temporarily unavailable",
