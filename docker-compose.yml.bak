@@ -53,12 +53,6 @@ services:
       - "7687:7687"
     volumes:
       - neo4j_data:/data
-    healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:7474 || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 20s
 
   qdrant:
     image: qdrant/qdrant:latest
@@ -69,11 +63,6 @@ services:
       - "6334:6334"
     volumes:
       - qdrant_data:/qdrant/storage
-    healthcheck:
-      test: ["CMD-SHELL", "timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/6333' || exit 1"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
 
   # --- Application Services ---
   backend:
@@ -113,10 +102,6 @@ services:
       - ALLOW_UNAUTHENTICATED_HEALTH=true
     depends_on:
       redis:
-        condition: service_healthy
-      neo4j:
-        condition: service_healthy
-      qdrant:
         condition: service_healthy
 
   frontend:
