@@ -13,6 +13,8 @@ _DEVELOPMENT_DATABASE_URL = "sqlite:///./iob_development.db"
 
 
 class Settings(BaseSettings):
+    DEFAULT_PAGE_LIMIT: int = 50
+    MAX_PAGE_LIMIT: int = 100
     """Application settings loaded from environment variables.
 
     Development has usable local defaults. Production deliberately fails during
@@ -190,3 +192,4 @@ def get_settings() -> Settings:
 settings = get_settings()
 
 __all__ = ["AppSettings", "Settings", "get_settings", "settings"]
+

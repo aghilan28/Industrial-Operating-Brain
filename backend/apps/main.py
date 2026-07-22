@@ -1,3 +1,4 @@
+from apps.api.ai_proxy import router as ai_router
 """
 Member 1 - IoT Core API Backend (Root Entry Point).
 
@@ -92,3 +93,10 @@ if __name__ == "__main__":
         log_level=settings.LOG_LEVEL.lower(),
         access_log=True,
     )
+
+def create_app():
+    """Application factory for test harness and ASGI runners."""
+    return app
+
+app.include_router(ai_router, prefix='/api/v1/ai', tags=['AI'])
+
