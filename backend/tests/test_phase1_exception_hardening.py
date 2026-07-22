@@ -25,7 +25,7 @@ from pydantic import BaseModel, ValidationError as PydanticValidationError
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from app.core.exceptions import (
+from apps.core.exceptions import (
     create_error_response,
     request_validation_exception_handler,
     pydantic_validation_exception_handler,

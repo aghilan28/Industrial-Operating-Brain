@@ -17,7 +17,7 @@ from sqlalchemy.orm import declarative_base, sessionmaker, Session as SyncSessio
 from sqlalchemy import text
 import structlog
 
-from app.core.config import settings
+from apps.core.config import settings
 
 logger = structlog.get_logger("apps.core.database.engine")
 

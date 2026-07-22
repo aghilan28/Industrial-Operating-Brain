@@ -5,15 +5,15 @@ from __future__ import annotations
 import pytest
 from pydantic import ValidationError as PydanticValidationError
 
-from app.core import security
-from app.core.config import Settings, settings
-from app.core.dependencies import (
+from apps.core import security
+from apps.core.config import Settings, settings
+from apps.core.dependencies import (
     get_user_repository,
     initialize_production_repositories,
     initialize_stub_repositories,
     reset_repository_subsystem,
 )
-from app.repositories.production import SQLAlchemyUserRepository
+from apps.repositories.production import SQLAlchemyUserRepository
 
 
 PRODUCTION_SECRET = "production-secret-key-with-more-than-thirty-two-characters"
@@ -94,7 +94,7 @@ def test_persistent_strategy_binds_a_real_user_adapter():
         reset_repository_subsystem()
         initialize_production_repositories()
 
-        from app.core.dependencies import get_user_repo
+        from apps.core.dependencies import get_user_repo
 
         assert isinstance(get_user_repo(), SQLAlchemyUserRepository)
     finally:

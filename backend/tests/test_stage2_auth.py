@@ -35,13 +35,13 @@ os.environ.setdefault("DATABASE_URL", "sqlite:///./test_stage2.db")
 os.environ.setdefault("ALGORITHM", "HS256")
 os.environ.setdefault("ACCESS_TOKEN_EXPIRE_MINUTES", "30")
 
-from app.core import security
-from app.core.config import settings
-from app.core.errors import error_envelope
-from app.core.exceptions import AuthenticationError
-from app.deps import UserContext, get_current_user
-from app.models.schemas import LoginRequest, RefreshRequest
-from app.models.user import User
+from apps.core import security
+from apps.core.config import settings
+from apps.core.errors import error_envelope
+from apps.core.exceptions import AuthenticationError
+from apps.deps import UserContext, get_current_user
+from apps.models.schemas import LoginRequest, RefreshRequest
+from apps.models.user import User
 
 
 # =====================================================================
@@ -160,8 +160,8 @@ def auth_client() -> Generator[TestClient, None, None]:
     Minimal FastAPI app mounting only the Stage-2 auth router,
     with get_db overridden to an in-memory user store.
     """
-    from app.api.auth import router as auth_router
-    from app.database import get_db
+    from apps.api.auth import router as auth_router
+    from apps.database import get_db
 
     demo_user = _make_user()
     store = {demo_user.email: demo_user}
@@ -352,6 +352,6 @@ class TestStage0Coexistence:
         assert ctx.role == "engineer"
 
     def test_security_and_deps_get_current_user_differ(self):
-        from app.core.security import get_current_user as sec_gcu
-        from app.deps import get_current_user as deps_gcu
+        from apps.core.security import get_current_user as sec_gcu
+        from apps.deps import get_current_user as deps_gcu
         assert sec_gcu is not deps_gcu

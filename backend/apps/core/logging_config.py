@@ -10,7 +10,7 @@ from typing import Any, Dict
 import structlog
 from structlog.stdlib import LoggerFactory
 
-from app.core.config import settings
+from apps.core.config import settings
 
 
 def setup_logging() -> None:

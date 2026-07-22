@@ -1,7 +1,7 @@
 """
 Track A — Stage 1 (Database Layer) — Offline Verification Harness
 Runs every Checkpoint 1 check that does NOT require a live Postgres socket.
-(The live-socket check is: python -c "from app.database import engine; print(engine.connect())")
+(The live-socket check is: python -c "from apps.database import engine; print(engine.connect())")
 """
 import inspect
 import os
@@ -15,7 +15,7 @@ from sqlalchemy.orm import configure_mappers
 print("=" * 72)
 print("CHECK 1 — Engine construction from settings.DATABASE_URL")
 print("=" * 72)
-from app.database import engine, SessionLocal, Base, get_db  # noqa: E402
+from apps.database import engine, SessionLocal, Base, get_db  # noqa: E402
 print("engine          :", engine)
 print("engine.url      :", engine.url.render_as_string(hide_password=True))
 print("engine.dialect  :", engine.dialect.name, "/", engine.dialect.driver)
@@ -26,7 +26,7 @@ print()
 print("=" * 72)
 print("CHECK 2 — All models import cleanly, tables registered, no circulars")
 print("=" * 72)
-from app.models import (  # noqa: E402
+from apps.models import (  # noqa: E402
     User, Asset, Sensor, Telemetry, Event, MaintenanceLog, Alarm,
 )
 expected = {"users", "assets", "sensors", "telemetry", "events", "maintenance_logs", "alarms"}
@@ -93,16 +93,16 @@ print()
 print("=" * 72)
 print("CHECK 5 — Integration shims import (app.config / app.deps), Pydantic schemas")
 print("=" * 72)
-from app.config import settings as shim_settings  # noqa: E402
-from app.core.config import settings as core_settings  # noqa: E402
+from apps.config import settings as shim_settings  # noqa: E402
+from apps.core.config import settings as core_settings  # noqa: E402
 assert shim_settings is core_settings, "app.config shim must alias the SAME settings object"
 print("app.config      : re-exports the canonical app.core.config settings (same object)")
 
-from app.deps import get_db as deps_get_db, DBSession  # noqa: E402
+from apps.deps import get_db as deps_get_db, DBSession  # noqa: E402
 assert deps_get_db is get_db, "app.deps must re-export app.database.get_db"
 print("app.deps        : get_db re-exported, DBSession dependency alias available")
 
-from app.models import schemas as s  # noqa: E402
+from apps.models import schemas as s  # noqa: E402
 now = __import__("datetime").datetime.now()
 asset = Asset(asset_id="PUMP-001", name="Feed Pump", plant_id="PLANT-1",
               line_id="LINE-1", machine_id="MCH-1")
@@ -117,7 +117,7 @@ print("=" * 72)
 print("CHECK 6 — Existing FastAPI wiring untouched: full app still boots")
 print("=" * 72)
 try:
-    import app.main  # noqa: E402
+    import apps.main  # noqa: E402
     print("app.main        : imported OK —", len(app.main.app.routes), "routes registered")
 except SyntaxError as exc:
     # PRE-EXISTING repo issue, NOT introduced by Track A:

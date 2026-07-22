@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Demo seed script for hackathon presentation (Phase 6)."""
 import asyncio
-from app.core.database import get_session
-from app.models.asset import Asset
-from app.models.alert import Alert
+from apps.core.database import get_session
+from apps.models.asset import Asset
+from apps.models.alert import Alert
 from datetime import datetime
 
 async def seed():

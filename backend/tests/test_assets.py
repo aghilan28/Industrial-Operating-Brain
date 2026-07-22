@@ -27,11 +27,11 @@ from unittest.mock import MagicMock
 import pytest
 from fastapi.testclient import TestClient
 
-from app.main import app
-from app.database import get_db
-from app.deps import get_current_user, UserContext
-from app.models.alarm import Alarm
-from app.models.asset import Asset
+from apps.main import app
+from apps.database import get_db
+from apps.deps import get_current_user, UserContext
+from apps.models.alarm import Alarm
+from apps.models.asset import Asset
 
 client = TestClient(app)
 

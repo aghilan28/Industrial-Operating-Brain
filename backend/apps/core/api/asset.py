@@ -1,9 +1,9 @@
 from typing import List, Optional
 from fastapi import APIRouter, Depends, Query, status
-from app.core.config import settings
-from app.deps import get_current_user, UserContext
-from app.services.industrial_service import IndustrialService
-from app.core.dependencies import get_industrial_service
+from apps.core.config import settings
+from apps.deps import get_current_user, UserContext
+from apps.services.industrial_service import IndustrialService
+from apps.core.dependencies import get_industrial_service
 
 router = APIRouter()
 
@@ -48,7 +48,7 @@ async def get_asset_telemetry(
     """
     Get historical telemetry for an asset.
     """
-    from app.schemas.industrial import TelemetryHistoryRequest
+    from apps.schemas.industrial import TelemetryHistoryRequest
     from datetime import datetime, timedelta, timezone
     
     delta_map = {

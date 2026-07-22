@@ -32,7 +32,7 @@ class TestAppSettings:
     """Tests for app.core.config.AppSettings."""
 
     def test_default_settings_load(self):
-        from app.core.config import AppSettings
+        from apps.core.config import AppSettings
         settings = AppSettings()
         assert settings.PROJECT_NAME == "Enterprise Backend Core"
         assert settings.VERSION == "1.0.0"
@@ -43,7 +43,7 @@ class TestAppSettings:
         assert settings.JSON_LOGS is True
 
     def test_settings_from_env_vars(self, monkeypatch):
-        from app.core.config import AppSettings
+        from apps.core.config import AppSettings
         monkeypatch.setenv("PROJECT_NAME", "Test Service")
         monkeypatch.setenv("ENVIRONMENT", "development")
         monkeypatch.setenv("DEBUG", "true")
@@ -58,7 +58,7 @@ class TestAppSettings:
         assert settings.JSON_LOGS is False
 
     def test_secret_key_validator_blocks_weak_in_prod(self, monkeypatch):
-        from app.core.config import AppSettings
+        from apps.core.config import AppSettings
         monkeypatch.setenv("ENVIRONMENT", "production")
         monkeypatch.setenv("SECRET_KEY", "CHANGE_ME_short")
 
@@ -66,7 +66,7 @@ class TestAppSettings:
             AppSettings()
 
     def test_secret_key_validator_allows_strong_in_prod(self, monkeypatch):
-        from app.core.config import AppSettings
+        from apps.core.config import AppSettings
         monkeypatch.setenv("ENVIRONMENT", "production")
         monkeypatch.setenv("SECRET_KEY", "a" * 32 + "_strong_secret_key_here_1234567890")
         monkeypatch.setenv("MQTT_PASSWORD", "production-mqtt-password")
@@ -79,7 +79,7 @@ class TestAppSettings:
         assert len(settings.SECRET_KEY) >= 32
 
     def test_integration_settings_mirrored(self):
-        from app.core.config import settings
+        from apps.core.config import settings
         assert hasattr(settings, "IOB_MQTT_URL")
         assert hasattr(settings, "IOB_TOPIC_PREFIX")
         assert hasattr(settings, "DEFAULT_PAGE_LIMIT")
@@ -94,7 +94,7 @@ class TestStructuredLogging:
     """Tests for app.core.logging_config module."""
 
     def test_json_formatter_outputs_valid_json(self):
-        from app.core.logging_config import StructuredJSONFormatter, correlation_id_ctx
+        from apps.core.logging_config import StructuredJSONFormatter, correlation_id_ctx
 
         formatter = StructuredJSONFormatter()
         record = logging.LogRecord(
@@ -119,7 +119,7 @@ class TestStructuredLogging:
         assert "correlation_id" in parsed
 
     def test_json_formatter_includes_extra_fields(self):
-        from app.core.logging_config import StructuredJSONFormatter
+        from apps.core.logging_config import StructuredJSONFormatter
 
         formatter = StructuredJSONFormatter()
         record = logging.LogRecord(
@@ -140,7 +140,7 @@ class TestStructuredLogging:
         assert parsed["count"] == 42
 
     def test_json_formatter_includes_exception_info(self):
-        from app.core.logging_config import StructuredJSONFormatter
+        from apps.core.logging_config import StructuredJSONFormatter
 
         formatter = StructuredJSONFormatter()
         try:
@@ -166,7 +166,7 @@ class TestStructuredLogging:
         assert "ValueError" in parsed["exception"]
 
     def test_setup_structured_logging_configures_root_logger(self):
-        from app.core.logging_config import setup_structured_logging
+        from apps.core.logging_config import setup_structured_logging
 
         # Reset root logger
         root = logging.getLogger()
@@ -184,7 +184,7 @@ class TestStructuredLogging:
             root.removeHandler(h)
 
     def test_correlation_id_context_var(self):
-        from app.core.logging_config import correlation_id_ctx
+        from apps.core.logging_config import correlation_id_ctx
 
         # Default should be empty string
         assert correlation_id_ctx.get() == ""
@@ -206,7 +206,7 @@ class TestCorrelationMiddleware:
     """Tests for the CorrelationIdMiddleware (Phase 1)."""
 
     def _create_test_app(self):
-        from app.core.middleware import CorrelationIdMiddleware
+        from apps.core.middleware import CorrelationIdMiddleware
 
         test_app = FastAPI()
         test_app.add_middleware(CorrelationIdMiddleware)
@@ -235,7 +235,7 @@ class TestCorrelationMiddleware:
         # Verify the correlation header is set on non-200 responses produced
         # by the normal Starlette exception pipeline.
         from fastapi import HTTPException
-        from app.core.middleware import CorrelationIdMiddleware
+        from apps.core.middleware import CorrelationIdMiddleware
 
         test_app = FastAPI()
         test_app.add_middleware(CorrelationIdMiddleware)
@@ -263,7 +263,7 @@ class TestExceptionHandlers:
         """Build a FastAPI app with the Phase 1 canonical handlers wired up,
         matching the registration performed in app.main.create_app().
         """
-        from app.core.exceptions import (
+        from apps.core.exceptions import (
             IOBException,
             AuthenticationError,
             AuthorizationError,
@@ -298,7 +298,7 @@ class TestExceptionHandlers:
         return test_app
 
     def test_iob_exception_handler(self):
-        from app.core.exceptions import IOBException
+        from apps.core.exceptions import IOBException
 
         test_app = self._create_test_app_with_handlers()
 
@@ -316,7 +316,7 @@ class TestExceptionHandlers:
         assert body["message"] == "Something went wrong"
 
     def test_authentication_error_handler(self):
-        from app.core.exceptions import AuthenticationError
+        from apps.core.exceptions import AuthenticationError
 
         test_app = self._create_test_app_with_handlers()
 
@@ -333,7 +333,7 @@ class TestExceptionHandlers:
         assert body["error"] == "UNAUTHORIZED"
 
     def test_authorization_error_handler(self):
-        from app.core.exceptions import AuthorizationError
+        from apps.core.exceptions import AuthorizationError
 
         test_app = self._create_test_app_with_handlers()
 
@@ -350,7 +350,7 @@ class TestExceptionHandlers:
         assert body["error"] == "FORBIDDEN"
 
     def test_resource_not_found_error_handler(self):
-        from app.core.exceptions import ResourceNotFoundError
+        from apps.core.exceptions import ResourceNotFoundError
 
         test_app = self._create_test_app_with_handlers()
 
@@ -410,7 +410,7 @@ class TestExceptionHandlers:
     def test_starlette_http_exception_handler(self):
         """HTTPException is handled by the built-in Starlette/HTTP handler
         registered in create_app(). Use the real app for this."""
-        from app.main import create_app
+        from apps.main import create_app
 
         app = create_app()
 
@@ -472,12 +472,12 @@ class TestApplicationFactory:
     """Tests for app.main.create_app() factory."""
 
     def test_create_app_returns_fastapi_instance(self):
-        from app.main import create_app
+        from apps.main import create_app
         app = create_app()
         assert isinstance(app, FastAPI)
 
     def test_health_endpoint(self):
-        from app.main import create_app
+        from apps.main import create_app
         app = create_app()
         client = TestClient(app)
         response = client.get("/health")
@@ -487,14 +487,14 @@ class TestApplicationFactory:
         assert "version" in data
 
     def test_correlation_id_in_response(self):
-        from app.main import create_app
+        from apps.main import create_app
         app = create_app()
         client = TestClient(app)
         response = client.get("/health")
         assert "x-correlation-id" in response.headers
 
     def test_custom_correlation_id_preserved(self):
-        from app.main import create_app
+        from apps.main import create_app
         app = create_app()
         client = TestClient(app)
         custom_id = "test-correlation-abc-123"
@@ -502,7 +502,7 @@ class TestApplicationFactory:
         assert response.headers["x-correlation-id"] == custom_id
 
     def test_cors_middleware_configured(self):
-        from app.main import create_app
+        from apps.main import create_app
         from fastapi.middleware.cors import CORSMiddleware
         app = create_app()
         # Check that CORS middleware is in the stack (Starlette uses `cls`)
@@ -518,7 +518,7 @@ class TestFullApplication:
     """End-to-end test of the wired FastAPI application via root main.py."""
 
     def test_health_endpoint(self):
-        from app.main import app
+        from apps.main import app
         client = TestClient(app)
         response = client.get("/health")
         assert response.status_code == 200
@@ -527,20 +527,20 @@ class TestFullApplication:
         assert "version" in data
 
     def test_correlation_id_in_response(self):
-        from app.main import app
+        from apps.main import app
         client = TestClient(app)
         response = client.get("/health")
         assert "x-correlation-id" in response.headers
 
     def test_custom_correlation_id_preserved(self):
-        from app.main import app
+        from apps.main import app
         client = TestClient(app)
         custom_id = "test-correlation-abc-123"
         response = client.get("/health", headers={"X-Correlation-ID": custom_id})
         assert response.headers["x-correlation-id"] == custom_id
 
     def test_exception_handlers_registered(self):
-        from app.main import app
+        from apps.main import app
         client = TestClient(app, raise_server_exceptions=False)
 
         # Trigger request validation error via missing fields on login
@@ -559,7 +559,7 @@ class TestSecurityHeaders:
     """Tests for app.core.security module."""
 
     def test_security_headers_injected(self):
-        from app.core.security import SecurityHeadersMiddleware
+        from apps.core.security import SecurityHeadersMiddleware
 
         test_app = FastAPI()
         test_app.add_middleware(SecurityHeadersMiddleware)
@@ -579,7 +579,7 @@ class TestSecurityHeaders:
         assert response.headers.get("Referrer-Policy") == "strict-origin-when-cross-origin"
 
     def test_password_hashing(self):
-        from app.core.security import hash_password, verify_password
+        from apps.core.security import hash_password, verify_password
 
         password = "SecureP@ssw0rd!"
         hashed = hash_password(password)
@@ -592,7 +592,7 @@ class TestSecurityHeaders:
         assert verify_password("wrong_password", hashed) is False
 
     def test_jwt_create_and_decode(self):
-        from app.core.security import create_access_token, decode_access_token
+        from apps.core.security import create_access_token, decode_access_token
         from datetime import timedelta
 
         data = {"sub": "user123", "role": "admin"}
@@ -610,7 +610,7 @@ class TestSecurityHeaders:
         assert "exp" in decoded
 
     def test_jwt_expired_token_returns_none(self):
-        from app.core.security import create_access_token, decode_access_token
+        from apps.core.security import create_access_token, decode_access_token
         from datetime import timedelta
 
         data = {"sub": "user123"}
@@ -621,13 +621,13 @@ class TestSecurityHeaders:
         assert decoded is None
 
     def test_jwt_invalid_token_returns_none(self):
-        from app.core.security import decode_access_token
+        from apps.core.security import decode_access_token
 
         decoded = decode_access_token("invalid.token.here")
         assert decoded is None
 
     def test_security_headers_middleware_in_factory_app(self):
-        from app.main import create_app
+        from apps.main import create_app
         app = create_app()
         client = TestClient(app)
         response = client.get("/health")
@@ -644,7 +644,7 @@ class TestHealthProbes:
     """Tests for app.core.health module."""
 
     def test_liveness_probe(self):
-        from app.main import create_app
+        from apps.main import create_app
         app = create_app()
         client = TestClient(app)
         response = client.get("/health/live")
@@ -653,7 +653,7 @@ class TestHealthProbes:
         assert data["status"] == "alive"
 
     def test_readiness_probe_healthy(self):
-        from app.main import create_app
+        from apps.main import create_app
         app = create_app()
         client = TestClient(app)
         # Mock DB to healthy so readiness succeeds
@@ -665,8 +665,8 @@ class TestHealthProbes:
             assert data["checks"]["database"] == "healthy"
 
     def test_readiness_probe_unhealthy(self):
-        from app.main import create_app
-        from app.core.health import check_database_connection
+        from apps.main import create_app
+        from apps.core.health import check_database_connection
 
         app = create_app()
 
@@ -680,7 +680,7 @@ class TestHealthProbes:
             assert data["checks"]["database"] == "unhealthy"
 
     def test_health_router_in_factory(self):
-        from app.main import create_app
+        from apps.main import create_app
         app = create_app()
 
         # Verify health routes are registered
@@ -689,7 +689,7 @@ class TestHealthProbes:
         assert "/health/ready" in routes
 
     def test_legacy_health_endpoint_still_works(self):
-        from app.main import create_app
+        from apps.main import create_app
         app = create_app()
         client = TestClient(app)
         response = client.get("/health")

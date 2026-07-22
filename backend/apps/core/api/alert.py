@@ -1,10 +1,10 @@
 from typing import List, Optional
 from fastapi import APIRouter, Depends, Query, status
-from app.core.config import settings
-from app.deps import get_current_user, UserContext, require_role
-from app.services.industrial_service import IndustrialService
-from app.core.dependencies import get_industrial_service
-from app.schemas.industrial import AlarmResolveRequest, AlarmAcknowledgeRequest
+from apps.core.config import settings
+from apps.deps import get_current_user, UserContext, require_role
+from apps.services.industrial_service import IndustrialService
+from apps.core.dependencies import get_industrial_service
+from apps.schemas.industrial import AlarmResolveRequest, AlarmAcknowledgeRequest
 
 router = APIRouter()
 

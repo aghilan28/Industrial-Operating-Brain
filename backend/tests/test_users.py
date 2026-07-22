@@ -16,11 +16,11 @@ from unittest.mock import MagicMock
 
 from fastapi.testclient import TestClient
 
-from app.main import create_app
-from app.core import security
-from app.database import get_db
-from app.deps import get_current_user, UserContext
-from app.models.user import User
+from apps.main import create_app
+from apps.core import security
+from apps.database import get_db
+from apps.deps import get_current_user, UserContext
+from apps.models.user import User
 
 app = create_app()
 client = TestClient(app)

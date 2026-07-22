@@ -9,8 +9,8 @@ from threading import RLock
 from typing import Any, AsyncGenerator, Dict, List, Optional
 from uuid import UUID, NAMESPACE_URL, uuid4, uuid5
 
-from app.core.config import settings
-from app.repositories.interfaces import (
+from apps.core.config import settings
+from apps.repositories.interfaces import (
     IAlarmRepository,
     IMachineRepository,
     IMetadataRepository,
@@ -19,10 +19,10 @@ from app.repositories.interfaces import (
     ITelemetryRepository,
     IUserRepository,
 )
-from app.services.auth_service import AuthService
-from app.services.dashboard_service import DashboardService
-from app.services.industrial_service import IndustrialService
-from app.services.user_service import UserService
+from apps.services.auth_service import AuthService
+from apps.services.dashboard_service import DashboardService
+from apps.services.industrial_service import IndustrialService
+from apps.services.user_service import UserService
 
 logger = logging.getLogger("app.core.dependencies")
 _repository_lock = RLock()
@@ -532,8 +532,8 @@ def initialize_production_repositories() -> None:
     if not settings.DATABASE_URL or not settings.DATABASE_URL.strip():
         raise RuntimeError("DATABASE_URL is required for persistent repositories")
 
-    from app.database import SessionLocal
-    from app.repositories.production import (
+    from apps.database import SessionLocal
+    from apps.repositories.production import (
         PolicyPermissionRepository,
         PolicyRoleRepository,
         SQLAlchemyUserRepository,
@@ -599,7 +599,7 @@ def shutdown_repository_subsystem() -> None:
     mode = _repository_mode
     reset_repository_subsystem()
     if mode == "production":
-        from app.database import engine
+        from apps.database import engine
 
         engine.dispose()
 

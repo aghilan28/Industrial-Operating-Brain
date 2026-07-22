@@ -14,7 +14,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import sys, os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from app.main import create_app
+from apps.main import create_app
 
 
 @pytest.fixture(scope="module")
@@ -105,7 +105,7 @@ def test_ai_gateway_route_exists(client):
 
 def test_mqtt_bridge_import():
     """MQTT bridge module loads without exception (Section 7 — PASS)."""
-    from app.mqtt_bridge import MQTTBridge
+    from apps.mqtt_bridge import MQTTBridge
     bridge = MQTTBridge()
     assert bridge is not None
 

@@ -15,9 +15,9 @@ import pytest
 from unittest.mock import AsyncMock, MagicMock
 from fastapi import WebSocket
 
-from app.core.security import create_access_token
-from app.services.mqtt_bridge import MQTTBridge, sensor_queue
-from app.api.ws import websocket_telemetry_endpoint, manager
+from apps.core.security import create_access_token
+from apps.services.mqtt_bridge import MQTTBridge, sensor_queue
+from apps.api.ws import websocket_telemetry_endpoint, manager
 
 
 # =====================================================================

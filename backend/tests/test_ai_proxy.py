@@ -21,10 +21,10 @@ os.environ.setdefault("DATABASE_URL", "sqlite:///./test_ai_proxy.db")
 import pytest
 from fastapi.testclient import TestClient
 
-from app.main import app
-from app.api import ai_proxy
-from app.core.security import create_access_token
-from app.services import ai_client
+from apps.main import app
+from apps.api import ai_proxy
+from apps.core.security import create_access_token
+from apps.services import ai_client
 
 client = TestClient(app)
 

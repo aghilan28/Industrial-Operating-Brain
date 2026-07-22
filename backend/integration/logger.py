@@ -24,8 +24,8 @@ Usage:
 import logging
 import sys
 
-from app.core.config import settings
-from app.core.logging_config import setup_structured_logging, correlation_id_ctx
+from apps.core.config import settings
+from apps.core.logging_config import setup_structured_logging, correlation_id_ctx
 
 
 def get_integration_logger(name: str = "iob.integration") -> logging.Logger:
@@ -55,7 +55,7 @@ def get_integration_logger(name: str = "iob.integration") -> logging.Logger:
     if not logger.handlers:
         logger.setLevel(settings.LOG_LEVEL)
         handler = logging.StreamHandler(sys.stdout)
-        from app.core.logging_config import StructuredJSONFormatter
+        from apps.core.logging_config import StructuredJSONFormatter
 
         handler.setFormatter(StructuredJSONFormatter())
         logger.addHandler(handler)

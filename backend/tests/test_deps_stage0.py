@@ -20,8 +20,8 @@ from fastapi import HTTPException
 # ── Ensure the project root is on sys.path ──────────────────────────────
 sys.path.insert(0, ".")
 
-from app.core.config import settings
-from app.deps import (
+from apps.core.config import settings
+from apps.deps import (
     DBSession,
     UserContext,
     __all__,
@@ -84,7 +84,7 @@ class TestModuleStructure:
 
     def test_no_circular_imports_with_security_module(self):
         """deps.get_current_user and core.security.get_current_user must coexist."""
-        from app.core.security import get_current_user as sec_gcu
+        from apps.core.security import get_current_user as sec_gcu
         assert sec_gcu is not get_current_user
 
 

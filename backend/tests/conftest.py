@@ -9,9 +9,9 @@ from httpx import AsyncClient, ASGITransport
 from unittest.mock import AsyncMock, MagicMock
 from fastapi.testclient import TestClient
 
-from app.main import create_app
-from app.core.dependencies import initialize_stub_repositories, reset_repository_subsystem
-from app.core.config import settings
+from apps.main import create_app
+from apps.core.dependencies import initialize_stub_repositories, reset_repository_subsystem
+from apps.core.config import settings
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -33,8 +33,8 @@ def setup_test_env():
     
     # Ensure SQLite tables exist for integration tests
     try:
-        from app.core.database.engine import sync_engine, Base
-        from app.models import user, asset, alarm
+        from apps.core.database.engine import sync_engine, Base
+        from apps.models import user, asset, alarm
         Base.metadata.create_all(bind=sync_engine)
     except Exception:
         pass

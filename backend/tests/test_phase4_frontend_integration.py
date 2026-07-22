@@ -30,13 +30,13 @@ from unittest.mock import MagicMock
 import pytest
 from fastapi.testclient import TestClient
 
-from app.main import app
-from app.core import security
-from app.core.config import settings
-from app.core.timeutils import utc_iso
-from app.database import get_db
-from app.deps import get_current_user, UserContext
-from app.models.user import User
+from apps.main import app
+from apps.core import security
+from apps.core.config import settings
+from apps.core.timeutils import utc_iso
+from apps.database import get_db
+from apps.deps import get_current_user, UserContext
+from apps.models.user import User
 
 client = TestClient(app)
 
@@ -182,7 +182,7 @@ class TestAIGatewayIntegration:
         assert resp.status_code == 401
 
     def test_authorized_inference_relayed(self, monkeypatch):
-        from app.api import ai_proxy
+        from apps.api import ai_proxy
 
         async def fake_call_ai(path, *, payload=None, method="POST"):
             return {"success": True, "data": {"echo": payload}}
@@ -210,7 +210,7 @@ class TestAIGatewayIntegration:
         assert body["success"] is False
 
     def test_payload_within_limit_not_rejected_by_guard(self, monkeypatch):
-        from app.api import ai_proxy
+        from apps.api import ai_proxy
 
         async def fake_call_ai(path, *, payload=None, method="POST"):
             return {"ok": True}
@@ -230,7 +230,7 @@ class TestWebSocketIntegration:
     async def test_invalid_token_rejected_4001(self):
         from unittest.mock import AsyncMock
         from fastapi import WebSocket
-        from app.api.ws import websocket_telemetry_endpoint
+        from apps.api.ws import websocket_telemetry_endpoint
 
         mock_ws = AsyncMock(spec=WebSocket)
         await websocket_telemetry_endpoint(mock_ws, token="bad.token.value")

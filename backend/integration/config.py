@@ -2,7 +2,7 @@
 Integration Layer Configuration Models.
 
 This module provides the IntegrationSettings class for the IOB integration layer.
-It now leverages the enterprise-grade AppSettings from app.core.config as the
+It now leverages the enterprise-grade AppSettings from apps.core.config as the
 primary configuration source, while maintaining backward compatibility with
 existing code that imports IntegrationSettings directly.
 
@@ -56,5 +56,5 @@ def get_app_settings():
     Use this when you need application-level config (LOG_LEVEL, ENVIRONMENT, etc.)
     rather than just integration-layer settings.
     """
-    from app.core.config import settings
+    from apps.core.config import settings
     return settings

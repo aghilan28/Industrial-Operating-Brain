@@ -14,11 +14,11 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from fastapi.testclient import TestClient
 
-from app.main import app
-from app.core import security
-from app.database import get_db
-from app.deps import get_current_user, UserContext
-from app.models.user import User
+from apps.main import app
+from apps.core import security
+from apps.database import get_db
+from apps.deps import get_current_user, UserContext
+from apps.models.user import User
 
 
 # =============================================================================
@@ -32,7 +32,7 @@ async def test_service_integrates_with_repos_correctly():
     This test ensures IndustrialService correctly orchestrates repository calls
     without bypassing the abstraction layer.
     """
-    from app.services.industrial_service import IndustrialService
+    from apps.services.industrial_service import IndustrialService
 
     mock_machine_repo = AsyncMock()
     mock_machine_repo.get_by_id.return_value = {

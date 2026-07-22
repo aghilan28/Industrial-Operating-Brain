@@ -7,7 +7,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from app.services.mqtt_bridge import MQTTBridge, sensor_queue
+from apps.services.mqtt_bridge import MQTTBridge, sensor_queue
 
 
 @pytest.mark.asyncio

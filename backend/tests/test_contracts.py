@@ -8,20 +8,20 @@ from pydantic import ValidationError
 from uuid import UUID
 from datetime import datetime
 
-from app.schemas.auth import (
+from apps.schemas.auth import (
     Token,
     LoginRequest,
     RegisterRequest,
     RefreshTokenRequest,
 )
-from app.schemas.users import (
+from apps.schemas.users import (
     UserResponse,
     UserCreate,
     UserUpdate,
     RoleResponse,
     PermissionResponse,
 )
-from app.schemas.industrial import (
+from apps.schemas.industrial import (
     MachineResponse,
     MachineCreate,
     MachineUpdate,
@@ -33,7 +33,7 @@ from app.schemas.industrial import (
     AnomalyPredictionResponse,
     RULPredictionResponse,
 )
-from app.schemas.dashboard import (
+from apps.schemas.dashboard import (
     DashboardOverviewResponse,
     MachineStatusSummary,
     TelemetryWidgetData,

@@ -135,7 +135,7 @@ def _emit_interface(name: str, schema: Dict[str, Any]) -> str:
 
 
 def generate(output_path: str) -> int:
-    from app.main import app  # imported lazily so env bootstrap applies first
+    from apps.main import app  # imported lazily so env bootstrap applies first
 
     openapi = app.openapi()
     components = openapi.get("components", {}).get("schemas", {})

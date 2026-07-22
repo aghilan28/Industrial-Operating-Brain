@@ -3,7 +3,7 @@ Non-blocking Pub/Sub interface for Track A → Track B notification dispatching.
 Replaces direct cross-track import violations (e.g., alert_service → websocket_manager)."""
 import json
 import redis.asyncio as aioredis
-from app.core.config import settings
+from apps.core.config import settings
 import structlog
 
 logger = structlog.get_logger("shared.event_bus")
