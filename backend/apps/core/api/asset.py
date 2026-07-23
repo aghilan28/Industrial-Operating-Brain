@@ -7,7 +7,7 @@ from apps.core.dependencies import get_industrial_service
 
 router = APIRouter()
 
-@router.get("/", response_model=List[dict])
+@router.get("/", response_model=dict)
 async def list_assets(
     limit: int = Query(
         settings.DEFAULT_PAGE_LIMIT,
