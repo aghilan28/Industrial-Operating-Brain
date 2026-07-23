@@ -1,9 +1,16 @@
-﻿/** @type {import('next').NextConfig} */
+/** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "standalone",
   reactStrictMode: true,
   experimental: {
     optimizePackageImports: ["@iconify/react", "gsap", "three"],
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: "http://localhost:8000/api/:path*",
+      },
+    ];
   },
 };
 
