@@ -11,7 +11,7 @@ def auth_header():
     """Returns a valid authorized bearer authorization header."""
     # Obtain a valid token using our mock auth system setup
     response = client.post(
-        "/api/v1/auth/login", json={"email": "admin", "password": "SecurePass123!"}
+        "/api/v1/auth/login", json={"email": "admin@iob.demo", "password": "SecurePass123!"}
     )
     token = response.json()["access_token"]
     return {"Authorization": f"Bearer {token}"}

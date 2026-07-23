@@ -20,13 +20,12 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      // Backend OAuth2 Password request format
-      const formData = new URLSearchParams();
-      formData.append("username", username);
-      formData.append("password", password);
-
-      const response = await api.post("/api/v1/auth/login", formData, {
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      const response = await api.post("/api/v1/auth/login", {
+        email: username,
+        password: password,
+        remember_me: false
+      }, {
+        headers: { "Content-Type": "application/json" },
       });
 
       const { access_token, user } = response.data;
@@ -90,7 +89,7 @@ export default function LoginPage() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="w-full rounded-lg border border-white/10 bg-neutral-950 px-3 py-2 text-sm text-white focus:border-blue-500 focus:outline-none"
-              placeholder="e.g. operator_01"
+              placeholder="e.g. admin@iob.demo"
             />
           </div>
 

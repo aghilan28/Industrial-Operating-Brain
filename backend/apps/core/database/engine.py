@@ -26,14 +26,11 @@ DATABASE_URL = (
     settings.DATABASE_URL
     or "postgresql+asyncpg://postgres:postgres@localhost:5432/iob"
 )
-if DATABASE_URL.startswith("postgresql://") and not DATABASE_URL.startswith(
-    "postgresql+asyncpg://"
-):
-    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
-if DATABASE_URL.startswith("sqlite://") and not DATABASE_URL.startswith(
-    "sqlite+aiosqlite://"
-):
-    DATABASE_URL = DATABASE_URL.replace("sqlite://", "sqlite+aiosqlite://", 1)
+import re
+if "postgresql" in DATABASE_URL:
+    DATABASE_URL = re.sub(r"^postgresql(\+[a-zA-Z0-9_]+)?://", "postgresql+asyncpg://", DATABASE_URL)
+if "sqlite" in DATABASE_URL:
+    DATABASE_URL = re.sub(r"^sqlite(\+[a-zA-Z0-9_]+)?://", "sqlite+aiosqlite://", DATABASE_URL)
 
 # Derive sync database URL for synchronous route handlers and ORM queries
 SYNC_DATABASE_URL = (

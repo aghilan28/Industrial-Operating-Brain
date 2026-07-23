@@ -53,6 +53,19 @@ class RoleUpdate(BaseModel):
     name: Optional[str] = None
     permissions: Optional[List[str]] = None
 
+class UserListResponse(BaseModel):
+    users: List[UserResponse]
+    total: int
+    page: int
+    page_size: int
+    total_pages: int
+
+class PermissionCreate(BaseModel):
+    name: str
+    resource: str
+    action: str
+    description: Optional[str] = None
+
 # Catch-all fallback
 def __getattr__(name: str):
     return type(name, (BaseModel,), {})

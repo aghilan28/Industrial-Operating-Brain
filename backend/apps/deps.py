@@ -130,8 +130,6 @@ def require_role(*allowed_roles: str):
 
 
 DBSession = Any
-def get_db():
-    yield None
 
 
 __all__ = [

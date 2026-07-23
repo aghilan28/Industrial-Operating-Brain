@@ -1,4 +1,4 @@
-﻿import json
+import json
 import logging
 import subprocess
 from fastapi import FastAPI, Request
@@ -10,6 +10,7 @@ from pydantic import ValidationError as PydanticValidationError
 
 from apps.api.ai_proxy import router as ai_router
 from apps.api.auth import router as auth_router
+from apps.api.users import router as users_router
 from apps.core.api.alert import router as alert_router
 from apps.core.api.asset import router as asset_router
 from apps.core.config import settings
@@ -79,6 +80,7 @@ def create_app() -> FastAPI:
 
     # Register Domain Routers
     app_instance.include_router(auth_router, prefix="/api/v1/auth", tags=["Auth"])
+    app_instance.include_router(users_router, prefix="/api/v1/users", tags=["Users"])
     app_instance.include_router(alert_router, prefix="/api/v1", tags=["alerts"])
     app_instance.include_router(asset_router, prefix="/api/v1/assets", tags=["Assets"])
     app_instance.include_router(ai_router, prefix="/api/v1/ai", tags=["AI"])

@@ -1,8 +1,8 @@
-from pydantic import BaseModel, EmailStr, field_validator
+from pydantic import BaseModel, field_validator
 from typing import Optional
 
 class LoginRequest(BaseModel):
-    email: EmailStr
+    email: str
     password: str
     remember_me: Optional[bool] = False
 
@@ -22,7 +22,7 @@ class Token(BaseModel):
     token_type: str = "bearer"
 
 class RegisterRequest(BaseModel):
-    email: EmailStr
+    email: str
     password: str
     full_name: str
     role: Optional[str] = "operator"

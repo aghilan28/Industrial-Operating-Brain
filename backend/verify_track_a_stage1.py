@@ -118,7 +118,7 @@ print("CHECK 6 — Existing FastAPI wiring untouched: full app still boots")
 print("=" * 72)
 try:
     import apps.main  # noqa: E402
-    print("app.main        : imported OK —", len(app.main.app.routes), "routes registered")
+    print("app.main        : imported OK —", len(apps.main.app.routes), "routes registered")
 except SyntaxError as exc:
     # PRE-EXISTING repo issue, NOT introduced by Track A:
     # app/schemas/auth.py line 81 — `for v` missing loop var (owned by another track).
