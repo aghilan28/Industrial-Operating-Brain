@@ -106,7 +106,11 @@ class HttpClient {
     const url = new URL(fullUrl, getOriginFallback());
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
-        url.searchParams.append(key, String(value));
+        if (Array.isArray(value)) {
+          value.forEach((v) => url.searchParams.append(key, String(v)));
+        } else {
+          url.searchParams.append(key, String(value));
+        }
       }
     });
     return url.toString();
@@ -153,11 +157,14 @@ class HttpClient {
       signal: controller.signal,
     };
 
-    // Body handling — FormData gets special treatment
+    // Body handling — FormData and URLSearchParams get special treatment
     if (body !== undefined && body !== null) {
       if (body instanceof FormData) {
         options.body = body;
         delete headers['Content-Type']; // Let browser set multipart boundary
+      } else if (body instanceof URLSearchParams) {
+        options.body = body.toString();
+        headers['Content-Type'] = 'application/x-www-form-urlencoded';
       } else {
         options.body = JSON.stringify(body);
       }
