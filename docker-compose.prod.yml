@@ -1,0 +1,44 @@
+# =============================================================================
+# IOB PHASE 7 — Production hardening overlay
+# =============================================================================
+# Apply on top of the base file to reach FULL data-tier isolation:
+#
+#     docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+#
+# Effects:
+#   * iob-data-net becomes `internal: true` — no route to/from the host or the
+#     internet. Image pulls still work because only the data services sit on it.
+#   * Every 127.0.0.1 debug port on the data tier is removed (ports: []).
+#   * backend / ai-platform stop publishing host ports; the edge proxy on :80
+#     becomes the single ingress.
+#
+# Debugging after this overlay is applied:
+#     docker compose exec postgres psql -U iob_user -d iob_db
+#     docker compose exec redis sh -c 'REDISCLI_AUTH=$REDIS_PASSWORD redis-cli'
+#     docker compose exec neo4j cypher-shell -u neo4j -p "$NEO4J_PASSWORD"
+# =============================================================================
+
+networks:
+  iob-data-net:
+    internal: true
+
+services:
+  postgres:
+    ports: []
+  redis:
+    ports: []
+  mosquitto:
+    ports: []
+  neo4j:
+    ports: []
+  qdrant:
+    ports: []
+
+  ai-platform:
+    ports: []
+    environment:
+      # Enforce the internal-only guard: direct browser calls return 403.
+      APP_ENV: production
+
+  backend:
+    ports: []
