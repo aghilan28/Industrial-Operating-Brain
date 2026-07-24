@@ -1,0 +1,101 @@
+"""
+FastAPI application entrypoint for the IOB AI Intelligence Platform.
+Phase 3 Hardened — Internal-Only Microservice with Global REST Exception Handlers.
+
+Changes from Phase 3:
+- Added REST API global exception handlers (AppException, RequestValidationError)
+  alongside existing AI-service handlers
+- Route registration unchanged (all routers already included via api_router)
+
+Run locally: uvicorn app.main:app --reload --port 8002 (note: 8002 internal, 8080 gateway)
+"""
+from __future__ import annotations
+
+import logging
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from app.api.v1.router import api_router
+from app.ai_service.exceptions import install_ai_exception_handlers
+from app.core.config import get_settings
+from app.api.middleware.internal_only_guard import InternalOnlyGuardMiddleware
+from app.middleware.exception_handler import install_rest_exception_handlers
+
+settings = get_settings()
+
+logging.basicConfig(level=getattr(logging, settings.log_level.upper(), logging.INFO))
+logger = logging.getLogger(__name__)
+
+app = FastAPI(
+    title=settings.app_name,
+    version=settings.app_version,
+    description=(
+        "Industrial Operating Brain (IOB) — AI Intelligence Platform. "
+        "Phase 3: REST-compliant API with standardized response envelopes. "
+        "Single Gateway: Frontend -> Gateway -> brain_intelligence. "
+        "Owns Predictive, GraphRAG, XAI, Decision, Vector."
+    ),
+    debug=settings.debug,
+    docs_url="/docs" if settings.app_env != "production" else None,
+    redoc_url="/redoc" if settings.app_env != "production" else None,
+)
+
+# Phase 0: AI-service exception handlers (for /ai/* routes)
+install_ai_exception_handlers(app)
+
+# Phase 3: REST API exception handlers (for assets, alerts, dashboard, auth, etc.)
+install_rest_exception_handlers(app)
+
+# Phase 0: Internal-only guard — validates X-Internal-Service-Token or JWT service token
+app.add_middleware(InternalOnlyGuardMiddleware)
+
+# CORS — Phase 0 locked: gateway only in production, localhost + gateway in dev
+cors_origins = settings.cors_origins_list
+if settings.app_env == "production":
+    cors_origins = [o for o in cors_origins if "3000" not in o]
+    if not cors_origins:
+        cors_origins = ["http://gateway:8080", "https://api.iob.enterprise.internal"]
+    logger.info(f"Production CORS locked to gateway-only: {cors_origins}")
+else:
+    logger.info(f"Dev CORS origins (includes frontend for standalone testing): {cors_origins}")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=cors_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(api_router, prefix=settings.api_v1_prefix)
+
+@app.get("/", tags=["root"])
+def root() -> dict:
+    return {
+        "service": settings.app_name,
+        "version": settings.app_version,
+        "phase": "3-rest-compliant",
+        "mode": "internal-only microservice",
+        "docs": "/docs" if settings.app_env != "production" else "disabled in prod",
+        "api_prefix": settings.api_v1_prefix,
+        "pipeline": "Frontend -> Gateway -> AI Platform (brain_intelligence)",
+        "embedding_lock": "all-mpnet-base-v2 768d Cosine operational_knowledge_v4",
+        "ownership": {
+            "owns": ["predictive", "graphrag", "xai", "decision", "vector", "ingestion"],
+            "does_not_own": ["auth", "frontend UI", "public gateway", "assets/dashboard/alerts persistence"],
+        },
+        "phase3_improvements": {
+            "response_envelope": "ApiResponse[T] + PaginatedResponse[T]",
+            "exception_handling": "AppException hierarchy with global handlers",
+            "missing_endpoints_added": [
+                "GET /api/v1/dashboard/summary",
+                "PATCH /api/v1/alerts/{id}/resolve",
+                "POST /api/v1/assets",
+                "DELETE /api/v1/assets/{id}",
+            ],
+        },
+    }
+
+@app.get("/health", tags=["root"])
+def health() -> dict:
+    return {"status": "ok", "service": settings.app_name, "version": settings.app_version, "phase": "3-rest-compliant"}
