@@ -1,0 +1,951 @@
+diff --git a/backend/apps/api/ws.py b/backend/apps/api/ws.py
+index b9a286c..b3bfd65 100644
+--- a/backend/apps/api/ws.py
++++ b/backend/apps/api/ws.py
+@@ -1,22 +1,369 @@
+-from typing import List
++"""Phase 5 — Authenticated Real-Time Telemetry WebSocket Router.
+ 
+-class ConnectionManager:
+-    def __init__(self):
+-        self.active_connections: List = []
++Fixes applied in this rewrite
++-----------------------------
++* **Route registration.** The endpoint is now exposed through a real
++  ``APIRouter`` that ``apps.main`` includes, instead of living as an orphan
++  coroutine no ASGI app ever mounted.
++* **Heartbeat engine.** Reads are bounded by ``asyncio.wait_for``. An idle
++  socket triggers a server ping; a peer that misses ``MAX_MISSED_HEARTBEATS``
++  consecutive pings is closed and reaped, so half-open TCP sessions can no
++  longer accumulate in memory.
++* **Channel subscriptions.** Clients declare the assets they are viewing, so
++  the server stops shipping the whole plant floor to every browser tab.
++* **Guaranteed cleanup.** Every exit path funnels through ``finally`` into
++  ``connection_manager.disconnect`` — including cancellation at shutdown.
+ 
+-    async def connect(self, websocket):
+-        await websocket.accept()
+-        self.active_connections.append(websocket)
++Two endpoints are published, both backed by the same manager:
+ 
+-    def disconnect(self, websocket):
+-        if websocket in self.active_connections:
+-            self.active_connections.remove(websocket)
++``/api/v1/stream?token=<jwt>``
++    Legacy transport consumed by the shipped frontend client. Frame shape and
++    the ``{"type": "pong"}`` heartbeat reply are preserved byte-for-byte.
+ 
+-    async def broadcast(self, message: str):
+-        for connection in self.active_connections:
+-            await connection.send_text(message)
++``/api/v1/ws/telemetry/{client_id}?token=<jwt>``
++    Phase 5 transport carrying versioned :class:`StreamEventEnvelope` frames.
++"""
+ 
+-manager = ConnectionManager()
++from __future__ import annotations
+ 
+-async def websocket_telemetry_endpoint(websocket):
+-    await manager.connect(websocket)
++import asyncio
++import logging
++from typing import Any, Dict, Optional
++
++from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
++
++from apps.core.connection_manager import connection_manager
++from apps.schemas.streaming import (
++    EVENT_ACK,
++    EVENT_ERROR,
++    EVENT_PING,
++    EVENT_PONG,
++    StreamControlCommand,
++    StreamEventEnvelope,
++)
++
++logger = logging.getLogger("iob.realtime.router")
++
++router = APIRouter(tags=["Real-Time Telemetry Stream"])
++
++# Seconds of client silence before the server probes with a ping frame.
++HEARTBEAT_INTERVAL_SECONDS = 15
++# Consecutive unanswered pings tolerated before the socket is reaped.
++MAX_MISSED_HEARTBEATS = 2
++
++# Policy close codes.
++WS_CLOSE_UNAUTHORIZED = 4001
++WS_CLOSE_HEARTBEAT_TIMEOUT = 4008
++
++# Legacy alias: pre-Phase-5 modules and tests import ``manager`` from here.
++manager = connection_manager
++
++
++# ---------------------------------------------------------------------------
++# Authentication
++# ---------------------------------------------------------------------------
++
++
++def _authenticate(token: Optional[str]) -> Optional[Dict[str, Any]]:
++    """Validate a stream JWT.
++
++    Returns the decoded claims, or ``None`` when the token is absent, malformed
++    or expired. Never raises — WebSocket auth failures must close the socket
++    with a policy code rather than surface an HTTP exception.
++    """
++    if not token:
++        return None
++    try:
++        from apps.core.security import decode_access_token
++
++        return decode_access_token(token)
++    except Exception as exc:  # noqa: BLE001 - any decode failure is a rejection
++        logger.debug("Stream token rejected: %s", exc)
++        return None
++
++
++def _token_from_socket(websocket: Any) -> Optional[str]:
++    """Recover a token from query params or the Authorization header."""
++    try:
++        params = getattr(websocket, "query_params", None)
++        if params:
++            candidate = params.get("token")
++            if isinstance(candidate, str) and candidate:
++                return candidate
++    except Exception:  # noqa: BLE001
++        pass
++
++    try:
++        headers = getattr(websocket, "headers", None)
++        if headers:
++            auth = headers.get("authorization") or headers.get("Authorization")
++            if isinstance(auth, str) and auth.lower().startswith("bearer "):
++                return auth.split(" ", 1)[1].strip()
++    except Exception:  # noqa: BLE001
++        pass
++
++    return None
++
++
++async def _reject(websocket: Any, code: int, reason: str) -> None:
++    """Close a socket before the handshake completes. Never calls ``accept``."""
++    logger.warning("Rejecting WebSocket connection (%d): %s", code, reason)
++    try:
++        await websocket.close(code=code, reason=reason)
++    except TypeError:
++        # Doubles whose close() does not accept a reason kwarg.
++        await websocket.close(code=code)
++    except Exception as exc:  # noqa: BLE001
++        logger.debug("Socket already closed during rejection: %s", exc)
++
++
++# ---------------------------------------------------------------------------
++# Legacy transport — /api/v1/stream
++# ---------------------------------------------------------------------------
++
++
++@router.websocket("/stream")
++async def websocket_telemetry_endpoint(
++    websocket: WebSocket,
++    token: Optional[str] = Query(default=None),
++) -> None:
++    """Authenticated telemetry socket (legacy frame contract preserved).
++
++    Heartbeat contract, unchanged from Stage 2 so deployed clients keep working:
++
++    * ``"ping"``                        -> ``{"type": "pong"}``
++    * ``{"type": "ping", "ts": <int>}`` -> ``{"type": "pong", "ts": <int>}``
++
++    Phase 5 additionally accepts ``{"action": "subscribe", "asset_id": "..."}``
++    to opt into filtered per-asset fan-out.
++    """
++    resolved_token = token if token is not None else _token_from_socket(websocket)
++    claims = _authenticate(resolved_token)
++
++    if claims is None:
++        await _reject(websocket, WS_CLOSE_UNAUTHORIZED, "Invalid or missing token")
++        return
++
++    client_id = await connection_manager.connect(
++        websocket,
++        client_id=None,
++        accept=True,
++        metadata={
++            "user_id": claims.get("sub"),
++            "role": claims.get("role"),
++            "transport": "legacy",
++        },
++    )
++
++    missed_heartbeats = 0
++
++    try:
++        while True:
++            try:
++                raw = await asyncio.wait_for(
++                    websocket.receive_text(),
++                    timeout=HEARTBEAT_INTERVAL_SECONDS,
++                )
++            except asyncio.TimeoutError:
++                missed_heartbeats += 1
++                if missed_heartbeats > MAX_MISSED_HEARTBEATS:
++                    logger.info(
++                        "Client %s missed %d heartbeats; reaping socket",
++                        client_id,
++                        missed_heartbeats,
++                    )
++                    await _safe_close(websocket, WS_CLOSE_HEARTBEAT_TIMEOUT)
++                    break
++                # Probe liveness. A dead peer surfaces as a write error here.
++                if not await connection_manager.send_personal_message(
++                    {"type": "ping"}, client_id
++                ):
++                    break
++                continue
++
++            missed_heartbeats = 0
++            command = StreamControlCommand.parse_client_frame(raw)
++
++            if command is None:
++                logger.debug("Ignoring unparseable control frame from %s", client_id)
++                continue
++
++            if command.action == "ping":
++                pong: Dict[str, Any] = {"type": "pong"}
++                if command.ts is not None:
++                    pong["ts"] = command.ts
++                await connection_manager.send_personal_message(pong, client_id)
++
++            elif command.action == "pong":
++                # Client answered our probe; liveness already reset above.
++                continue
++
++            elif command.action == "subscribe" and command.asset_id:
++                await connection_manager.subscribe(client_id, command.asset_id)
++                await connection_manager.send_personal_message(
++                    {
++                        "type": "subscribed",
++                        "asset_id": command.asset_id,
++                    },
++                    client_id,
++                )
++
++            elif command.action == "unsubscribe" and command.asset_id:
++                await connection_manager.unsubscribe(client_id, command.asset_id)
++                await connection_manager.send_personal_message(
++                    {
++                        "type": "unsubscribed",
++                        "asset_id": command.asset_id,
++                    },
++                    client_id,
++                )
++
++    except WebSocketDisconnect:
++        logger.info("Client %s disconnected normally", client_id)
++    except asyncio.CancelledError:
++        logger.info("Client %s cancelled during shutdown", client_id)
++        raise
++    except Exception as exc:  # noqa: BLE001 - never let one socket kill the worker
++        logger.error("Unexpected error on socket %s: %s", client_id, exc)
++    finally:
++        await connection_manager.disconnect(client_id)
++
++
++# ---------------------------------------------------------------------------
++# Phase 5 transport — /api/v1/ws/telemetry/{client_id}
++# ---------------------------------------------------------------------------
++
++
++@router.websocket("/ws/telemetry/{client_id}")
++async def telemetry_envelope_endpoint(
++    websocket: WebSocket,
++    client_id: str,
++    token: Optional[str] = Query(default=None),
++) -> None:
++    """Versioned envelope transport with explicit asset channel subscriptions."""
++    resolved_token = token if token is not None else _token_from_socket(websocket)
++    claims = _authenticate(resolved_token)
++
++    if claims is None:
++        await _reject(websocket, WS_CLOSE_UNAUTHORIZED, "Invalid or missing token")
++        return
++
++    registered_id = await connection_manager.connect(
++        websocket,
++        client_id=client_id,
++        accept=True,
++        metadata={
++            "user_id": claims.get("sub"),
++            "role": claims.get("role"),
++            "transport": "envelope",
++        },
++    )
++
++    # Envelope clients receive an explicit handshake acknowledgement.
++    await connection_manager.send_personal_message(
++        StreamEventEnvelope(
++            event_type=EVENT_ACK,
++            payload={
++                "status": "connected",
++                "client_id": registered_id,
++                "heartbeat_interval_seconds": HEARTBEAT_INTERVAL_SECONDS,
++            },
++        ),
++        registered_id,
++    )
++
++    missed_heartbeats = 0
++
++    try:
++        while True:
++            try:
++                raw = await asyncio.wait_for(
++                    websocket.receive_text(),
++                    timeout=HEARTBEAT_INTERVAL_SECONDS,
++                )
++            except asyncio.TimeoutError:
++                missed_heartbeats += 1
++                if missed_heartbeats > MAX_MISSED_HEARTBEATS:
++                    await _safe_close(websocket, WS_CLOSE_HEARTBEAT_TIMEOUT)
++                    break
++                if not await connection_manager.send_personal_message(
++                    StreamEventEnvelope(event_type=EVENT_PING), registered_id
++                ):
++                    break
++                continue
++
++            missed_heartbeats = 0
++            command = StreamControlCommand.parse_client_frame(raw)
++
++            if command is None:
++                await connection_manager.send_personal_message(
++                    StreamEventEnvelope(
++                        event_type=EVENT_ERROR,
++                        quality="BAD",
++                        payload={"reason": "malformed_control_frame"},
++                    ),
++                    registered_id,
++                )
++                continue
++
++            if command.action == "ping":
++                await connection_manager.send_personal_message(
++                    StreamEventEnvelope(
++                        event_type=EVENT_PONG,
++                        payload={"status": "alive", "ts": command.ts},
++                    ),
++                    registered_id,
++                )
++
++            elif command.action == "subscribe" and command.asset_id:
++                await connection_manager.subscribe(registered_id, command.asset_id)
++                await connection_manager.send_personal_message(
++                    StreamEventEnvelope(
++                        event_type=EVENT_ACK,
++                        asset_id=command.asset_id,
++                        payload={"status": "subscribed", "asset_id": command.asset_id},
++                    ),
++                    registered_id,
++                )
++
++            elif command.action == "unsubscribe" and command.asset_id:
++                await connection_manager.unsubscribe(registered_id, command.asset_id)
++                await connection_manager.send_personal_message(
++                    StreamEventEnvelope(
++                        event_type=EVENT_ACK,
++                        asset_id=command.asset_id,
++                        payload={
++                            "status": "unsubscribed",
++                            "asset_id": command.asset_id,
++                        },
++                    ),
++                    registered_id,
++                )
++
++    except WebSocketDisconnect:
++        logger.info("Envelope client %s disconnected normally", registered_id)
++    except asyncio.CancelledError:
++        logger.info("Envelope client %s cancelled during shutdown", registered_id)
++        raise
++    except Exception as exc:  # noqa: BLE001
++        logger.error("Unexpected error on envelope socket %s: %s", registered_id, exc)
++    finally:
++        await connection_manager.disconnect(registered_id)
++
++
++async def _safe_close(websocket: Any, code: int) -> None:
++    try:
++        await websocket.close(code=code)
++    except Exception:  # noqa: BLE001 - peer may already be gone
++        pass
++
++
++__all__ = [
++    "HEARTBEAT_INTERVAL_SECONDS",
++    "MAX_MISSED_HEARTBEATS",
++    "WS_CLOSE_UNAUTHORIZED",
++    "manager",
++    "router",
++    "telemetry_envelope_endpoint",
++    "websocket_telemetry_endpoint",
++]
+diff --git a/backend/apps/main.py b/backend/apps/main.py
+index 0214218..03f218c 100644
+--- a/backend/apps/main.py
++++ b/backend/apps/main.py
+@@ -1,6 +1,9 @@
++import asyncio
+ import json
+ import logging
+ import subprocess
++from contextlib import asynccontextmanager
++
+ from fastapi import FastAPI, Request
+ from fastapi.responses import JSONResponse
+ from fastapi.middleware.cors import CORSMiddleware
+@@ -11,6 +14,7 @@ from pydantic import ValidationError as PydanticValidationError
+ from apps.api.ai_proxy import router as ai_router
+ from apps.api.auth import router as auth_router
+ from apps.api.users import router as users_router
++from apps.api.ws import router as ws_router
+ from apps.core.api.alert import router as alert_router
+ from apps.core.api.asset import router as asset_router
+ from apps.core.config import settings
+@@ -35,9 +39,58 @@ from sqlalchemy.exc import SQLAlchemyError
+ logger = logging.getLogger("app.legacy")
+ 
+ 
++@asynccontextmanager
++async def lifespan(app_instance: FastAPI):
++    """Phase 5 — real-time subsystem startup and graceful shutdown.
++
++    Startup boots the async MQTT ingestion bridge as a supervised background
++    task (it self-heals across broker outages via exponential backoff).
++    Shutdown stops ingestion first, then drains every WebSocket connection so
++    no socket is left half-open when the worker exits.
++
++    Ingestion is opt-out via ``settings.ENABLE_REALTIME_STREAMING`` and never
++    blocks application startup: a broker that is down at boot simply causes the
++    supervisor to retry in the background while the HTTP API serves normally.
++    """
++    bridge = None
++
++    if getattr(settings, "ENABLE_REALTIME_STREAMING", True):
++        try:
++            from apps.services.mqtt_bridge import mqtt_bridge
++
++            bridge = mqtt_bridge
++            await bridge.start()
++            logger.info("Phase 5 real-time MQTT ingestion bridge started")
++        except Exception as exc:  # noqa: BLE001 - ingestion must not block the API
++            logger.error("MQTT bridge failed to start: %s", exc)
++            bridge = None
++    else:
++        logger.info("Real-time streaming disabled by configuration")
++
++    try:
++        yield
++    finally:
++        if bridge is not None:
++            try:
++                await bridge.stop()
++            except Exception as exc:  # noqa: BLE001
++                logger.warning("Error stopping MQTT bridge: %s", exc)
++
++        try:
++            from apps.core.connection_manager import connection_manager
++
++            await connection_manager.disconnect_all()
++        except Exception as exc:  # noqa: BLE001
++            logger.warning("Error draining WebSocket connections: %s", exc)
++
++
+ def create_app() -> FastAPI:
+     """Application factory for test harness and ASGI runners."""
+-    app_instance = FastAPI(title="Industrial Operating Brain", version="1.0.0")
++    app_instance = FastAPI(
++        title="Industrial Operating Brain",
++        version="1.0.0",
++        lifespan=lifespan,
++    )
+ 
+     # Add Middlewares
+     app_instance.add_middleware(
+@@ -85,6 +138,14 @@ def create_app() -> FastAPI:
+     app_instance.include_router(asset_router, prefix="/api/v1/assets", tags=["Assets"])
+     app_instance.include_router(ai_router, prefix="/api/v1/ai", tags=["AI"])
+ 
++    # Phase 5 — Real-Time Telemetry Streaming.
++    # Publishes:
++    #   WS /api/v1/stream?token=<jwt>                     (legacy frame contract)
++    #   WS /api/v1/ws/telemetry/{client_id}?token=<jwt>   (versioned envelopes)
++    app_instance.include_router(
++        ws_router, prefix="/api/v1", tags=["Real-Time Telemetry Stream"]
++    )
++
+     @app_instance.get("/", tags=["Root"])
+     def read_root():
+         """Root endpoint â€” basic service status."""
+@@ -99,6 +160,28 @@ def create_app() -> FastAPI:
+     def health_endpoint():
+         return {"status": "healthy", "version": settings.VERSION}
+ 
++    @app_instance.get("/api/v1/stream/health", tags=["Real-Time Telemetry Stream"])
++    def stream_health():
++        """Phase 5 streaming subsystem observability snapshot."""
++        from apps.core.connection_manager import connection_manager
++        from apps.services.mqtt_bridge import mqtt_bridge, sensor_queue
++        from apps.services.stream_dispatcher import stream_dispatcher
++
++        return {
++            "success": True,
++            "data": {
++                "active_connections": connection_manager.connection_count,
++                "dispatcher": stream_dispatcher.stats(),
++                "ingestion": {
++                    "queue_depth": sensor_queue.qsize(),
++                    "messages_ingested": mqtt_bridge.messages_ingested,
++                    "messages_rejected": mqtt_bridge.messages_rejected,
++                    "broker": f"{mqtt_bridge.broker_host}:{mqtt_bridge.broker_port}",
++                    "topic_filter": mqtt_bridge.topic_filter,
++                },
++            },
++        }
++
+     @app_instance.get("/api/telemetry/latest", tags=["Telemetry"])
+     def get_latest_telemetry(limit: int = 10):
+         """Retrieve latest telemetry records from the database."""
+diff --git a/backend/apps/services/mqtt_bridge.py b/backend/apps/services/mqtt_bridge.py
+index ed69126..b0c7f1d 100644
+--- a/backend/apps/services/mqtt_bridge.py
++++ b/backend/apps/services/mqtt_bridge.py
+@@ -1,13 +1,355 @@
++"""Phase 5 — Async, Non-Blocking MQTT Ingestion Bridge.
++
++Replaces the Phase-4 stub whose ``start()``/``stop()`` were empty coroutines and
++whose predecessor ran blocking synchronous callbacks directly on the event loop
++while writing to sockets inline.
++
++What this bridge guarantees
++---------------------------
++* **Never blocks the event loop.** The broker callback performs only cheap,
++  synchronous parsing, then hands the frame off via ``create_task``. Socket
++  fan-out is owned by the :class:`StreamDispatcher`.
++* **Survives broker outages.** ``start()`` runs a supervised reconnect loop
++  with exponential backoff and jitter (1s -> 2s -> 4s ... capped at 30s),
++  so a Mosquitto/EMQX restart no longer requires a container restart.
++* **Never dies on a bad payload.** Malformed JSON is logged and dropped; the
++  ingestion loop keeps running.
++* **Retains telemetry when Redis is down.** Frames are enqueued on the local
++  ``sensor_queue`` *before* the Redis publish is attempted, so an event-bus
++  outage cannot lose already-ingested data.
++
++Contract preservation
++---------------------
++``sensor_queue``, ``MQTTBridge``, the synchronous ``on_message(client, topic,
++payload, qos, properties)`` and ``on_connect(client, flags, rc, properties)``
++callbacks, and the ``{"topic": ..., "payload": ...}`` queue record shape are all
++retained exactly as the Stage-2 / Phase-5 test suites expect.
++"""
++
++from __future__ import annotations
++
+ import asyncio
++import importlib
++import json
++import logging
++import random
++from typing import Any, Dict, Optional
++
++from apps.schemas.streaming import EVENT_TELEMETRY_UPDATE, StreamEventEnvelope
++from apps.services.stream_dispatcher import StreamDispatcher, stream_dispatcher
++
++logger = logging.getLogger("iob.realtime.mqtt")
++
++# Process-wide ingestion buffer consumed by downstream workers/persistence.
++sensor_queue: asyncio.Queue = asyncio.Queue()
++
++DEFAULT_TOPIC_FILTER = "industrial/telemetry/#"
++INITIAL_BACKOFF_SECONDS = 1.0
++MAX_BACKOFF_SECONDS = 30.0
++MAX_QUEUE_DEPTH = 10_000
+ 
+-sensor_queue = asyncio.Queue()
+ 
+ class MQTTBridge:
+-    def __init__(self, *args, **kwargs):
+-        pass
++    """Async MQTT consumer bridging the industrial broker into the stream layer."""
++
++    def __init__(
++        self,
++        broker_host: Optional[str] = None,
++        broker_port: Optional[int] = None,
++        *,
++        topic_filter: str = DEFAULT_TOPIC_FILTER,
++        dispatcher: Optional[StreamDispatcher] = None,
++        client_id: Optional[str] = None,
++        username: Optional[str] = None,
++        password: Optional[str] = None,
++    ) -> None:
++        host, port, resolved_client_id, resolved_user, resolved_pass = _load_broker_defaults()
++
++        self.broker_host = broker_host or host
++        self.broker_port = int(broker_port or port)
++        self.topic_filter = topic_filter
++        self.dispatcher = dispatcher or stream_dispatcher
++        self.client_id = client_id or resolved_client_id
++        self.username = username if username is not None else resolved_user
++        self.password = password if password is not None else resolved_pass
++
++        self._running = False
++        self._client: Any = None
++        self._task: Optional[asyncio.Task] = None
++        self._backoff = INITIAL_BACKOFF_SECONDS
++        self.messages_ingested = 0
++        self.messages_rejected = 0
++
++    # ------------------------------------------------------------------
++    # Broker callbacks (synchronous, must stay cheap)
++    # ------------------------------------------------------------------
++
++    def on_connect(self, client: Any, flags: Any = None, rc: Any = None, properties: Any = None) -> None:
++        """Subscribe to the telemetry topic filter once the broker session is up."""
++        logger.info(
++            "MQTT connected to %s:%s — subscribing to %s",
++            self.broker_host,
++            self.broker_port,
++            self.topic_filter,
++        )
++        self._backoff = INITIAL_BACKOFF_SECONDS
++        if client is not None:
++            client.subscribe(self.topic_filter, qos=1)
++
++    def on_disconnect(self, client: Any = None, packet: Any = None, exc: Any = None) -> None:
++        logger.warning("MQTT broker disconnected; supervisor will reconnect")
++
++    def on_message(
++        self,
++        client: Any,
++        topic: Any,
++        payload: Any,
++        qos: Any = 0,
++        properties: Any = None,
++    ) -> Any:
++        """Handle one inbound broker frame.
++
++        Runs synchronously on the client's callback path, so it only decodes and
++        validates, then defers all I/O (Redis publish, socket fan-out) to a task.
++        """
++        topic_str = str(topic)
++
++        parsed = self._decode_payload(payload)
++        if parsed is None:
++            self.messages_rejected += 1
++            logger.error("Dropping malformed MQTT payload on topic %s", topic_str)
++            return None
++
++        record: Dict[str, Any] = {"topic": topic_str, "payload": parsed}
++
++        # Enqueue first: ingestion durability must not depend on Redis health.
++        try:
++            sensor_queue.put_nowait(record)
++            self.messages_ingested += 1
++        except asyncio.QueueFull:
++            self.messages_rejected += 1
++            logger.error("Ingestion buffer saturated; dropping frame from %s", topic_str)
++            return None
++
++        # Defer outbound I/O so the broker callback never blocks.
++        try:
++            asyncio.get_running_loop()
++        except RuntimeError:
++            # No loop (pure synchronous unit test): queueing alone is sufficient.
++            return None
++
++        return asyncio.ensure_future(self._forward(topic_str, parsed))
++
++    # ------------------------------------------------------------------
++    # Outbound propagation
++    # ------------------------------------------------------------------
++
++    async def _forward(self, topic: str, payload: Dict[str, Any]) -> None:
++        """Publish to the shared event bus, then fan out to subscribed sockets."""
++        await self._publish_to_event_bus({"topic": topic, "payload": payload})
++        await self._dispatch(topic, payload)
++
++    async def _publish_to_event_bus(self, event: Dict[str, Any]) -> None:
++        """Best-effort Redis publish. A bus outage must not drop telemetry."""
++        try:
++            event_bus = importlib.import_module("shared.event_bus")
++        except Exception as exc:  # noqa: BLE001 - bus is optional infrastructure
++            logger.debug("Shared event bus unavailable: %s", exc)
++            return
++
++        publish = getattr(event_bus, "publish_telemetry", None)
++        if publish is None:
++            return
++
++        try:
++            await publish(event)
++        except asyncio.CancelledError:
++            raise
++        except Exception as exc:  # noqa: BLE001 - retained in sensor_queue regardless
++            logger.warning(
++                "Event bus publish failed (%s); telemetry retained in local queue",
++                exc,
++            )
++
++    async def _dispatch(self, topic: str, payload: Dict[str, Any]) -> None:
++        """Route the frame to asset-channel subscribers through the dispatcher."""
++        try:
++            asset_id = self.dispatcher.extract_asset_id(topic)
++            envelope = StreamEventEnvelope(
++                event_type=EVENT_TELEMETRY_UPDATE,
++                asset_id=asset_id,
++                topic=topic,
++                payload=payload,
++                quality=_quality_of(payload),
++                sequence_number=_sequence_of(payload),
++            )
++            await self.dispatcher.dispatch_telemetry(envelope)
++        except asyncio.CancelledError:
++            raise
++        except Exception as exc:  # noqa: BLE001 - one bad frame must not kill ingestion
++            logger.error("Failed to dispatch telemetry frame from %s: %s", topic, exc)
++
++    # ------------------------------------------------------------------
++    # Supervised lifecycle
++    # ------------------------------------------------------------------
++
++    async def start(self) -> None:
++        """Launch the supervised ingestion loop as a background task."""
++        if self._running:
++            return
++        self._running = True
++        self._task = asyncio.create_task(self._run_supervised(), name="mqtt-bridge")
++        logger.info("MQTT ingestion bridge started")
++
++    async def _run_supervised(self) -> None:
++        """Connect, consume, and reconnect with exponential backoff forever."""
++        while self._running:
++            try:
++                await self._connect_and_consume()
++            except asyncio.CancelledError:
++                raise
++            except Exception as exc:  # noqa: BLE001 - broker errors are expected
++                if not self._running:
++                    break
++                delay = self._next_backoff()
++                logger.error(
++                    "MQTT connection error (%s). Reconnecting in %.1fs...", exc, delay
++                )
++                try:
++                    await asyncio.sleep(delay)
++                except asyncio.CancelledError:
++                    raise
++
++    async def _connect_and_consume(self) -> None:
++        """Establish a broker session and stay connected until it drops."""
++        try:
++            gmqtt = importlib.import_module("gmqtt")
++        except Exception as exc:  # noqa: BLE001
++            raise RuntimeError(f"MQTT client library unavailable: {exc}") from exc
++
++        client = gmqtt.Client(self.client_id)
++        client.on_connect = self.on_connect
++        client.on_message = self.on_message
++        client.on_disconnect = self.on_disconnect
++
++        if self.username:
++            client.set_auth_credentials(self.username, self.password or "")
++
++        self._client = client
++
++        logger.info(
++            "Connecting to MQTT broker at %s:%s...", self.broker_host, self.broker_port
++        )
++        await client.connect(self.broker_host, self.broker_port)
++        self._backoff = INITIAL_BACKOFF_SECONDS
++
++        try:
++            # Hold the session open; callbacks drive ingestion.
++            while self._running:
++                await asyncio.sleep(1.0)
++        finally:
++            try:
++                await client.disconnect()
++            except Exception:  # noqa: BLE001 - shutdown is best-effort
++                pass
++            self._client = None
++
++    def _next_backoff(self) -> float:
++        """Exponential backoff with jitter, capped at ``MAX_BACKOFF_SECONDS``."""
++        delay = min(self._backoff, MAX_BACKOFF_SECONDS)
++        self._backoff = min(self._backoff * 2, MAX_BACKOFF_SECONDS)
++        return delay + random.uniform(0, 0.3)
++
++    async def stop(self) -> None:
++        """Stop the supervisor and close the broker session."""
++        self._running = False
++
++        client = self._client
++        if client is not None:
++            try:
++                await client.disconnect()
++            except Exception:  # noqa: BLE001
++                pass
++            self._client = None
++
++        task = self._task
++        if task is not None and not task.done():
++            task.cancel()
++            try:
++                await task
++            except (asyncio.CancelledError, Exception):  # noqa: BLE001
++                pass
++        self._task = None
++
++        logger.info("MQTT ingestion bridge stopped")
++
++    # ------------------------------------------------------------------
++    # Helpers
++    # ------------------------------------------------------------------
++
++    @staticmethod
++    def _decode_payload(payload: Any) -> Optional[Dict[str, Any]]:
++        """Decode an MQTT payload into a JSON object, or ``None`` if invalid."""
++        try:
++            if isinstance(payload, (bytes, bytearray)):
++                text = payload.decode("utf-8")
++            elif isinstance(payload, str):
++                text = payload
++            elif isinstance(payload, dict):
++                return payload
++            else:
++                return None
++
++            parsed = json.loads(text)
++        except (UnicodeDecodeError, ValueError, TypeError):
++            return None
++
++        return parsed if isinstance(parsed, dict) else None
++
++
++def _quality_of(payload: Dict[str, Any]) -> str:
++    """Extract an OPC-UA style quality flag, defaulting to ``GOOD``."""
++    raw = payload.get("quality")
++    if isinstance(raw, str) and raw.upper() in ("GOOD", "BAD", "UNCERTAIN"):
++        return raw.upper()
++    return "GOOD"
++
++
++def _sequence_of(payload: Dict[str, Any]) -> int:
++    """Extract a source-provided sequence number, defaulting to ``0``."""
++    for key in ("seq", "sequence", "sequence_number"):
++        value = payload.get(key)
++        if isinstance(value, int) and value >= 0:
++            return value
++    return 0
++
++
++def _load_broker_defaults() -> tuple:
++    """Read broker coordinates from settings, tolerating a missing config."""
++    try:
++        from apps.core.config import settings
++
++        return (
++            getattr(settings, "MQTT_BROKER_HOST", "localhost"),
++            getattr(settings, "MQTT_BROKER_PORT", 1883),
++            getattr(settings, "MQTT_CLIENT_ID", "iob-backend"),
++            getattr(settings, "MQTT_USERNAME", None),
++            getattr(settings, "MQTT_PASSWORD", None),
++        )
++    except Exception:  # noqa: BLE001 - settings must never break import
++        return ("localhost", 1883, "iob-backend", None, None)
++
++
++# Shared instance used by the FastAPI lifespan hook.
++mqtt_bridge = MQTTBridge()
+ 
+-    async def start(self):
+-        pass
++# Phase 5 naming alias.
++AsyncMQTTBridge = MQTTBridge
+ 
+-    async def stop(self):
+-        pass
++__all__ = [
++    "AsyncMQTTBridge",
++    "DEFAULT_TOPIC_FILTER",
++    "MQTTBridge",
++    "mqtt_bridge",
++    "sensor_queue",
++]
+diff --git a/backend/requirements.txt b/backend/requirements.txt
+index 98e2547..dc5d322 100644
+--- a/backend/requirements.txt
++++ b/backend/requirements.txt
+@@ -55,6 +55,8 @@ email-validator>=2.0.0
+ # HTTP client for test suite
+ httpx>=0.27.0
+ 
++# Async MQTT client — Phase 5 real-time ingestion bridge
++# (apps/services/mqtt_bridge.py runs a supervised asyncio consumer on gmqtt)
+ gmqtt>=0.7.0
+ 
+ aiosqlite>=0.20.0
+diff --git a/frontend/.env.example b/frontend/.env.example
+index 7857826..3089cfd 100644
+--- a/frontend/.env.example
++++ b/frontend/.env.example
+@@ -1,4 +1,14 @@
+-﻿# Industrial Operating Brain - Frontend Environment Template
++# Industrial Operating Brain - Frontend Environment Template
+ NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+-NEXT_PUBLIC_WS_URL=ws://localhost:8000/ws
+ NEXT_PUBLIC_APP_ENV=production
++
++# --- Phase 5: Real-Time Streaming ---
++# Leave NEXT_PUBLIC_WS_URL unset to let StreamProvider derive the socket URL
++# from window.location (recommended: works behind the Next.js rewrite proxy and
++# automatically upgrades ws: -> wss: on HTTPS deployments).
++#
++# Set it explicitly only when the stream terminates on a different origin than
++# the web app, e.g. a dedicated gateway:
++#   Legacy transport      : ws://localhost:8000/api/v1/stream
++#   Versioned envelopes   : ws://localhost:8000/api/v1/ws/telemetry/<client-id>
++NEXT_PUBLIC_WS_URL=ws://localhost:8000/api/v1/stream
+diff --git a/frontend/src/app/(dashboard)/layout.tsx b/frontend/src/app/(dashboard)/layout.tsx
+index 2ef6fb0..e38192d 100644
+--- a/frontend/src/app/(dashboard)/layout.tsx
++++ b/frontend/src/app/(dashboard)/layout.tsx
+@@ -3,6 +3,7 @@
+ import React from "react";
+ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+ import { TelemetryProvider } from "@/providers/TelemetryProvider";
++import { StreamProvider } from "@/providers/StreamProvider";
+ import { DashboardLayout as DashboardLayoutWrapper } from "@/components/layout/DashboardLayout";
+ 
+ export default function DashboardLayout({
+@@ -13,9 +14,18 @@ export default function DashboardLayout({
+   return (
+     <ProtectedRoute>
+       <TelemetryProvider>
+-        <DashboardLayoutWrapper>
+-          {children}
+-        </DashboardLayoutWrapper>
++        {/*
++          Phase 5: StreamProvider owns the single dashboard-wide telemetry
++          socket (connection state machine + exponential backoff reconnect +
++          per-asset subscriptions). It is mounted inside TelemetryProvider so
++          the existing useTelemetry() surface keeps working unchanged while
++          new views migrate to useStream() / useAssetStream().
++        */}
++        <StreamProvider>
++          <DashboardLayoutWrapper>
++            {children}
++          </DashboardLayoutWrapper>
++        </StreamProvider>
+       </TelemetryProvider>
+     </ProtectedRoute>
+   );
