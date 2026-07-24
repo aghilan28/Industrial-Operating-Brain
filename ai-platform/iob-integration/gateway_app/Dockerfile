@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Install deps
 COPY gateway_app/requirements.txt ./requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --default-timeout=1000 --retries=10 --no-cache-dir -r requirements.txt
 
 COPY gateway_app/ ./gateway_app/
 COPY __init__.py ./__init__.py 2>/dev/null || true
